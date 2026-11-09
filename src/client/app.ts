@@ -387,18 +387,44 @@ function setupRevise() {
 function setupNavToggle() {
   const btn = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
   if (!btn) return;
+  const signal = pageSignal();
+  const root = document.documentElement;
+  // phones (and the app) have no left menu: the same button slides it in as a drawer over the page
+  const phone = window.matchMedia("(max-width: 800px)");
+  const backdrop = document.querySelector<HTMLElement>("[data-nav-backdrop]");
+  const drawer = (open: boolean) => {
+    if (open) root.dataset.drawer = "open";
+    else delete root.dataset.drawer;
+    if (backdrop) backdrop.hidden = !open;
+    render();
+    if (open) document.querySelector<HTMLElement>("[data-nav-close]")?.focus();
+  };
   const render = () => {
-    const collapsed = document.documentElement.dataset.nav === "collapsed";
+    if (phone.matches) {
+      const open = root.dataset.drawer === "open";
+      btn.setAttribute("aria-expanded", String(open));
+      btn.setAttribute("aria-label", open ? "Close the menu" : "Open the menu");
+      return;
+    }
+    const collapsed = root.dataset.nav === "collapsed";
     btn.setAttribute("aria-expanded", String(!collapsed));
     btn.setAttribute("aria-label", collapsed ? "Expand the menu" : "Collapse the menu");
   };
   btn.addEventListener("click", () => {
-    const collapsed = document.documentElement.dataset.nav !== "collapsed";
-    document.documentElement.dataset.nav = collapsed ? "collapsed" : "open";
+    if (phone.matches) return drawer(root.dataset.drawer !== "open");
+    const collapsed = root.dataset.nav !== "collapsed";
+    root.dataset.nav = collapsed ? "collapsed" : "open";
     setPrefs({ nav: collapsed ? "collapsed" : "open" });
     render();
-  }, { signal: pageSignal() });
-  render();
+  }, { signal });
+  backdrop?.addEventListener("click", () => drawer(false), { signal });
+  document.querySelector("[data-nav-close]")?.addEventListener("click", () => { drawer(false); btn.focus(); }, { signal });
+  document.querySelector(".sidebar")?.addEventListener("click", (e) => (e.target as Element).closest("a") && drawer(false), { signal });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && root.dataset.drawer === "open") { drawer(false); btn.focus(); }
+  }, { signal });
+  phone.addEventListener("change", () => drawer(false), { signal });
+  drawer(false);
 }
 
 document.addEventListener("astro:page-load", () => {

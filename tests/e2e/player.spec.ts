@@ -257,6 +257,34 @@ test.describe("videos page: notes, playlist, small player", () => {
     await expect.poll(async () => (await page.locator(".sidebar").boundingBox())!.width).toBeGreaterThan(200);
   });
 
+  test("phones (and the app): the menu button opens the whole menu as a drawer", async ({ page, isMobile }) => {
+    test.skip(!isMobile && (page.viewportSize()?.width ?? 0) > 800, "wide screens collapse the menu instead");
+    await page.goto(`videos/${ids[1]}/`);
+    const btn = page.getByRole("button", { name: "Open the menu" });
+    await expect(btn).toBeVisible();
+    await btn.click();
+    const menu = page.locator(".sidebar");
+    await expect(menu).toBeVisible();
+    await expect(page.locator("[data-nav-toggle]")).toHaveAttribute("aria-expanded", "true");
+    const axe = await new AxeBuilder({ page }).include(".sidebar").analyze();
+    expect(axe.violations).toEqual([]);
+    // the × in the drawer closes it (the drawer covers the menu button); so do Escape and the backdrop; a link goes there and closes it
+    await menu.getByRole("button", { name: "Close the menu" }).click();
+    await expect(menu).toBeHidden();
+    await expect(btn).toBeFocused();
+    await btn.click();
+    await page.keyboard.press("Escape");
+    await expect(menu).toBeHidden();
+    await btn.click();
+    await page.mouse.click(page.viewportSize()!.width - 10, 300);
+    await expect(menu).toBeHidden();
+    await btn.click();
+    await menu.getByRole("link", { name: "Podcasts" }).click();
+    await expect(page).toHaveURL(/podcasts\/$/);
+    await expect(page.locator(".sidebar")).toBeHidden();
+    await expect(page.locator("html")).not.toHaveAttribute("data-drawer", "open");
+  });
+
   test("the video page has no accessibility violations with the player running", async ({ page }) => {
     await page.goto(`videos/${ids[4]}/`);
     await page.getByRole("button", { name: /Play video:/ }).click();

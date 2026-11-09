@@ -88,6 +88,7 @@ const crumb = nav ? CRUMB[nav] : title;
     <a class="skip-link" href="#main">Skip to content</a>
 
     <aside class="sidebar" aria-label="Site">
+      <button class="icon-btn sidebar__close" type="button" data-nav-close aria-label="Close the menu" title="Close the menu"><Icon name="close" /></button>
       <a class="brand" href={base} aria-label="Mule Learning Hub home">
         <span class="brand__mark" aria-hidden="true">M</span>
         <span class="brand__text"><strong>Mule Learning Hub</strong><small>Learn. Build. Master.</small></span>
@@ -111,6 +112,8 @@ const crumb = nav ? CRUMB[nav] : title;
         <span>My learning space<small>Progress saved in this browser</small></span>
       </div>
     </aside>
+
+    <div class="nav-backdrop" data-nav-backdrop hidden></div>
 
     <div class="app-main">
       <header class="topbar">
