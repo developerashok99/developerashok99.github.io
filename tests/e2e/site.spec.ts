@@ -164,7 +164,7 @@ test.describe("course and home", () => {
     await page.locator("[data-toggle-done]").click();
     await page.locator("[data-toggle-bookmark]").click();
     await page.goto("");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Welcome back, learner.");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Welcome back, Ravi.");
     await expect(page.locator("[data-total-done]")).toHaveText("1");
     await expect(page.locator("[data-n-bookmarks]")).toHaveText("1");
     // Day 1's lecture length comes from config/media.json

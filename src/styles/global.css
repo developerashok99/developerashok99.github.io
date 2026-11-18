@@ -1546,7 +1546,11 @@ html { scroll-padding-top: calc(var(--topbar-h) + env(safe-area-inset-top, 0px) 
 /* Quiz (src/components/Quiz.astro) */
 .quiz__bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
 .quiz__bar p { margin: 0; }
-.quiz__list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; }
+.quiz__list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.9rem; }
+/* a long answer or code line wraps (or scrolls inside its box) instead of widening the page on phones */
+.quiz__q { min-width: 0; }
+.quiz__opt > span, .quiz__feedback, .quiz__q legend { min-width: 0; overflow-wrap: anywhere; }
+.quiz__feedback pre { max-width: 100%; overflow-x: auto; }
 .quiz__q[hidden] { display: none; }
 .quiz__q fieldset { margin: 0; padding: 0.9rem 1rem; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); min-width: 0; }
 .quiz__q legend { float: left; width: 100%; padding: 0; margin-bottom: 0.6rem; font-weight: 700; line-height: 1.5; }
@@ -1564,7 +1568,9 @@ html { scroll-padding-top: calc(var(--topbar-h) + env(safe-area-inset-top, 0px) 
 .quiz__verdict { font-weight: 800; }
 .quiz__verdict[data-ok="true"] { color: var(--success); }
 .quiz__verdict[data-ok="false"] { color: var(--danger); }
-.keycards { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.keycards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.5rem; }
+/* questions with long code names wrap on phones instead of widening the page */
+.qa summary, .qa__q { min-width: 0; overflow-wrap: anywhere; }
 .keycard .qa__a { padding-left: 1rem; }
 .cmap-filters { flex-basis: 100%; }
 .cmap-filters summary { cursor: pointer; font-weight: 800; font-size: 0.9rem; min-height: 2.4rem; display: flex; align-items: center; gap: 0.5rem; }

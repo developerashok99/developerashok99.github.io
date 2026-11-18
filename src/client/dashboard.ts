@@ -48,6 +48,8 @@ function fill(list: HTMLElement | null, items: HTMLLIElement[]) {
 export function setupDashboard() {
   const dash = document.querySelector<HTMLElement>("[data-dashboard]");
   if (!dash) return;
+  const head = document.querySelector<HTMLElement>("[data-head-title]");
+  if (head) head.textContent = `Welcome, ${firstName()}.`;
   let index: IndexItem[] = [];
   try {
     index = JSON.parse(dash.querySelector("[data-lesson-index]")?.textContent || "[]");
@@ -78,7 +80,7 @@ export function setupDashboard() {
       watch.hidden = false;
     }
     const title = document.querySelector<HTMLElement>("[data-head-title]");
-    if (title) title.textContent = "Welcome back, learner.";
+    if (title) title.textContent = `Welcome back, ${firstName()}.`;
     // the hero's main button resumes too
     const hero = $<HTMLAnchorElement>("[data-hero-start]");
     if (hero && !done.has(last.id)) {
@@ -181,5 +183,15 @@ export function setupDashboard() {
       go.href = go.href.replace(/#.*$/, "#browse");
       next.textContent = qi.nextDue ? `Nothing due. Next review in ${describeWait(qi.nextDue - Date.now())}.` : "Nothing due.";
     } else next.textContent = qi.due.length ? `${qi.due.length + left} cards in today's review` : `${left} new cards to start today`;
+  }
+}
+
+/** the signed-in person's first name for the greeting ("learner" if unknown) */
+function firstName(): string {
+  try {
+    const name = (JSON.parse(localStorage.getItem("mls.account") ?? "null") as { name?: string } | null)?.name?.trim();
+    return name ? name.split(/\s+/)[0] : "learner";
+  } catch {
+    return "learner";
   }
 }
