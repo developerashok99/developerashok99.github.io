@@ -170,10 +170,25 @@ function setupControlsSwitch(page: HTMLElement) {
   document.addEventListener("mls:controls-mode", (e) => (box.checked = (e as CustomEvent<{ mode: string }>).detail.mode === "youtube"), { signal });
 }
 
+/** "Keyboard shortcuts": "?" opens the list, Escape or a click elsewhere closes it. */
+function setupKeysHelp(page: HTMLElement) {
+  const box = page.querySelector<HTMLDetailsElement>("[data-video-keys]");
+  if (!box) return;
+  const signal = pageSignal();
+  document.addEventListener("keydown", (e) => {
+    const t = e.target as HTMLElement | null;
+    if (t?.closest("input, textarea, select, [contenteditable='true']")) return;
+    if (e.key === "?") { box.open = !box.open; e.preventDefault(); }
+    else if (e.key === "Escape" && box.open) box.open = false;
+  }, { signal });
+  document.addEventListener("click", (e) => { if (box.open && !box.contains(e.target as Node)) box.open = false; }, { signal });
+}
+
 export function setupVideoPage() {
   const page = document.querySelector<HTMLElement>("[data-video-page], [data-podcast-page]");
   if (!page) return;
   setupControlsSwitch(page);
+  setupKeysHelp(page);
   // podcast pages: keep the current episode visible in the list (the Videos tab does this in videos.ts)
   if (page.dataset.podcastPage) {
     const list = page.querySelector<HTMLElement>("[data-video-list]");

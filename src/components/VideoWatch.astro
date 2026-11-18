@@ -76,7 +76,18 @@ const name = `${current.label} — ${current.title}`;
           <label class="switch" title="YouTube only lets you choose 720p / 1080p in its own controls"><input type="checkbox" role="switch" data-player-youtube /> YouTube's own controls (quality menu)</label>
           <a class="video-meta__item" href={withBase(base, lessonPath(current.id))}><Icon name="notes" /> Lesson page</a>
           {lecture.watchUrl && <a class="video-meta__item" href={lecture.watchUrl} target="_blank" rel="noopener noreferrer"><Icon name="external" /> Open on YouTube</a>}
-          <span class="video-keys">Keys: <kbd>Space</kbd> play/pause · <kbd>←</kbd><kbd>→</kbd> 5 s · <kbd>J</kbd><kbd>L</kbd> 10 s · <kbd>F</kbd> full screen · <kbd>M</kbd> mute · <kbd>Shift</kbd>+<kbd>N</kbd>/<kbd>P</kbd> next / previous</span>
+          <details class="video-keys" data-video-keys>
+            <summary><kbd>?</kbd> Keyboard shortcuts</summary>
+            <dl class="video-keys__list">
+              <dt><kbd>Space</kbd> <kbd>K</kbd></dt><dd>Play / pause</dd>
+              <dt><kbd>←</kbd> <kbd>→</kbd></dt><dd>Back / forward 5 s</dd>
+              <dt><kbd>J</kbd> <kbd>L</kbd></dt><dd>Back / forward 10 s</dd>
+              <dt><kbd>F</kbd></dt><dd>Full screen</dd>
+              <dt><kbd>M</kbd></dt><dd>Mute</dd>
+              <dt><kbd>C</kbd></dt><dd>Captions</dd>
+              <dt><kbd>Shift</kbd>+<kbd>N</kbd> / <kbd>P</kbd></dt><dd>Next / previous video</dd>
+            </dl>
+          </details>
         </div>
 
         <nav class="video-pager" aria-label="Previous and next video">
