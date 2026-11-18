@@ -49,7 +49,7 @@ self.addEventListener("fetch", (e) => {
     })));
     return;
   }
-  if (url.pathname.startsWith(BASE + "notes-assets/") || url.pathname === BASE + "glossary.json" || url.pathname === BASE + "interview.json") {
+  if (url.pathname.startsWith(BASE + "notes-assets/") || url.pathname === BASE + "glossary.json" || url.pathname === BASE + "interview.json" || url.pathname === BASE + "mcq.json") {
     // stale-while-revalidate: instant from cache, refreshed in the background so updated slides appear on the next visit
     e.respondWith(caches.open(IMAGES).then(async (c) => {
       const cached = await c.match(req);

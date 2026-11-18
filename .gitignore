@@ -15,3 +15,5 @@ coverage/
 .DS_Store
 dist-app/
 reports/
+# the key that encrypts the site's content (scripts/protect.mjs); also a GitHub secret and in Firestore config/site
+.site-key

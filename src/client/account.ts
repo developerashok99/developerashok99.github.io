@@ -7,6 +7,7 @@
 import { SYNC_KEYS, authMessage, initials, reconcile, summarize, type ProfileSummary, type Snapshot } from "../lib/sync";
 import { ACCOUNT_KEY, AUTH_AT_KEY, SIGN_IN_DAYS, SYNC_AT_KEY, timeAgo } from "./store";
 import { pageSignal } from "./page";
+import { SITE_KEY } from "./seal";
 
 export interface AccountUser {
   uid: string;
@@ -25,6 +26,25 @@ export interface Backend {
   putProgress(uid: string, snap: Snapshot): Promise<void>;
   putProfile(uid: string, p: ProfileSummary): Promise<void>;
   listProfiles(): Promise<(ProfileSummary & { uid: string })[]>;
+  /** the key that opens the site's encrypted content (Firestore config/site; members only) */
+  getSiteKey(): Promise<string | null>;
+  /** the shared question bank (Firestore mcqs): everyone reads, you change only your own */
+  listMcqs(): Promise<(McqDoc & { id: string })[]>;
+  saveMcq(id: string | null, d: McqDoc): Promise<string>;
+  deleteMcq(id: string): Promise<void>;
+}
+/** a question in the shared bank */
+export interface McqDoc {
+  q: string;
+  options: string[];
+  answer: number;
+  explain: string;
+  /** the lesson it belongs to, or "" */
+  lid: string;
+  author: string;
+  authorName: string;
+  created: number;
+  updated: number;
 }
 declare global {
   interface Window {
@@ -61,6 +81,7 @@ function saveUser(u: AccountUser | null) {
       localStorage.removeItem(AUTH_AT_KEY);
       // the next sign-in on this device merges with the account again instead of replacing it
       localStorage.removeItem(SYNC_AT_KEY);
+      localStorage.removeItem(SITE_KEY);
     }
   } catch {
     /* storage unavailable */
@@ -262,6 +283,7 @@ function connect() {
     const name = state.user?.uid === u.uid ? state.user.name : u.name;
     state.user = { ...u, name };
     saveUser(state.user);
+    if (!hasSiteKey()) void loadSiteKey();
     void syncNow();
   })).catch((e) => {
     console.warn("account unavailable", e);
@@ -313,6 +335,7 @@ async function renderFriends(box: HTMLElement) {
       if (p.lecturesWatched || p.hoursWatched) parts.push(`${p.lecturesWatched ?? 0} lectures watched (${p.hoursWatched ?? 0} h)`);
       parts.push(`${p.cardsLearned} cards learned`, `${p.quizRight} quiz answers right`);
       if (p.interviews) parts.push(`${p.interviews} mock interview${p.interviews === 1 ? "" : "s"}, recent average ${p.interviewScore}%`);
+      if (p.mcqTests) parts.push(`${p.mcqTests} MCQ test${p.mcqTests === 1 ? "" : "s"}, best ${p.mcqBest}%`);
       stats.textContent = parts.join(" · ");
       body.append(head, bar, stats);
       if (p.lastTitle) {
@@ -378,6 +401,11 @@ function setupAccountPage() {
       form.reset();
       say(msg, "Signed in. Loading your progress…");
       // bring the account's progress down before showing any page, so it opens up to date
+      const key = await loadSiteKey();
+      if (!key) {
+        say(msg, "Signed in, but the site's content key isn't set up in Firebase yet. Ask whoever runs this site.", "error");
+        return;
+      }
       await Promise.race([syncNow(), new Promise((r) => setTimeout(r, 8000))]);
       if (document.documentElement.hasAttribute("data-locked")) {
         location.replace(nextPage());
@@ -485,10 +513,47 @@ function setupAccountPage() {
 }
 
 /** Called on every page (astro:page-load). */
-export function setupAccount() {
+export function setupAccount(): boolean {
   startAccount();
   // client-side navigation skips the check in Base.astro, so check again on every page
-  if (!signedIn() && !onLoginPage()) return toLogin(savedUser() ? "expired" : undefined);
+  if (!signedIn() && !onLoginPage()) {
+    toLogin(savedUser() ? "expired" : undefined);
+    return false;
+  }
   render();
   setupAccountPage();
+  return true;
 }
+
+// ---- the site key ----
+const hasSiteKey = () => {
+  try {
+    return !!localStorage.getItem(SITE_KEY);
+  } catch {
+    return false;
+  }
+};
+/** Gets the content key from the account and keeps it on this device (until sign-out or the 30 days are up). */
+async function loadSiteKey(): Promise<string | null> {
+  try {
+    const key = await (await backend()).getSiteKey();
+    if (key) localStorage.setItem(SITE_KEY, key.trim());
+    return key;
+  } catch (e) {
+    console.warn("site key unavailable", e);
+    return null;
+  }
+}
+// a page didn't open: maybe the key changed. Fetch it again once, and reload if it did.
+let retried = false;
+document.addEventListener("mls:unseal-failed", () => {
+  if (retried || !state.user) return;
+  retried = true;
+  const before = localStorage.getItem(SITE_KEY);
+  void loadSiteKey().then((k) => k && k.trim() !== before && location.reload());
+});
+
+/** The signed-in person, for features that write to the shared database (the question bank). */
+export const currentUser = (): AccountUser | null => state.user;
+/** The account server, for features that use the shared database. */
+export const accountBackend = (): Promise<Backend> => backend();

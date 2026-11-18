@@ -5,7 +5,7 @@
   "scripts": {
     "sync": "node scripts/sync-notes.mjs",
     "dev": "npm run sync && astro dev",
-    "build:site": "astro build && pagefind --site dist",
+    "build:site": "astro build && pagefind --site dist && node scripts/protect.mjs dist",
     "build": "npm run sync && npm run build:site",
     "preview": "astro preview",
     "check": "astro check",
@@ -13,8 +13,8 @@
     "test:links": "node scripts/check-links.mjs",
     "test:e2e": "playwright test",
     "verify": "npm run check && npm test && npm run sync && npm run build:test && npm run test:links && npm run test:e2e && npm run build:site",
-    "build:test": "SHOW_TEST_EPISODES=true npm run build:site",
-    "build:app": "APP_BUILD=1 astro build && pagefind --site dist-app",
+    "build:test": "SHOW_TEST_EPISODES=true SITE_KEY=dGVzdC1zaXRlLWtleS1mb3ItZTJlLXRlc3RzLW9ubHk= npm run build:site",
+    "build:app": "APP_BUILD=1 astro build && pagefind --site dist-app && node scripts/protect.mjs dist-app",
     "app:sync": "npm run build:app && npx cap sync android",
     "app:apk": "npm run app:sync && cd android && ./gradlew assembleDebug",
     "coverage": "vitest run tests/unit/coverage-report.test.ts && echo \"wrote reports/coverage.md\""

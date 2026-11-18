@@ -30,7 +30,10 @@ test.describe("members only: signing in", () => {
     await expect(page.locator(".bottom-nav")).toBeHidden();
     await signIn(page);
     await expect(page).toHaveURL(/videos\/day02\/$/);
+    // the key came from the account, and the page opened with it
+    expect(await page.evaluate(() => localStorage.getItem("mls.siteKey"))).toBeTruthy();
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.locator("main script[data-sealed]")).toHaveCount(0);
   });
 
   test("a wrong password says so in plain words", async ({ page }) => {
@@ -115,6 +118,7 @@ test.describe("account and sync, signed in", () => {
     await page.getByRole("button", { name: "Sign out" }).click();
     await expect(page.getByRole("region", { name: "Sign in" })).toBeVisible();
     expect(await page.evaluate(() => localStorage.getItem("mls.account"))).toBeNull();
+    expect(await page.evaluate(() => localStorage.getItem("mls.siteKey"))).toBeNull();
     await page.goto("lessons/");
     await expect(page).toHaveURL(/account\/\?next=/);
   });
@@ -123,5 +127,25 @@ test.describe("account and sync, signed in", () => {
     await page.goto("account/");
     await expect(page.locator("[data-account-in] [data-account-sync]")).toHaveText(/Synced/);
     expect((await axe(page)).violations).toEqual([]);
+  });
+});
+
+test.describe("members only: the content itself is protected", () => {
+  test("pages, search files and data are unreadable without signing in", async ({ request }) => {
+    const page = await (await request.get("lessons/day05/detailed/")).text();
+    expect(page).toContain("data-sealed");
+    expect(page).not.toMatch(/Database Select|Add Modules/i);
+    const data = await (await request.get("interview.json")).json();
+    expect(Object.keys(data)).toEqual(["sealed"]);
+    expect((await (await request.get("glossary.json")).json()).sealed).toBeTruthy();
+    const signin = await (await request.get("account/")).text();
+    expect(signin).not.toContain("data-sealed");
+  });
+
+  test("signed in, the same page opens normally", async ({ page }) => {
+    await page.goto("lessons/day05/detailed/");
+    await expect(page.locator("article.prose h1")).toContainText(/Day 0?5/);
+    await expect(page.locator("main script[data-sealed]")).toHaveCount(0);
+    await expect(page).toHaveTitle(/Day 5/);
   });
 });

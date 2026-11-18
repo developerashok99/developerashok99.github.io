@@ -1,0 +1,155 @@
+---
+/**
+ * MCQ tests: exam-style tests (timed, marked at the end, 70% to pass, like MuleSoft's developer exam) or practice
+ * (answer shown after each question), from every lesson's questions plus the shared bank your friends add to.
+ * src/client/mcq.ts runs it; the bank lives in the database (Firestore mcqs).
+ */
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import PageHead from "../components/PageHead.astro";
+import { getCourses, getLessons } from "../lib/content";
+import { studyFor } from "../lib/study";
+import { withBase } from "../lib/routes";
+
+const base = import.meta.env.BASE_URL;
+const lessons = getLessons();
+const total = lessons.reduce((n, l) => n + studyFor(l.id).quiz.length, 0);
+const sections = getCourses().flatMap((c) => c.sections)
+  .map((s) => ({ id: s.id, title: s.title, n: s.lessons.reduce((n, id) => n + studyFor(id).quiz.length, 0) }))
+  .filter((s) => s.n > 0);
+---
+<Base title="MCQ tests" nav="mcq" description="Multiple-choice tests in exam or practice mode, and a question bank shared with your friends">
+  <div class="page mcq" data-mcq data-src={withBase(base, "mcq.json")}>
+    <PageHead eyebrow="Test yourself" title="MCQ tests" sub="Exam mode is timed and marked at the end, like MuleSoft's developer exam (70% to pass). Practice mode shows the answer after each question. Wrong answers come back in later tests." />
+
+    <section class="card iv-setup" data-mcq-setup aria-labelledby="mq-setup-h">
+      <h2 id="mq-setup-h">New test</h2>
+      <div class="iv-grid">
+        <label class="account__field">Topics
+          <select class="input" data-mcq-topic>
+            <option value="">Whole course ({total} questions)</option>
+            <option value="done">Only lessons I've completed</option>
+            {sections.map((s) => <option value={s.id}>{s.title} ({s.n})</option>)}
+            <option value="friends">Only friends' questions</option>
+          </select>
+        </label>
+        <fieldset class="iv-choice">
+          <legend>Questions</legend>
+          <div class="segmented" role="group" aria-label="Number of questions">
+            {[10, 20, 30, 60].map((n) => <button type="button" data-mcq-count={n} aria-pressed={n === 20 ? "true" : "false"}>{n}</button>)}
+          </div>
+        </fieldset>
+        <fieldset class="iv-choice">
+          <legend>Mode</legend>
+          <div class="segmented" role="group" aria-label="Mode">
+            <button type="button" data-mcq-mode="exam" aria-pressed="true">Exam</button>
+            <button type="button" data-mcq-mode="practice" aria-pressed="false">Practice</button>
+          </div>
+        </fieldset>
+      </div>
+      <p class="small muted" data-mcq-mode-help>Exam: 2 minutes a question, answers shown when you finish.</p>
+      <label class="switch"><input type="checkbox" role="switch" data-mcq-friends checked /> Include friends' questions <span class="muted" data-mcq-friends-n></span></label>
+      <div class="btn-row"><button class="btn btn--primary btn--lg" type="button" data-mcq-start><Icon name="check" /> Start test</button></div>
+      <p class="account__msg" data-mcq-msg role="status" hidden></p>
+    </section>
+
+    <section class="card mcq-run" data-mcq-run hidden aria-labelledby="mq-n">
+      <div class="iv-live__top">
+        <p class="iv-live__count"><b id="mq-n" data-mcq-n>Question 1 of 20</b> <span class="pill pill--blue" data-mcq-where></span></p>
+        <p class="iv-timer" data-mcq-timer aria-label="Time left" hidden></p>
+      </div>
+      <div class="progress progress--thin" aria-hidden="true"><span data-mcq-bar></span></div>
+      <fieldset class="mcq-q">
+        <legend class="iv-question" data-mcq-q tabindex="-1"></legend>
+        <div class="quiz__options" data-mcq-options></div>
+      </fieldset>
+      <div class="quiz__feedback" data-mcq-feedback hidden><p data-mcq-verdict></p><p class="small muted" data-mcq-explain></p></div>
+      <div class="btn-row mcq-nav">
+        <button class="btn" type="button" data-mcq-prev><Icon name="left" /> Previous</button>
+        <button class="btn" type="button" data-mcq-flag aria-pressed="false">Flag for review</button>
+        <button class="btn btn--primary" type="button" data-mcq-next>Next <Icon name="right" /></button>
+        <button class="btn btn--ghost" type="button" data-mcq-submit>Finish test</button>
+      </div>
+      <details class="mcq-map">
+        <summary>All questions <span class="small muted" data-mcq-answered></span></summary>
+        <ol class="mcq-map__grid" data-mcq-map></ol>
+      </details>
+    </section>
+
+    <section class="card iv-summary" data-mcq-result hidden aria-labelledby="mq-res-h" tabindex="-1">
+      <h2 id="mq-res-h">Test result</h2>
+      <div class="iv-score">
+        <strong data-mcq-score>0%</strong>
+        <div><p><span class="pill" data-mcq-pass></span> <span data-mcq-right></span></p><p class="small muted" data-mcq-time></p></div>
+      </div>
+      <div>
+        <h3 class="mcq-h3">By topic, weakest first</h3>
+        <ul class="mcq-sections" data-mcq-sections></ul>
+      </div>
+      <div>
+        <div class="mcq-review-head">
+          <h3 class="mcq-h3">Review</h3>
+          <label class="switch"><input type="checkbox" role="switch" data-mcq-show-all /> Show right answers too</label>
+        </div>
+        <ol class="mcq-review" data-mcq-review></ol>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn--primary" type="button" data-mcq-again>New test</button>
+        <a class="btn btn--ghost" href={withBase(base, "revise/mistakes/")}>Mistakes page</a>
+      </div>
+    </section>
+
+    <section aria-labelledby="mq-hist-h" class="iv-history">
+      <div class="section-head"><div><h2 id="mq-hist-h">Your tests</h2><p>Scores over time</p></div></div>
+      <p class="empty" data-mcq-history-empty>No tests yet.</p>
+      <div class="table-wrap" data-mcq-history-wrap hidden>
+        <table class="iv-table">
+          <thead><tr><th scope="col">When</th><th scope="col">Mode</th><th scope="col">Topics</th><th scope="col">Score</th><th scope="col">Result</th><th scope="col">Time</th></tr></thead>
+          <tbody data-mcq-history></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="mq-bank-h" class="mcq-bank" data-mcq-bank>
+      <div class="section-head">
+        <div><h2 id="mq-bank-h">Question bank</h2><p>Questions you and your friends add, for example from real interviews. Everyone can use them; you can edit or delete your own.</p></div>
+        <button class="btn" type="button" data-mcq-add><Icon name="edit" /> Add a question</button>
+      </div>
+      <form class="card account__form mcq-form" data-mcq-form hidden aria-labelledby="mq-form-h">
+        <h3 id="mq-form-h" class="mcq-h3" data-mcq-form-title>Add a question</h3>
+        <label class="account__field">Question<textarea class="input" name="q" rows="3" maxlength="1000" required placeholder="Use `backticks` for code, e.g. `vars.orderId`"></textarea></label>
+        <fieldset class="iv-choice">
+          <legend>Options (choose the right one)</legend>
+          {[0, 1, 2, 3].map((i) => (
+            <div class="mcq-form__opt">
+              <input type="radio" name="answer" value={i} id={`mq-right-${i}`} checked={i === 0} />
+              <label class="visually-hidden" for={`mq-right-${i}`}>Option {"ABCD"[i]} is right</label>
+              <span class="quiz__letter" aria-hidden="true">{"ABCD"[i]}</span>
+              <label class="visually-hidden" for={`mq-opt-${i}`}>Option {"ABCD"[i]}</label>
+              <input class="input" type="text" id={`mq-opt-${i}`} name={`o${i}`} maxlength="300" placeholder={i < 2 ? `Option ${"ABCD"[i]}` : `Option ${"ABCD"[i]} (optional)`} />
+            </div>
+          ))}
+        </fieldset>
+        <label class="account__field">Why it's right (optional)<textarea class="input" name="explain" rows="2" maxlength="1500"></textarea></label>
+        <label class="account__field">Lesson (optional)
+          <select class="input" name="lid">
+            <option value="">No particular lesson</option>
+            {lessons.map((l) => <option value={l.id}>{l.label} · {l.title}</option>)}
+          </select>
+        </label>
+        <div class="btn-row">
+          <button class="btn btn--primary" type="submit">Save question</button>
+          <button class="btn btn--ghost" type="button" data-mcq-cancel>Cancel</button>
+        </div>
+        <p class="account__msg" data-mcq-form-msg role="status" hidden></p>
+      </form>
+      <div class="filters">
+        <label class="visually-hidden" for="mq-filter">Filter the question bank</label>
+        <input id="mq-filter" class="input" type="search" placeholder="Filter questions" data-mcq-bank-filter />
+        <label class="switch"><input type="checkbox" role="switch" data-mcq-mine /> Only mine</label>
+      </div>
+      <p class="muted small" data-mcq-bank-status role="status">Loading the question bank…</p>
+      <ul class="mcq-bank__list" data-mcq-bank-list></ul>
+    </section>
+  </div>
+</Base>

@@ -1681,3 +1681,44 @@ html[data-locked] .account__card { max-width: none; }
 .iv-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
 .iv-table :is(th, td) { padding: 0.55rem 0.8rem; text-align: left; border-bottom: 1px solid var(--border); white-space: nowrap; }
 .iv-table th { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+
+/* ---------- MCQ tests ---------- */
+.mcq-run { display: grid; gap: 1rem; margin-bottom: 1.5rem; }
+.mcq-q { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 0.9rem; }
+.mcq-q legend { float: left; width: 100%; padding: 0; margin: 0 0 0.9rem; }
+.mcq-q .quiz__opt[aria-pressed="true"]:not([data-state]) , .mcq-q .quiz__opt[aria-pressed="true"][data-state=""] { border-color: var(--accent); background: var(--accent-soft); }
+.mcq-nav { justify-content: space-between; }
+.mcq-nav [data-mcq-submit] { margin-left: auto; }
+.mcq-map > summary { cursor: pointer; font-weight: 700; font-size: 0.88rem; min-height: 2rem; display: flex; align-items: center; gap: 0.4rem; }
+.mcq-map__grid { list-style: none; margin: 0.6rem 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(2.4rem, 1fr)); gap: 0.35rem; }
+.mcq-map__grid button { width: 100%; min-height: 2.4rem; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--surface); color: var(--text); font-weight: 700; cursor: pointer; }
+.mcq-map__grid button[data-state="answered"] { background: var(--accent-soft); border-color: var(--accent); }
+.mcq-map__grid button[data-state="flagged"] { background: var(--warn-soft); border-color: var(--warn); color: var(--warn); }
+.mcq-map__grid button[aria-current="true"] { outline: 2px solid var(--focus); outline-offset: 1px; }
+.mcq-h3 { margin: 0 0 0.5rem; font-size: 1rem; }
+.mcq-sections { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.mcq-sections li { display: grid; grid-template-columns: minmax(0, 16rem) minmax(0, 1fr); gap: 0.75rem; align-items: center; font-size: 0.88rem; }
+@media (max-width: 560px) { .mcq-sections li { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; } }
+.mcq-review-head { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.mcq-review { margin: 0; padding-left: 1.4rem; display: grid; gap: 0.9rem; }
+.mcq-review li { padding-left: 0.25rem; }
+.mcq-review li p { margin: 0 0 0.25rem; }
+.mcq-review__q { font-weight: 650; }
+.mcq-review li[data-ok="false"] .small:first-of-type { color: var(--danger); }
+.mcq-review li[data-ok="true"] .small:first-of-type { color: var(--success); }
+.mcq-bank { margin-top: 2rem; }
+.mcq-form { margin-bottom: 1rem; max-width: 46rem; }
+.mcq-form__opt { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.45rem; }
+.mcq-form__opt input[type="radio"] { width: 1.15rem; height: 1.15rem; accent-color: var(--success); flex: none; }
+.mcq-form__opt .input { flex: 1; min-width: 0; }
+.mcq-bank__list { list-style: none; margin: 0.75rem 0 0; padding: 0; display: grid; gap: 0.75rem; }
+.mcq-bank__item { display: grid; gap: 0.5rem; }
+.mcq-bank__q { margin: 0; font-weight: 700; }
+.mcq-bank__opts { margin: 0; padding-left: 1.4rem; list-style: upper-alpha; display: grid; gap: 0.2rem; font-size: 0.92rem; }
+.mcq-bank__opts li[data-right="true"] { color: var(--success); font-weight: 650; }
+.mcq-bank__item .small { margin: 0; }
+.locked-note { max-width: 34rem; display: grid; gap: 0.75rem; }
+.locked-note h1 { margin: 0; font-size: 1.3rem; }
+.locked-note p { margin: 0; }
+/* while a page's content is being opened */
+main:has(> script[data-sealed])::before { content: "Opening…"; display: block; padding: 3rem 1rem; text-align: center; color: var(--text-muted); }

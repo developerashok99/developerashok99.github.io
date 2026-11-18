@@ -9,10 +9,10 @@ import {
   EmailAuthProvider, browserLocalPersistence, indexedDBLocalPersistence, initializeAuth, onAuthStateChanged,
   reauthenticateWithCredential, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updatePassword, updateProfile, type User,
 } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore/lite";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore/lite";
 import { firebaseConfig } from "../lib/firebase-config";
 import { nameFromEmail, type ProfileSummary, type Snapshot } from "../lib/sync";
-import type { AccountUser, Backend } from "./account";
+import type { AccountUser, Backend, McqDoc } from "./account";
 
 const app = initializeApp(firebaseConfig);
 // no popup/redirect resolver: email + password only, which also works inside the Android app's WebView
@@ -70,6 +70,25 @@ export const firebaseBackend: Backend = {
   },
   async putProfile(uid, p) {
     await setDoc(doc(db, "profiles", uid), p);
+  },
+  async getSiteKey() {
+    const snap = await getDoc(doc(db, "config", "site"));
+    const key = snap.exists() ? (snap.data() as { key?: unknown }).key : null;
+    return typeof key === "string" ? key : null;
+  },
+  async listMcqs() {
+    const all = await getDocs(collection(db, "mcqs"));
+    return all.docs.map((d) => ({ ...(d.data() as McqDoc), id: d.id }));
+  },
+  async saveMcq(id, d) {
+    if (id) {
+      await setDoc(doc(db, "mcqs", id), d);
+      return id;
+    }
+    return (await addDoc(collection(db, "mcqs"), d)).id;
+  },
+  async deleteMcq(id) {
+    await deleteDoc(doc(db, "mcqs", id));
   },
   async listProfiles() {
     const all = await getDocs(collection(db, "profiles"));

@@ -11,7 +11,7 @@ export async function useFakeAccount(target: Page | BrowserContext) {
       "ravi@example.com": { uid: "u1", pw: "secret1", name: "Ravi" },
       "sita@example.com": { uid: "u2", pw: "secret2", name: "Sita" },
     };
-    type Server = { progress: Record<string, unknown>; profiles: Record<string, unknown>; session: string | null };
+    type Server = { progress: Record<string, unknown>; profiles: Record<string, unknown>; session: string | null; mcqs?: Record<string, { author: string }> };
     const load = (): Server => JSON.parse(localStorage.getItem("__fake_server") ?? '{"progress":{},"profiles":{},"session":null}') as Server;
     const save = (s: Server) => localStorage.setItem("__fake_server", JSON.stringify(s));
     const userOf = (email: string) => ({ uid: USERS[email].uid, email, name: USERS[email].name });
@@ -58,6 +58,31 @@ export async function useFakeAccount(target: Page | BrowserContext) {
       async listProfiles() {
         return Object.entries(load().profiles).map(([uid, p]) => ({ ...(p as object), uid }));
       },
+      async listMcqs() {
+        return Object.entries(load().mcqs ?? {}).map(([id, d]) => ({ ...d, id }));
+      },
+      async saveMcq(id: string | null, d: { author: string }) {
+        const s = load();
+        s.mcqs ??= {};
+        const uid = s.session ? USERS[s.session].uid : "";
+        // like the Firestore rules: only your own questions, and the author must be you
+        if (d.author !== uid || (id && s.mcqs[id] && s.mcqs[id].author !== uid)) throw fail("permission-denied");
+        const key = id ?? `m${Object.keys(s.mcqs).length + 1}`;
+        s.mcqs[key] = d;
+        save(s);
+        return key;
+      },
+      async deleteMcq(id: string) {
+        const s = load();
+        const uid = s.session ? USERS[s.session].uid : "";
+        if (s.mcqs?.[id]?.author !== uid) throw fail("permission-denied");
+        delete s.mcqs[id];
+        save(s);
+      },
+      // the test build is encrypted with this key (package.json build:test, scripts/protect.mjs)
+      async getSiteKey() {
+        return load().session ? "dGVzdC1zaXRlLWtleS1mb3ItZTJlLXRlc3RzLW9ubHk=" : null;
+      },
     };
   });
 }
@@ -78,6 +103,7 @@ export async function startSignedIn(target: Page | BrowserContext) {
     localStorage.setItem("__e2e_seeded", "1");
     localStorage.setItem("mls.account", JSON.stringify({ uid: "u1", email: "ravi@example.com", name: "Ravi" }));
     localStorage.setItem("mls.authAt", String(Date.now()));
+    localStorage.setItem("mls.siteKey", "dGVzdC1zaXRlLWtleS1mb3ItZTJlLXRlc3RzLW9ubHk=");
     localStorage.setItem("__fake_server", JSON.stringify({ progress: {}, profiles: {}, session: "ravi@example.com" }));
   });
 }

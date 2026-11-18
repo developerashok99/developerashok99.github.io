@@ -25,7 +25,9 @@ import { setupPractice } from "./practice";
 import { setupRecommend } from "./recommend";
 import { setupPreferences } from "./preferences";
 import { setupAccount } from "./account";
+import { setupSeal, unsealDocument } from "./seal";
 import { setupInterview } from "./interview";
+import { setupMcq } from "./mcq";
 import { pageSignal } from "./page";
 import { recommend } from "../lib/progress";
 import { bookmarkIds, startedIds, statusOf, completedIds, isBookmarked, isCompleted, prefs, recent, recordVisit, setBookmarked, setCompleted, setPrefs, srsStates, timeAgo } from "./store";
@@ -429,7 +431,26 @@ function setupNavToggle() {
   drawer(false);
 }
 
-document.addEventListener("astro:page-load", () => {
+setupSeal();
+
+/** When a page's content can't be opened (no key on this device yet and none arrived), say so plainly. */
+function showLocked() {
+  const main = document.querySelector("main");
+  if (!main) return;
+  const base = document.documentElement.dataset.base ?? "/";
+  main.innerHTML = `<div class="page"><div class="card locked-note"><h1>Couldn't open this page</h1><p>Your device needs to be online once after signing in to unlock the content. Check the connection and reload, or <a href="${base}account/">sign in again</a>.</p><button class="btn btn--primary" type="button" onclick="location.reload()">Reload</button></div></div>`;
+}
+
+document.addEventListener("astro:page-load", async () => {
+  // members only: the account check may send you to the sign-in page; the page content opens with the site key
+  if (!setupAccount()) return;
+  if (!(await unsealDocument(document))) return showLocked();
+  setupPage();
+  // other modules (audio player, downloads) that touch the page content wait for this
+  document.dispatchEvent(new CustomEvent("mls:page-ready"));
+});
+
+function setupPage() {
   renderOnline();
   setupRevise();
   setupPodcastSwitch();
@@ -459,7 +480,7 @@ document.addEventListener("astro:page-load", () => {
   setupPractice();
   setupRecommend();
   setupPreferences();
-  setupAccount();
   setupInterview();
-});
+  setupMcq();
+}
 window.addEventListener("mls:store", markDone);

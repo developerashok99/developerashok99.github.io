@@ -24,6 +24,7 @@ export const KEYS = {
   dw: "mls.dw", // Record<exerciseId, DwResult> DataWeave practice results (src/client/dataweave.ts)
   lectures: "mls.lectures", // Record<lessonId, LectureProgress> how far each lecture video has been watched
   interviews: "mls.interviews", // InterviewSession[] mock interviews, newest first (src/client/interview.ts)
+  mcqTests: "mls.mcqTests", // McqTestResult[] MCQ tests taken, newest first (src/client/mcq.ts)
   prefs: "mls.prefs", // { theme?, width?, scale?, lessonNav?, videoAutoplay?, lastVideo? }
 } as const;
 
@@ -160,14 +161,14 @@ export function saveReadingProgress(key: string, value: number) {
 
 /** Backup file format. Version 1 files ({ app, exportedAt, data }) and bare data objects are still accepted. */
 export const BACKUP_VERSION = 2;
-const LIST_KEYS = new Set<string>([KEYS.completed, KEYS.bookmarks, KEYS.started, KEYS.recent, KEYS.searches, KEYS.interviews]);
+const LIST_KEYS = new Set<string>([KEYS.completed, KEYS.bookmarks, KEYS.started, KEYS.recent, KEYS.searches, KEYS.interviews, KEYS.mcqTests]);
 /** what each key holds, in words, for the restore summary */
 export const KEY_NAMES: Record<string, string> = {
   [KEYS.completed]: "completed lessons", [KEYS.bookmarks]: "bookmarks", [KEYS.started]: "lessons in progress", [KEYS.recent]: "recent activity",
   [KEYS.audio]: "podcast positions", [KEYS.video]: "video positions", [KEYS.reading]: "reading positions", [KEYS.player]: "audio player",
   [KEYS.searches]: "recent searches", [KEYS.srs]: "flashcard schedule", [KEYS.srsNew]: "new flashcards today", [KEYS.mapSrs]: "concept-map review schedule",
   [KEYS.quiz]: "quiz answers and mistakes", [KEYS.flows]: "Build-the-flow results", [KEYS.dw]: "DataWeave results", [KEYS.prefs]: "preferences",
-  [KEYS.lectures]: "lecture videos watched", [KEYS.interviews]: "mock interviews",
+  [KEYS.lectures]: "lecture videos watched", [KEYS.interviews]: "mock interviews", [KEYS.mcqTests]: "MCQ tests",
 };
 
 /** Everything this site stores, for backup / restore / reset on the My study page. */
@@ -380,3 +381,17 @@ export const interviewScore = (s: InterviewSession) => {
   const r = Object.values(s.ratings);
   return r.length ? Math.round((r.reduce<number>((a, b) => a + b, 0) / (r.length * 2)) * 100) : 0;
 };
+
+// ---- MCQ tests ----
+export interface McqTestResult {
+  at: number;
+  mode: "exam" | "practice";
+  topic: string;
+  total: number;
+  right: number;
+  secs: number;
+}
+export const mcqTests = () => read<McqTestResult[]>(KEYS.mcqTests, []).filter((t) => t && typeof t.at === "number" && typeof t.total === "number");
+export function saveMcqTest(t: McqTestResult) {
+  write(KEYS.mcqTests, [t, ...mcqTests()].slice(0, 60));
+}

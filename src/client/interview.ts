@@ -9,12 +9,10 @@ import type { RenderedCard } from "../lib/cardsHtml";
 import { pageSignal } from "./page";
 import { completedIds, interviewScore, interviews, saveCardState, saveInterview, srsStates, timeAgo, type InterviewSession } from "./store";
 import { clock } from "./videos";
+import { fetchSealedJson } from "./seal";
 
 let cardsP: Promise<RenderedCard[]> | null = null;
-const loadCards = (src: string) => (cardsP ??= fetch(src).then((r) => {
-  if (!r.ok) throw new Error(String(r.status));
-  return r.json() as Promise<RenderedCard[]>;
-}).catch((e) => {
+const loadCards = (src: string) => (cardsP ??= fetchSealedJson<RenderedCard[]>(src).catch((e) => {
   cardsP = null;
   throw e;
 }));

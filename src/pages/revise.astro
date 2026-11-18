@@ -86,6 +86,11 @@ const decks = sections.map((sec) => ({ id: sec.id, title: sec.title, n: cards.fi
       )}
     </div>
 
+    <a class="card card--hover iv-promo" href={`${base}mcq/`}>
+      <span class="stat-icon" aria-hidden="true"><Icon name="check" /></span>
+      <span><b>MCQ tests</b><span class="small muted">Exam-style tests from every lesson's questions, plus the question bank you and your friends add to.</span></span>
+      <Icon name="right" />
+    </a>
     <a class="card card--hover iv-promo" href={`${base}interview/`}>
       <span class="stat-icon" aria-hidden="true"><Icon name="interview" /></span>
       <span><b>Mock interview</b><span class="small muted">Timed questions, model answers and a score. Practise out loud, like the real thing.</span></span>

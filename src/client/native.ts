@@ -336,7 +336,7 @@ export async function setupNative() {
     const b = (e.target as Element).closest<HTMLButtonElement>("[data-dl-act]");
     if (b) void onAction(b.dataset.dlAct!, b.dataset.dlId!);
   });
-  document.addEventListener("astro:page-load", renderDownloads);
+  document.addEventListener("mls:page-ready", renderDownloads);
 
   setupMediaSession();
   setupStatusBar();

@@ -5,6 +5,7 @@
 import { setupMermaid } from "./mermaid";
 import { activeYouTube, switchPlayerControls } from "./media";
 import { pageSignal } from "./page";
+import { unsealDocument } from "./seal";
 import { prefs, setPrefs } from "./store";
 
 /** notes already fetched this session, by URL: switching levels or lectures back and forth is instant */
@@ -25,7 +26,12 @@ export function extractNotes(html: string): { body: string; sections: { id: stri
 function fetchNotes(url: string): Promise<string | null> {
   let p = cache.get(url);
   if (!p) {
-    p = fetch(url).then((r) => (r.ok ? r.text() : null)).catch(() => null);
+    // the notes page's content is encrypted like every page: open it before taking the notes out
+    p = fetch(url).then((r) => (r.ok ? r.text() : null)).then(async (t) => {
+      if (t == null) return null;
+      const doc = new DOMParser().parseFromString(t, "text/html");
+      return (await unsealDocument(doc)) ? doc.documentElement.outerHTML : null;
+    }).catch(() => null);
     cache.set(url, p);
     void p.then((v) => v === null && cache.delete(url)); // a failure is retried next time
   }

@@ -4,8 +4,10 @@
  * and for root-relative URLs that forgot the GitHub Pages base path.
  * Usage: npm run test:links   (after npm run build)
  */
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
+import zlib from "node:zlib";
 import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -14,6 +16,27 @@ const BASE = (process.env.SITE_BASE ?? "/mule-learning-web").replace(/\/?$/, "/"
 if (!fs.existsSync(DIST)) {
   console.error("dist/ not found — run npm run build first");
   process.exit(2);
+}
+
+// pages are encrypted (scripts/protect.mjs): open them with whichever key built them, so their links get checked too
+const KEYS = [process.env.SITE_KEY, fs.existsSync(path.join(ROOT, ".site-key")) ? fs.readFileSync(path.join(ROOT, ".site-key"), "utf8") : "", "dGVzdC1zaXRlLWtleS1mb3ItZTJlLXRlc3RzLW9ubHk="]
+  .filter(Boolean).map((k) => Buffer.from(k.trim(), "base64"));
+function unseal(b64) {
+  const bytes = Buffer.from(b64, "base64");
+  for (const key of KEYS) {
+    try {
+      const d = crypto.createDecipheriv("aes-256-gcm", key, bytes.subarray(0, 12));
+      d.setAuthTag(bytes.subarray(bytes.length - 16));
+      return zlib.inflateRawSync(Buffer.concat([d.update(bytes.subarray(12, bytes.length - 16)), d.final()])).toString("utf8");
+    } catch {
+      /* try the next key */
+    }
+  }
+  throw new Error("an encrypted page could not be opened with any known key");
+}
+function readHtml(file) {
+  const html = fs.readFileSync(file, "utf8");
+  return html.replace(/<script type="application\/octet-stream" data-sealed>([^<]*)<\/script>/, (_, b64) => unseal(b64));
 }
 
 const htmlFiles = [];
@@ -29,7 +52,7 @@ const htmlFiles = [];
 const idCache = new Map();
 function idsOf(file) {
   if (!idCache.has(file)) {
-    const html = fs.readFileSync(file, "utf8");
+    const html = readHtml(file);
     idCache.set(file, new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((m) => decodeEntities(m[1]))));
   }
   return idCache.get(file);
@@ -46,7 +69,7 @@ function targetFile(urlPath) {
 const problems = [];
 let checked = 0;
 for (const file of htmlFiles) {
-  const html = fs.readFileSync(file, "utf8");
+  const html = readHtml(file);
   const page = "/" + path.relative(DIST, file).replace(/index\.html$/, "").replace(/\\/g, "/");
   for (const m of html.matchAll(/\s(href|src)="([^"]*)"/g)) {
     const raw = decodeEntities(m[2]);

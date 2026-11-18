@@ -82,10 +82,14 @@ jobs:
           path: playwright-report
           retention-days: 7
 
-      - name: Build the published site (no test episode or test media)
+      - name: Build the published site (no test episode or test media), with its content encrypted
+        env:
+          SITE_KEY: ${{ secrets.SITE_KEY }}
         run: |
           npm run build:site
           npm run test:links
+          # members only: no page may be published readable
+          if ! grep -q "data-sealed" dist/lessons/day04/detailed/index.html; then echo "a lesson page is not encrypted"; exit 1; fi
           if [ -e dist/test-media ]; then echo "test media in the published build"; exit 1; fi
           if grep -rl "test-fixture" dist --include=*.html; then echo "test episode in the published build"; exit 1; fi
 

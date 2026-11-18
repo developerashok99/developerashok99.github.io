@@ -352,7 +352,7 @@ document.addEventListener("click", (e) => {
 });
 window.addEventListener("pagehide", () => save(true));
 document.addEventListener("visibilitychange", () => document.visibilityState === "hidden" && save(true));
-document.addEventListener("astro:page-load", () => {
+document.addEventListener("mls:page-ready", () => {
   document.body.classList.toggle("has-player", !root.hidden);
   syncPage();
 });

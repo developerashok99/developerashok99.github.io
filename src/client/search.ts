@@ -28,7 +28,8 @@ function loadPagefind(): Promise<Pagefind | null> {
     try {
       const url = `${base()}pagefind/pagefind.js`;
       const mod = (await import(/* @vite-ignore */ url)) as Pagefind;
-      await mod.options({ baseUrl: base(), excerptLength: 26 });
+      // noWorker: search on the page, where src/client/seal.ts opens the encrypted index files (a worker would get them still encrypted)
+      await mod.options({ baseUrl: base(), excerptLength: 26, noWorker: true });
       await mod.init();
       return mod;
     } catch {

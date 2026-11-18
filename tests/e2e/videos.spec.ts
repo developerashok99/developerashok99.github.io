@@ -82,7 +82,7 @@ test.describe("lecture progress", () => {
     await page.reload();
     await expect(page.locator("button[data-yt] small")).toHaveText("Resume at 16:40 · 20% watched");
     await page.locator("button[data-yt]").click();
-    await expect.poll(async () => (await yt(page).vars())?.start).toBe(1000);
+    await expect.poll(() => page.evaluate(() => (window as unknown as { __fakeYt?: { vars?: { start?: number } } }).__fakeYt?.vars?.start)).toBe(1000);
     // jump near the end: 92% counts as watched, and the lesson is marked complete
     await expect.poll(() => yt(page).state()).toBe(1);
     await yt(page).seek(4600);

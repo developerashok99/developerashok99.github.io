@@ -6,7 +6,7 @@ import { getCourses, getManifest } from "../lib/content";
 import { APP_BUILD } from "../lib/routes";
 import "../styles/global.css";
 
-type NavKey = "home" | "videos" | "courses" | "lessons" | "notes" | "podcasts" | "search" | "about" | "revise" | "mystudy" | "preferences" | "downloads" | "account" | "interview";
+type NavKey = "home" | "videos" | "courses" | "lessons" | "notes" | "podcasts" | "search" | "about" | "revise" | "mystudy" | "preferences" | "downloads" | "account" | "interview" | "mcq";
 interface Props {
   title: string;
   description?: string;
@@ -31,6 +31,7 @@ const WORKSPACE = [
 ] as const;
 const TOOLS = [
   { key: "revise", href: `${base}revise/`, label: "Revision", icon: "edit" },
+  { key: "mcq", href: `${base}mcq/`, label: "MCQ tests", icon: "check" },
   { key: "interview", href: `${base}interview/`, label: "Mock interview", icon: "interview" },
   { key: "mystudy", href: `${base}my-study/`, label: "My Study", icon: "bookmark", bookmarks: true },
   { key: "search", href: `${base}search/`, label: "Search", icon: "search" },
@@ -47,7 +48,7 @@ const BOTTOM = [
 const current = nav === "notes" ? "lessons" : nav === "downloads" && !APP_BUILD ? "podcasts" : nav;
 const CRUMB: Record<NavKey, string> = {
   home: "Home", courses: "Courses", lessons: "Lessons", notes: "Notes", videos: "Videos", podcasts: "Podcasts",
-  revise: "Revision", mystudy: "My Study", search: "Search", preferences: "Preferences", about: "About & help", downloads: "Downloads", account: "Account", interview: "Mock interview",
+  revise: "Revision", mystudy: "My Study", search: "Search", preferences: "Preferences", about: "About & help", downloads: "Downloads", account: "Account", interview: "Mock interview", mcq: "MCQ tests",
 };
 const crumb = nav ? CRUMB[nav] : title;
 ---

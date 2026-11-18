@@ -10,7 +10,7 @@
 /** the progress that follows you between devices; preferences, recent searches and the audio player stay per device */
 export const SYNC_KEYS = [
   "mls.completed", "mls.bookmarks", "mls.started", "mls.recent", "mls.audio", "mls.video", "mls.reading",
-  "mls.srs", "mls.srsNew", "mls.mapSrs", "mls.quiz", "mls.flows", "mls.dw", "mls.lectures", "mls.interviews",
+  "mls.srs", "mls.srsNew", "mls.mapSrs", "mls.quiz", "mls.flows", "mls.dw", "mls.lectures", "mls.interviews", "mls.mcqTests",
 ] as const;
 export type SyncKey = (typeof SYNC_KEYS)[number];
 
@@ -47,7 +47,7 @@ export function mergeValues(key: string, local: unknown, remote: unknown): unkno
       }
       return [...byId.values()].sort((a, b) => stamp(b) - stamp(a)).slice(0, 12);
     }
-    if (key === "mls.interviews") {
+    if (key === "mls.interviews" || key === "mls.mcqTests") {
       // mock interviews from both devices, one per start time, newest first
       const byAt = new Map<number, unknown>();
       for (const item of [...remote, ...local]) if (stamp(item)) byAt.set(stamp(item), item);
@@ -115,6 +115,9 @@ export interface ProfileSummary {
   /** mock interviews done, and the average score of the last five (percent) */
   interviews: number;
   interviewScore: number;
+  /** MCQ tests taken, and the best score (percent) */
+  mcqTests: number;
+  mcqBest: number;
   /** the lesson you looked at last */
   lastTitle: string;
   lastHref: string;
@@ -142,6 +145,8 @@ export function summarize(name: string, data: Snapshot["data"], now = Date.now()
     hoursWatched: Math.round((lectures.reduce((t, l) => t + (typeof l.max === "number" ? l.max : 0), 0) / 3600) * 10) / 10,
     interviews: sessions.length,
     interviewScore: scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0,
+    mcqTests: list("mls.mcqTests").length,
+    mcqBest: Math.max(0, ...list("mls.mcqTests").filter(isObj).map((t) => (typeof t.right === "number" && typeof t.total === "number" && t.total ? Math.round((t.right / t.total) * 100) : 0))),
     lastTitle: typeof recent?.title === "string" ? recent.title : "",
     lastHref: typeof recent?.href === "string" ? recent.href : "",
     updated: now,

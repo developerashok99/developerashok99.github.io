@@ -5,6 +5,7 @@
  * - Tap a box: its glossary definition (glossary.json, loaded on first use) and the lessons that teach it.
  * Works with a mouse, touch and the keyboard (boxes are focusable; Enter / Space).
  */
+import { fetchSealedJson } from "./seal";
 import { matchTerms, type Term } from "../lib/term-match";
 import { base } from "./page";
 
@@ -94,7 +95,7 @@ function sequenceModel(svg: SVGSVGElement): Model | null {
 // ---- glossary lookup (tap a box) ----
 let glossaryP: Promise<Term[]> | null = null;
 const loadGlossary = () =>
-  (glossaryP ??= fetch(`${base()}glossary.json`).then((r) => (r.ok ? r.json() : [])).catch(() => {
+  (glossaryP ??= fetchSealedJson<Term[]>(`${base()}glossary.json`).catch(() => {
     glossaryP = null;
     return [];
   }));
