@@ -16,6 +16,22 @@ export async function useFakeAccount(target: Page | BrowserContext) {
     const save = (s: Server) => localStorage.setItem("__fake_server", JSON.stringify(s));
     const userOf = (email: string) => ({ uid: USERS[email].uid, email, name: USERS[email].name });
     const fail = (code: string) => Object.assign(new Error(code), { code });
+    const shared = (op: string, ...args: unknown[]) =>
+      (window as unknown as { __fakeShared?: (op: string, ...a: unknown[]) => Promise<unknown> }).__fakeShared?.(op, ...args) ?? Promise.resolve(op.startsWith("list") ? [] : null);
+    /** like Firestore's live listeners: calls back whenever the answer changes */
+    const poll = (get: () => Promise<unknown>, cb: (v: never) => void) => {
+      let last = "";
+      const tick = () => void get().then((v) => {
+        const j = JSON.stringify(v);
+        if (j !== last) {
+          last = j;
+          cb(v as never);
+        }
+      }).catch(() => {});
+      tick();
+      const t = setInterval(tick, 250);
+      return () => clearInterval(t);
+    };
     (window as unknown as { __mlsAccountBackend: unknown }).__mlsAccountBackend = {
       onUser(cb: (u: unknown) => void) {
         const s = load();
@@ -79,6 +95,25 @@ export async function useFakeAccount(target: Page | BrowserContext) {
         delete s.mcqs[id];
         save(s);
       },
+      // who's online and invites: kept in the test process (window.__fakeShared, see sharedDb) so two browsers see each other
+      async setPresence(p: unknown) {
+        await shared("setPresence", p);
+      },
+      watchPresence(cb: (all: unknown) => void) {
+        return poll(() => shared("listPresence"), cb);
+      },
+      async sendInvite(i: unknown) {
+        return (await shared("sendInvite", i)) as string;
+      },
+      watchInvites(uid: string, cb: (all: unknown) => void) {
+        return poll(() => shared("listInvites", uid), cb);
+      },
+      async answerInvite(id: string, status: string) {
+        await shared("answerInvite", id, status);
+      },
+      async deleteInvite(id: string) {
+        await shared("deleteInvite", id);
+      },
       // the test build is encrypted with this key (package.json build:test, scripts/protect.mjs)
       async getSiteKey() {
         return load().session ? "dGVzdC1zaXRlLWtleS1mb3ItZTJlLXRlc3RzLW9ubHk=" : null;
@@ -96,14 +131,46 @@ export const serverState = (page: Page) =>
 
 export const seedServer = (page: Page, state: unknown) => page.evaluate((s) => localStorage.setItem("__fake_server", JSON.stringify(s)), state);
 
-/** Signed in as Ravi from the start (once per test: signing out in a test stays signed out). */
-export async function startSignedIn(target: Page | BrowserContext) {
-  await target.addInitScript(() => {
+/** Signed in from the start, as Ravi unless told otherwise (once per test: signing out in a test stays signed out). */
+export async function startSignedIn(target: Page | BrowserContext, who: "ravi" | "sita" = "ravi") {
+  const u = who === "ravi" ? { uid: "u1", email: "ravi@example.com", name: "Ravi" } : { uid: "u2", email: "sita@example.com", name: "Sita" };
+  await target.addInitScript((u) => {
     if (localStorage.getItem("__e2e_seeded")) return;
     localStorage.setItem("__e2e_seeded", "1");
-    localStorage.setItem("mls.account", JSON.stringify({ uid: "u1", email: "ravi@example.com", name: "Ravi" }));
+    localStorage.setItem("mls.account", JSON.stringify(u));
     localStorage.setItem("mls.authAt", String(Date.now()));
     localStorage.setItem("mls.siteKey", "dGVzdC1zaXRlLWtleS1mb3ItZTJlLXRlc3RzLW9ubHk=");
-    localStorage.setItem("__fake_server", JSON.stringify({ progress: {}, profiles: {}, session: "ravi@example.com" }));
+    localStorage.setItem("__fake_server", JSON.stringify({ progress: {}, profiles: {}, session: u.email }));
+  }, u);
+}
+
+/** The shared part of the pretend database (presence, invites), one per test, reachable from every browser in it. */
+export type SharedDb = { presence: Record<string, unknown>; invites: Record<string, Record<string, unknown>>; n: number };
+export const newSharedDb = (): SharedDb => ({ presence: {}, invites: {}, n: 0 });
+export async function sharedDb(context: BrowserContext, db: SharedDb) {
+  await context.exposeFunction("__fakeShared", (op: string, ...a: unknown[]) => {
+    switch (op) {
+      case "setPresence": {
+        const p = a[0] as { uid: string };
+        db.presence[p.uid] = p;
+        return null;
+      }
+      case "listPresence":
+        return Object.values(db.presence);
+      case "sendInvite": {
+        const id = `i${++db.n}`;
+        db.invites[id] = { ...(a[0] as object), id };
+        return id;
+      }
+      case "listInvites":
+        return Object.values(db.invites).filter((i) => i.to === a[0] || i.from === a[0]);
+      case "answerInvite":
+        if (db.invites[a[0] as string]) db.invites[a[0] as string].status = a[1];
+        return null;
+      case "deleteInvite":
+        delete db.invites[a[0] as string];
+        return null;
+    }
+    return null;
   });
 }

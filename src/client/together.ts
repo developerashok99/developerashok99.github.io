@@ -533,7 +533,25 @@ function siteRoot(): string {
   return document.documentElement.dataset.app === "android" ? WEBSITE : `${location.origin}${base()}`;
 }
 
+/** The room you're in (for friends.ts: "watching together", invites), or null. */
+export function currentRoom(): { code: string; role: "host" | "guest"; vid: string; connected: boolean } | null {
+  return room ? { code: room.code, role: room.role, vid: room.vid ?? "", connected: room.connected } : null;
+}
+/** Starts a room on this page if there isn't one (for "Invite"), and returns its code. */
+export function ensureRoom(): string | null {
+  if (!currentVid()) return null;
+  if (!room) open("host", roomCode());
+  return room?.code ?? null;
+}
+
+let lastRoomKey = "";
 function render() {
+  // tell friends.ts when the room starts, connects or ends (it shows in your friends' list)
+  const key = room ? `${room.code}:${room.connected}:${room.vid}` : "";
+  if (key !== lastRoomKey) {
+    lastRoomKey = key;
+    document.dispatchEvent(new CustomEvent("mls:together-room"));
+  }
   const page = document.querySelector<HTMLElement>("[data-watch-page]");
   if (!page) return;
   const panel = page.querySelector<HTMLElement>("[data-together]");

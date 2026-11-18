@@ -128,6 +128,10 @@ const crumb = nav ? CRUMB[nav] : title;
           ))}
         </ul>
       </nav>
+      <div class="side-online" data-side-online hidden>
+        <p class="side-online__head"><span class="online-dot" aria-hidden="true"></span> <span data-side-online-n>0 online</span></p>
+        <ul aria-label="Friends online"></ul>
+      </div>
       <a class="side-profile" href={`${base}account/`} title="Account: sign in to sync your progress" aria-current={nav === "account" ? "page" : undefined}>
         <span class="side-profile__avatar" aria-hidden="true" data-account-avatar>ML</span>
         <span><span data-account-name>My learning space</span><small data-account-status>Sign in to sync your progress</small></span>
@@ -180,6 +184,14 @@ const crumb = nav ? CRUMB[nav] : title;
 
     <AudioPlayer />
     <div class="toast" data-toast role="status" aria-live="polite" hidden></div>
+    <section class="invite-pop" data-invite-pop hidden aria-label="Invitation to watch together" aria-live="assertive">
+      <span class="invite-pop__icon" aria-hidden="true"><Icon name="users" /></span>
+      <p data-invite-text></p>
+      <div class="btn-row">
+        <button class="btn btn--sm btn--primary" type="button" data-invite-answer="accepted">Join</button>
+        <button class="btn btn--sm" type="button" data-invite-answer="declined">Not now</button>
+      </div>
+    </section>
 
     <script>
       import "../client/app";

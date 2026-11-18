@@ -32,6 +32,43 @@ export interface Backend {
   listMcqs(): Promise<(McqDoc & { id: string })[]>;
   saveMcq(id: string | null, d: McqDoc): Promise<string>;
   deleteMcq(id: string): Promise<void>;
+  /** who's online (Firestore presence): your own record, and live updates of everyone's */
+  setPresence(p: Presence): Promise<void>;
+  watchPresence(cb: (all: Presence[]) => void): () => void;
+  /** watch-together invites (Firestore invites): send, see yours (sent and received) live, answer */
+  sendInvite(i: Omit<Invite, "id">): Promise<string>;
+  watchInvites(uid: string, cb: (all: Invite[]) => void): () => void;
+  answerInvite(id: string, status: "accepted" | "declined"): Promise<void>;
+  deleteInvite(id: string): Promise<void>;
+}
+/** a signed-in person's latest sign of life (src/client/friends.ts) */
+export interface Presence {
+  uid: string;
+  name: string;
+  /** last seen (ms); "online" means within the last two and a half minutes and not away */
+  at: number;
+  /** the tab or app was put in the background */
+  away: boolean;
+  device: "app" | "web";
+  /** the page they're on, relative to the site root (works for both the app and the website), and its title */
+  page: string;
+  pageTitle: string;
+  /** their watch-together room, if they're in one */
+  room: { code: string; href: string; title: string; host: boolean } | null;
+}
+/** an invitation to watch together, without sending a link */
+export interface Invite {
+  id: string;
+  from: string;
+  fromName: string;
+  to: string;
+  toName: string;
+  /** the room, and the page it's on (relative to the site root) */
+  code: string;
+  href: string;
+  title: string;
+  created: number;
+  status: "pending" | "accepted" | "declined";
 }
 /** a question in the shared bank */
 export interface McqDoc {
@@ -74,6 +111,8 @@ function savedUser(): AccountUser | null {
   }
 }
 function saveUser(u: AccountUser | null) {
+  // friends.ts starts (or stops) showing you online and listening for invites
+  queueMicrotask(() => document.dispatchEvent(new CustomEvent(u ? "mls:signed-in" : "mls:signed-out")));
   try {
     if (u) localStorage.setItem(ACCOUNT_KEY, JSON.stringify(u));
     else {
@@ -304,6 +343,7 @@ async function renderFriends(box: HTMLElement) {
     box.replaceChildren(...list.map((p) => {
       const li = document.createElement("li");
       li.className = "friend" + (p.uid === state.user?.uid ? " friend--me" : "");
+      li.dataset.uid = p.uid;
       const pct = PERCENT(p.completed, total);
       const avatar = document.createElement("span");
       avatar.className = "friend__avatar";
@@ -355,6 +395,7 @@ async function renderFriends(box: HTMLElement) {
       return li;
     }));
     if (!list.length) box.innerHTML = `<li class="empty">Nobody has synced yet.</li>`;
+    document.dispatchEvent(new CustomEvent("mls:friends-rendered"));
   } catch (e) {
     console.warn("friends unavailable", e);
     box.innerHTML = `<li class="empty">Couldn't load your friends' progress. Check the connection and open this page again.</li>`;

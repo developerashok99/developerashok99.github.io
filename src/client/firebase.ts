@@ -1,6 +1,6 @@
 /**
  * The Firebase side of accounts (loaded on demand by account.ts, so people who never sign in don't download it).
- * Firestore "lite" is enough: we read and write whole documents, no live listeners.
+ * Firestore with live listeners: who's online and watch-together invites arrive as they happen.
  *   progress/{uid}  everything that syncs, one JSON string per key, plus when each key changed (only the owner can read it)
  *   profiles/{uid}  the counts on the Friends page (any signed-in friend can read them)
  */
@@ -9,10 +9,10 @@ import {
   EmailAuthProvider, browserLocalPersistence, indexedDBLocalPersistence, initializeAuth, onAuthStateChanged,
   reauthenticateWithCredential, sendPasswordResetEmail, signInWithEmailAndPassword, signOut, updatePassword, updateProfile, type User,
 } from "firebase/auth";
-import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore/lite";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, getFirestore, onSnapshot, query, setDoc, updateDoc, where } from "firebase/firestore";
 import { firebaseConfig } from "../lib/firebase-config";
 import { nameFromEmail, type ProfileSummary, type Snapshot } from "../lib/sync";
-import type { AccountUser, Backend, McqDoc } from "./account";
+import type { AccountUser, Backend, Invite, McqDoc, Presence } from "./account";
 
 const app = initializeApp(firebaseConfig);
 // no popup/redirect resolver: email + password only, which also works inside the Android app's WebView
@@ -89,6 +89,31 @@ export const firebaseBackend: Backend = {
   },
   async deleteMcq(id) {
     await deleteDoc(doc(db, "mcqs", id));
+  },
+  async setPresence(p) {
+    await setDoc(doc(db, "presence", p.uid), p);
+  },
+  watchPresence(cb) {
+    return onSnapshot(collection(db, "presence"), (snap) => cb(snap.docs.map((d) => ({ ...(d.data() as Presence), uid: d.id }))), (e) => console.warn("presence unavailable", e));
+  },
+  async sendInvite(i) {
+    return (await addDoc(collection(db, "invites"), i)).id;
+  },
+  watchInvites(uid, cb) {
+    // two queries (sent and received); the rules let you read only invites you're part of
+    let got: Record<string, Invite[]> = { to: [], from: [] };
+    const emit = () => cb([...got.to, ...got.from.filter((i) => i.to !== uid)]);
+    const subs = (["to", "from"] as const).map((field) => onSnapshot(query(collection(db, "invites"), where(field, "==", uid)), (snap) => {
+      got = { ...got, [field]: snap.docs.map((d) => ({ ...(d.data() as Omit<Invite, "id">), id: d.id })) };
+      emit();
+    }, (e) => console.warn("invites unavailable", e)));
+    return () => subs.forEach((u) => u());
+  },
+  async answerInvite(id, status) {
+    await updateDoc(doc(db, "invites", id), { status });
+  },
+  async deleteInvite(id) {
+    await deleteDoc(doc(db, "invites", id));
   },
   async listProfiles() {
     const all = await getDocs(collection(db, "profiles"));
