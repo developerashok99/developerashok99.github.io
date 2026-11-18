@@ -40,6 +40,7 @@
     "@capgo/capacitor-media-session": "^8.1.5",
     "astro": "^7.3.8",
     "cytoscape": "^3.34.3",
+    "firebase": "^12.19.0",
     "github-slugger": "^2.0.0",
     "markmap-view": "^0.18.12",
     "mermaid": "^12.2.0",

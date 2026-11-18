@@ -1,0 +1,72 @@
+---
+/**
+ * Account: sign in so progress follows you between devices, and see how your friends are doing.
+ * Everything here is filled in by src/client/account.ts; accounts are created in the Firebase console (sign-up is off).
+ */
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import PageHead from "../components/PageHead.astro";
+import { getLessons } from "../lib/content";
+
+const total = getLessons().length;
+---
+<Base title="Account" nav="account" description="Sign in to keep your progress on every device and see your friends' progress">
+  <div class="page account" data-account-page>
+    <PageHead eyebrow="Study together" title="Account" sub="Sign in to keep your progress on every device and to see how your friends are doing. Without signing in everything still works and stays in this browser." />
+
+    <p class="muted" data-account-loading>Loading…</p>
+
+    <section class="card account__card" data-account-out hidden aria-labelledby="ac-signin">
+      <h2 id="ac-signin">Sign in</h2>
+      <form class="account__form" data-account-signin>
+        <label class="account__field">Email<input class="input" type="email" name="email" autocomplete="username" required /></label>
+        <label class="account__field">Password<input class="input" type="password" name="password" autocomplete="current-password" required /></label>
+        <div class="btn-row">
+          <button class="btn btn--primary" type="submit">Sign in</button>
+          <button class="btn btn--ghost" type="button" data-account-forgot>Forgot password</button>
+        </div>
+        <p class="account__msg" data-account-msg role="status" hidden></p>
+      </form>
+      <p class="small muted account__note"><Icon name="info" /> Accounts are added by whoever runs this site. Your progress so far in this browser is kept and joined with your account when you sign in.</p>
+    </section>
+
+    <div class="account__in" data-account-in hidden>
+      <section class="card account__card" aria-labelledby="ac-you">
+        <div class="account__me">
+          <span class="friend__avatar friend__avatar--lg" aria-hidden="true" data-account-avatar>ML</span>
+          <div>
+            <h2 id="ac-you" data-account-name>My learning space</h2>
+            <p class="small muted" data-account-email></p>
+            <p class="account__sync small" data-account-sync role="status"></p>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn--sm" type="button" data-account-sync-now>Sync now</button>
+          <button class="btn btn--sm" type="button" data-account-signout>Sign out</button>
+        </div>
+        <p class="small muted account__note">Lessons completed, bookmarks, flashcards, quiz and practice results, and where you stopped in videos and podcasts sync. Theme and other preferences stay on each device.</p>
+
+        <details class="account__more">
+          <summary>Change name or password</summary>
+          <form class="account__form" data-account-name-form>
+            <label class="account__field">Name your friends see<input class="input" type="text" name="name" maxlength="40" autocomplete="nickname" required /></label>
+            <div class="btn-row"><button class="btn btn--sm" type="submit">Save name</button></div>
+            <p class="account__msg" data-account-name-msg role="status" hidden></p>
+          </form>
+          <form class="account__form" data-account-password>
+            <label class="account__field">Current password<input class="input" type="password" name="current" autocomplete="current-password" required /></label>
+            <label class="account__field">New password (at least 6 characters)<input class="input" type="password" name="next" autocomplete="new-password" minlength="6" required /></label>
+            <div class="btn-row"><button class="btn btn--sm" type="submit">Change password</button></div>
+            <p class="account__msg" data-account-password-msg role="status" hidden></p>
+          </form>
+        </details>
+      </section>
+
+      <section class="card account__card" aria-labelledby="ac-friends">
+        <h2 id="ac-friends"><Icon name="users" /> Friends</h2>
+        <p class="small muted" style="margin-top:0">Everyone's progress, updated each time they sync.</p>
+        <ul class="friends" data-friends data-total={total}></ul>
+      </section>
+    </div>
+  </div>
+</Base>

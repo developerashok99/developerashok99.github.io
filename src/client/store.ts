@@ -1,8 +1,10 @@
 /**
- * Everything the site remembers lives in this browser's localStorage (no account, no sync between devices).
+ * Everything the site remembers lives in this browser's localStorage. Signing in (src/client/account.ts) copies the
+ * progress keys to the account and back, so it follows you between devices.
  * Every read/write is guarded: private browsing or blocked storage just means nothing is remembered.
  */
 import type { CardState } from "../lib/srs";
+import { SYNC_KEYS } from "../lib/sync";
 
 export const KEYS = {
   completed: "mls.completed", // string[] lesson ids
@@ -55,7 +57,30 @@ export function write(key: string, value: unknown): void {
   } catch {
     /* storage full or unavailable: progress simply isn't saved */
   }
+  markChanged([key]);
   window.dispatchEvent(new CustomEvent("mls:store", { detail: { key } }));
+}
+
+/** signed in on this device (src/client/account.ts): { uid, email, name } */
+export const ACCOUNT_KEY = "mls.account";
+/** when each synced kind of progress last changed on this device (ms), for src/lib/sync.ts */
+export const SYNC_AT_KEY = "mls.syncAt";
+const SYNCED = new Set<string>(SYNC_KEYS);
+/**
+ * Notes the time a synced key changed. Only while signed in: progress from before signing in has no time,
+ * so the first sync merges it with the account instead of one side replacing the other.
+ */
+export function markChanged(keys: string[], at = Date.now()) {
+  const synced = keys.filter((k) => SYNCED.has(k));
+  if (!synced.length) return;
+  try {
+    if (localStorage.getItem(ACCOUNT_KEY) == null) return;
+    const all = JSON.parse(localStorage.getItem(SYNC_AT_KEY) ?? "{}") as Record<string, number>;
+    for (const k of synced) all[k] = at;
+    localStorage.setItem(SYNC_AT_KEY, JSON.stringify(all));
+  } catch {
+    /* storage unavailable */
+  }
 }
 
 const ids = (key: string) => read<string[]>(key, []).filter((x) => typeof x === "string");
@@ -197,6 +222,8 @@ export function clearAll(keepPrefs = true) {
       /* ignore */
     }
   }
+  // signed in: the reset reaches the account (and your other devices) too
+  markChanged(Object.values(KEYS));
   window.dispatchEvent(new CustomEvent("mls:store", { detail: { key: "*" } }));
 }
 

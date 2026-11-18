@@ -17,7 +17,8 @@ const LISTS = [
 <Base title="My study" nav="mystudy" description="Bookmarks, progress and listening history saved in this browser">
   <div class="page" data-my-study>
     <script is:inline type="application/json" data-lesson-index set:html={JSON.stringify(index).replace(/</g, "\\u003c")} />
-    <PageHead eyebrow="Your personal learning space" title="My Study" sub="Return to bookmarks, track your learning, and pick up recent activity. Everything here is stored only in this browser.">
+    <PageHead eyebrow="Your personal learning space" title="My Study" sub="Return to bookmarks, track your learning, and pick up recent activity. Saved in this browser; sign in to keep it on every device.">
+      <a slot="actions" class="btn" href={withBase(base, "account/")}><Icon name="users" /> Account &amp; friends</a>
       <a slot="actions" class="btn" href={withBase(base, "preferences/")}><Icon name="user" /> Preferences</a>
     </PageHead>
 

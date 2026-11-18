@@ -6,7 +6,7 @@ import { getCourses, getManifest } from "../lib/content";
 import { APP_BUILD } from "../lib/routes";
 import "../styles/global.css";
 
-type NavKey = "home" | "videos" | "courses" | "lessons" | "notes" | "podcasts" | "search" | "about" | "revise" | "mystudy" | "preferences" | "downloads";
+type NavKey = "home" | "videos" | "courses" | "lessons" | "notes" | "podcasts" | "search" | "about" | "revise" | "mystudy" | "preferences" | "downloads" | "account";
 interface Props {
   title: string;
   description?: string;
@@ -46,7 +46,7 @@ const BOTTOM = [
 const current = nav === "notes" ? "lessons" : nav === "downloads" && !APP_BUILD ? "podcasts" : nav;
 const CRUMB: Record<NavKey, string> = {
   home: "Home", courses: "Courses", lessons: "Lessons", notes: "Notes", videos: "Videos", podcasts: "Podcasts",
-  revise: "Revision", mystudy: "My Study", search: "Search", preferences: "Preferences", about: "About & help", downloads: "Downloads",
+  revise: "Revision", mystudy: "My Study", search: "Search", preferences: "Preferences", about: "About & help", downloads: "Downloads", account: "Account",
 };
 const crumb = nav ? CRUMB[nav] : title;
 ---
@@ -107,10 +107,10 @@ const crumb = nav ? CRUMB[nav] : title;
           ))}
         </ul>
       </nav>
-      <div class="side-profile">
-        <span class="side-profile__avatar" aria-hidden="true">ML</span>
-        <span>My learning space<small>Progress saved in this browser</small></span>
-      </div>
+      <a class="side-profile" href={`${base}account/`} title="Account: sign in to sync your progress" aria-current={nav === "account" ? "page" : undefined}>
+        <span class="side-profile__avatar" aria-hidden="true" data-account-avatar>ML</span>
+        <span><span data-account-name>My learning space</span><small data-account-status>Sign in to sync your progress</small></span>
+      </a>
     </aside>
 
     <div class="nav-backdrop" data-nav-backdrop hidden></div>
@@ -144,7 +144,7 @@ const crumb = nav ? CRUMB[nav] : title;
       </main>
 
       <footer class="site-footer">
-        <span>Personal study site. Progress is saved in this browser only.</span>
+        <span>Personal study site. Progress is saved in this browser; <a href={`${base}account/`}>sign in</a> to keep it on every device.</span>
         <span>
           <a href={`${base}about/`}>About &amp; help</a> ·
           <a href={`${base}preferences/`}>Preferences</a> ·

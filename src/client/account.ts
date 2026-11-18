@@ -1,0 +1,440 @@
+/**
+ * Sign in to keep progress in sync between devices, and see friends' progress (src/pages/account.astro).
+ * Without signing in nothing changes: progress stays in this browser and Firebase is never downloaded.
+ * The sync rules (who wins when both sides changed) are in src/lib/sync.ts.
+ */
+import { SYNC_KEYS, authMessage, initials, reconcile, summarize, type ProfileSummary, type Snapshot } from "../lib/sync";
+import { ACCOUNT_KEY, SYNC_AT_KEY, timeAgo } from "./store";
+import { pageSignal } from "./page";
+
+export interface AccountUser {
+  uid: string;
+  email: string;
+  name: string;
+}
+/** what the account needs from a server; Firebase in the real site, an in-memory fake in the e2e tests */
+export interface Backend {
+  onUser(cb: (u: AccountUser | null) => void): void;
+  signIn(email: string, password: string): Promise<AccountUser>;
+  signOut(): Promise<void>;
+  resetPassword(email: string): Promise<void>;
+  changePassword(current: string, next: string): Promise<void>;
+  setName(name: string): Promise<void>;
+  getProgress(uid: string): Promise<Snapshot | null>;
+  putProgress(uid: string, snap: Snapshot): Promise<void>;
+  putProfile(uid: string, p: ProfileSummary): Promise<void>;
+  listProfiles(): Promise<(ProfileSummary & { uid: string })[]>;
+}
+declare global {
+  interface Window {
+    /** e2e tests put a fake server here (tests/e2e/fake-account.ts) */
+    __mlsAccountBackend?: Backend;
+  }
+}
+
+type SyncState = "off" | "syncing" | "synced" | "offline" | "error";
+const state = { user: null as AccountUser | null, sync: "off" as SyncState, lastSync: 0, ready: false };
+let backendP: Promise<Backend> | null = null;
+
+function backend(): Promise<Backend> {
+  backendP ??= window.__mlsAccountBackend
+    ? Promise.resolve(window.__mlsAccountBackend)
+    : import("./firebase").then((m) => m.firebaseBackend);
+  return backendP;
+}
+
+/** the signed-in person remembered on this device, so the menu shows it straight away (before Firebase loads) */
+function savedUser(): AccountUser | null {
+  try {
+    const v = JSON.parse(localStorage.getItem(ACCOUNT_KEY) ?? "null") as AccountUser | null;
+    return v && typeof v.uid === "string" ? v : null;
+  } catch {
+    return null;
+  }
+}
+function saveUser(u: AccountUser | null) {
+  try {
+    if (u) localStorage.setItem(ACCOUNT_KEY, JSON.stringify(u));
+    else {
+      localStorage.removeItem(ACCOUNT_KEY);
+      // the next sign-in on this device merges with the account again instead of replacing it
+      localStorage.removeItem(SYNC_AT_KEY);
+    }
+  } catch {
+    /* storage unavailable */
+  }
+}
+
+function localSnapshot(): Snapshot {
+  const snap: Snapshot = { data: {}, at: {} };
+  try {
+    const at = JSON.parse(localStorage.getItem(SYNC_AT_KEY) ?? "{}") as Record<string, number>;
+    for (const key of SYNC_KEYS) {
+      const raw = localStorage.getItem(key);
+      if (raw != null) {
+        try {
+          const v = JSON.parse(raw) as unknown;
+          if (v != null) snap.data[key] = v;
+        } catch {
+          /* a damaged value doesn't sync */
+        }
+      }
+      if (typeof at[key] === "number") snap.at[key] = at[key];
+    }
+  } catch {
+    /* storage unavailable */
+  }
+  return snap;
+}
+
+/** Puts the account's values into this browser without counting them as new changes here. */
+function applyLocal(snap: Snapshot, keys: string[]) {
+  try {
+    const at = JSON.parse(localStorage.getItem(SYNC_AT_KEY) ?? "{}") as Record<string, number>;
+    for (const key of keys) {
+      const v = snap.data[key];
+      if (v == null) localStorage.removeItem(key);
+      else localStorage.setItem(key, JSON.stringify(v));
+    }
+    for (const [k, t] of Object.entries(snap.at)) if (typeof t === "number") at[k] = t;
+    localStorage.setItem(SYNC_AT_KEY, JSON.stringify(at));
+  } catch {
+    /* storage unavailable */
+  }
+  if (keys.length) window.dispatchEvent(new CustomEvent("mls:store", { detail: { key: "*", sync: true } }));
+}
+
+let running: Promise<void> | null = null;
+let again = false;
+/** Syncs this device with the account: pulls what changed elsewhere, pushes what changed here. */
+export function syncNow(): Promise<void> {
+  if (!state.user) return Promise.resolve();
+  if (running) {
+    again = true;
+    return running;
+  }
+  running = (async () => {
+    const user = state.user!;
+    setSync("syncing");
+    try {
+      const api = await backend();
+      const remote = (await api.getProgress(user.uid)) ?? { data: {}, at: {} };
+      const result = reconcile(localSnapshot(), remote);
+      applyLocal(result.merged, result.localChanged);
+      if (result.remoteChanged) await api.putProgress(user.uid, result.merged);
+      await api.putProfile(user.uid, summarize(user.name, result.merged.data));
+      state.lastSync = Date.now();
+      setSync("synced");
+    } catch (e) {
+      console.warn("sync failed", e);
+      setSync(navigator.onLine === false || String((e as { code?: string })?.code ?? "").includes("unavailable") ? "offline" : "error");
+    }
+  })().finally(() => {
+    running = null;
+    if (again) {
+      again = false;
+      void syncNow();
+    }
+  });
+  return running;
+}
+
+let pushTimer: ReturnType<typeof setTimeout> | undefined;
+/** changes are sent a few seconds after the last one, so a burst of flashcard answers is one write */
+function schedulePush(delay = 4000) {
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(() => void syncNow(), delay);
+}
+
+function setSync(s: SyncState) {
+  state.sync = s;
+  render();
+}
+
+function statusText(): string {
+  switch (state.sync) {
+    case "syncing": return "Syncing…";
+    case "synced": return `Synced ${timeAgo(state.lastSync)}`;
+    case "offline": return "Offline: will sync when you're back online";
+    case "error": return "Couldn't sync. Try “Sync now”.";
+    default: return state.user ? "Signed in" : "Progress saved in this browser";
+  }
+}
+
+/** The menu's profile corner and the Account page reflect the current state. */
+function render() {
+  const u = state.user;
+  for (const el of document.querySelectorAll<HTMLElement>("[data-account-name]")) el.textContent = u ? u.name : "My learning space";
+  for (const el of document.querySelectorAll<HTMLElement>("[data-account-status]")) el.textContent = u ? statusText() : "Sign in to sync your progress";
+  for (const el of document.querySelectorAll<HTMLElement>("[data-account-avatar]")) el.textContent = u ? initials(u.name) : "ML";
+  for (const el of document.querySelectorAll<HTMLElement>("[data-account-sync]")) {
+    el.textContent = statusText();
+    el.dataset.state = state.sync;
+  }
+  for (const el of document.querySelectorAll<HTMLElement>("[data-account-email]")) el.textContent = u?.email ?? "";
+  const page = document.querySelector<HTMLElement>("[data-account-page]");
+  if (page) {
+    page.querySelector<HTMLElement>("[data-account-loading]")!.hidden = state.ready || !!u;
+    page.querySelector<HTMLElement>("[data-account-out]")!.hidden = !state.ready || !!u;
+    page.querySelector<HTMLElement>("[data-account-in]")!.hidden = !u;
+  }
+}
+
+/** Starts the account once per visit (not per page): only touches Firebase if someone signed in on this device. */
+let started = false;
+export function startAccount() {
+  if (started) return;
+  started = true;
+  state.user = savedUser();
+  if (state.user) connect();
+  else state.ready = true;
+  window.addEventListener("mls:store", (e) => {
+    if (state.user && !(e as CustomEvent<{ sync?: boolean }>).detail?.sync) schedulePush();
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (!state.user) return;
+    if (document.visibilityState === "hidden") {
+      // leaving the app or tab: send what's pending now
+      if (pushTimer) {
+        clearTimeout(pushTimer);
+        void syncNow();
+      }
+    } else if (Date.now() - state.lastSync > 60_000) void syncNow();
+  });
+  window.addEventListener("online", () => state.user && void syncNow());
+}
+
+let connected = false;
+function connect() {
+  if (connected) return;
+  connected = true;
+  void backend().then((api) => api.onUser((u) => {
+    state.ready = true;
+    if (!u) {
+      // signed out elsewhere, or the session expired
+      if (state.user) {
+        state.user = null;
+        saveUser(null);
+        setSync("off");
+      }
+      render();
+      return;
+    }
+    const name = state.user?.uid === u.uid ? state.user.name : u.name;
+    state.user = { ...u, name };
+    saveUser(state.user);
+    void syncNow();
+  })).catch((e) => {
+    console.warn("account unavailable", e);
+    state.ready = true;
+    setSync("offline");
+  });
+}
+
+const PERCENT = (n: number, total: number) => (total ? Math.round((n / total) * 100) : 0);
+
+async function renderFriends(box: HTMLElement) {
+  if (!state.user) return;
+  const total = Number(box.dataset.total) || 0;
+  const base = document.documentElement.dataset.base ?? "/";
+  try {
+    const api = await backend();
+    const list = (await api.listProfiles()).sort((a, b) => b.completed - a.completed || b.cardsLearned - a.cardsLearned);
+    box.replaceChildren(...list.map((p) => {
+      const li = document.createElement("li");
+      li.className = "friend" + (p.uid === state.user?.uid ? " friend--me" : "");
+      const pct = PERCENT(p.completed, total);
+      const avatar = document.createElement("span");
+      avatar.className = "friend__avatar";
+      avatar.setAttribute("aria-hidden", "true");
+      avatar.textContent = initials(p.name);
+      const body = document.createElement("div");
+      body.className = "friend__body";
+      const head = document.createElement("p");
+      head.className = "friend__head";
+      const name = document.createElement("b");
+      name.textContent = p.uid === state.user?.uid ? `${p.name} (you)` : p.name;
+      const seen = document.createElement("span");
+      seen.className = "small muted";
+      seen.textContent = p.updated ? `active ${timeAgo(p.updated)}` : "";
+      head.append(name, seen);
+      const bar = document.createElement("div");
+      bar.className = "progress";
+      bar.setAttribute("role", "progressbar");
+      bar.setAttribute("aria-label", `${p.name}: lessons completed`);
+      bar.setAttribute("aria-valuemin", "0");
+      bar.setAttribute("aria-valuemax", String(total));
+      bar.setAttribute("aria-valuenow", String(p.completed));
+      const fill = document.createElement("span");
+      fill.style.width = `${pct}%`;
+      bar.append(fill);
+      const stats = document.createElement("p");
+      stats.className = "friend__stats small";
+      stats.textContent = `${p.completed} of ${total} lessons (${pct}%) · ${p.cardsLearned} cards learned · ${p.quizRight} quiz answers right`;
+      body.append(head, bar, stats);
+      if (p.lastTitle) {
+        const last = document.createElement("p");
+        last.className = "friend__last small muted";
+        last.append("Last opened: ");
+        if (p.lastHref.startsWith("/")) {
+          // the website lives under /mule-learning-web/, the app at /: link to the same page in whichever this is
+          const a = document.createElement("a");
+          a.href = base + p.lastHref.replace(/^\/(mule-learning-web\/)?/, "");
+          a.textContent = p.lastTitle;
+          last.append(a);
+        } else last.append(p.lastTitle);
+        body.append(last);
+      }
+      li.append(avatar, body);
+      return li;
+    }));
+    if (!list.length) box.innerHTML = `<li class="empty">Nobody has synced yet.</li>`;
+  } catch (e) {
+    console.warn("friends unavailable", e);
+    box.innerHTML = `<li class="empty">Couldn't load your friends' progress. Check the connection and open this page again.</li>`;
+  }
+}
+
+function busy(btn: HTMLButtonElement | null, on: boolean) {
+  if (!btn) return;
+  btn.disabled = on;
+  btn.setAttribute("aria-busy", String(on));
+}
+function say(el: HTMLElement | null, text: string, kind: "ok" | "error" = "ok") {
+  if (!el) return;
+  el.textContent = text;
+  el.dataset.kind = kind;
+  el.hidden = !text;
+}
+const errCode = (e: unknown) => String((e as { code?: string })?.code ?? "");
+
+/** The Account page: sign in, sync status, name and password, friends. */
+function setupAccountPage() {
+  const page = document.querySelector<HTMLElement>("[data-account-page]");
+  if (!page) return;
+  const signal = pageSignal();
+  connect(); // the sign-in form needs Firebase even when nobody is signed in yet
+  const form = page.querySelector<HTMLFormElement>("[data-account-signin]")!;
+  const msg = page.querySelector<HTMLElement>("[data-account-msg]");
+  const friends = page.querySelector<HTMLElement>("[data-friends]");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+    const password = (form.elements.namedItem("password") as HTMLInputElement).value;
+    const btn = form.querySelector<HTMLButtonElement>("[type=submit]");
+    busy(btn, true);
+    say(msg, "");
+    try {
+      const api = await backend();
+      const u = await api.signIn(email, password);
+      state.user = u;
+      saveUser(u);
+      form.reset();
+      render();
+      await syncNow();
+      if (friends) void renderFriends(friends);
+    } catch (err) {
+      say(msg, authMessage(errCode(err)), "error");
+    } finally {
+      busy(btn, false);
+    }
+  }, { signal });
+
+  page.querySelector("[data-account-forgot]")?.addEventListener("click", async () => {
+    const email = (form.elements.namedItem("email") as HTMLInputElement).value.trim();
+    if (!email) {
+      say(msg, "Type your email above first, then press “Forgot password” again.", "error");
+      (form.elements.namedItem("email") as HTMLInputElement).focus();
+      return;
+    }
+    try {
+      await (await backend()).resetPassword(email);
+      say(msg, `If ${email} has an account, a reset link is on its way. Check the spam folder too.`);
+    } catch (err) {
+      say(msg, authMessage(errCode(err)), "error");
+    }
+  }, { signal });
+
+  page.querySelector("[data-account-sync-now]")?.addEventListener("click", async (e) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    busy(btn, true);
+    await syncNow();
+    busy(btn, false);
+    if (friends) void renderFriends(friends);
+  }, { signal });
+
+  page.querySelector("[data-account-signout]")?.addEventListener("click", async () => {
+    await syncNow(); // don't leave the last changes behind
+    try {
+      await (await backend()).signOut();
+    } catch {
+      /* signed out locally anyway */
+    }
+    state.user = null;
+    saveUser(null);
+    setSync("off");
+    if (friends) friends.replaceChildren();
+  }, { signal });
+
+  const nameForm = page.querySelector<HTMLFormElement>("[data-account-name-form]");
+  const nameMsg = page.querySelector<HTMLElement>("[data-account-name-msg]");
+  nameForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const input = nameForm.elements.namedItem("name") as HTMLInputElement;
+    const name = input.value.trim().slice(0, 40);
+    if (!name || !state.user) return;
+    try {
+      await (await backend()).setName(name);
+      state.user = { ...state.user, name };
+      saveUser(state.user);
+      render();
+      await syncNow();
+      say(nameMsg, "Name saved.");
+      if (friends) void renderFriends(friends);
+    } catch (err) {
+      say(nameMsg, authMessage(errCode(err)), "error");
+    }
+  }, { signal });
+
+  const pwForm = page.querySelector<HTMLFormElement>("[data-account-password]");
+  const pwMsg = page.querySelector<HTMLElement>("[data-account-password-msg]");
+  pwForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const current = (pwForm.elements.namedItem("current") as HTMLInputElement).value;
+    const next = (pwForm.elements.namedItem("next") as HTMLInputElement).value;
+    if (next.length < 6) return say(pwMsg, authMessage("auth/weak-password"), "error");
+    const btn = pwForm.querySelector<HTMLButtonElement>("[type=submit]");
+    busy(btn, true);
+    try {
+      await (await backend()).changePassword(current, next);
+      pwForm.reset();
+      say(pwMsg, "Password changed.");
+    } catch (err) {
+      say(pwMsg, authMessage(errCode(err)), "error");
+    } finally {
+      busy(btn, false);
+    }
+  }, { signal });
+
+  // fill in the name box and the friends list once we know who is signed in
+  const fill = () => {
+    if (!state.user) return;
+    const input = nameForm?.elements.namedItem("name") as HTMLInputElement | null;
+    if (input && !input.value) input.value = state.user.name;
+    if (friends && !friends.childElementCount) void renderFriends(friends);
+  };
+  fill();
+  const timer = setInterval(() => {
+    render(); // keeps "Synced 2 min ago" current
+    fill();
+  }, 2000);
+  signal.addEventListener("abort", () => clearInterval(timer));
+}
+
+/** Called on every page (astro:page-load). */
+export function setupAccount() {
+  startAccount();
+  render();
+  setupAccountPage();
+}
