@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./test";
 import { useFakeYouTube, yt } from "./fake-yt";
 
 const media = JSON.parse(readFileSync(new URL("../../config/media.json", import.meta.url), "utf8"));

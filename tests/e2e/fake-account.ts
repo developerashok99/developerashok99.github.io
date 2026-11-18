@@ -1,12 +1,12 @@
-import type { Page } from "@playwright/test";
+import type { BrowserContext, Page } from "@playwright/test";
 
 /**
  * A pretend account server for the e2e tests, so they never touch the real Firebase project.
  * It keeps its "database" in this browser's localStorage under __fake_server; tests read or seed it with serverState().
  * Two accounts exist: ravi@example.com / secret1 and sita@example.com / secret2.
  */
-export async function useFakeAccount(page: Page) {
-  await page.addInitScript(() => {
+export async function useFakeAccount(target: Page | BrowserContext) {
+  await target.addInitScript(() => {
     const USERS: Record<string, { uid: string; pw: string; name: string }> = {
       "ravi@example.com": { uid: "u1", pw: "secret1", name: "Ravi" },
       "sita@example.com": { uid: "u2", pw: "secret2", name: "Sita" },
@@ -70,3 +70,14 @@ export const serverState = (page: Page) =>
   });
 
 export const seedServer = (page: Page, state: unknown) => page.evaluate((s) => localStorage.setItem("__fake_server", JSON.stringify(s)), state);
+
+/** Signed in as Ravi from the start (once per test: signing out in a test stays signed out). */
+export async function startSignedIn(target: Page | BrowserContext) {
+  await target.addInitScript(() => {
+    if (localStorage.getItem("__e2e_seeded")) return;
+    localStorage.setItem("__e2e_seeded", "1");
+    localStorage.setItem("mls.account", JSON.stringify({ uid: "u1", email: "ravi@example.com", name: "Ravi" }));
+    localStorage.setItem("mls.authAt", String(Date.now()));
+    localStorage.setItem("__fake_server", JSON.stringify({ progress: {}, profiles: {}, session: "ravi@example.com" }));
+  });
+}

@@ -1,6 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { readFileSync } from "node:fs";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./test";
 
 const media = JSON.parse(readFileSync(new URL("../../config/media.json", import.meta.url), "utf8"));
 /** A lesson whose lecture video is still empty, if any (all 60 are linked as of Oct 2026). */

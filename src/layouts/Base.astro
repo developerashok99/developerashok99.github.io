@@ -6,7 +6,7 @@ import { getCourses, getManifest } from "../lib/content";
 import { APP_BUILD } from "../lib/routes";
 import "../styles/global.css";
 
-type NavKey = "home" | "videos" | "courses" | "lessons" | "notes" | "podcasts" | "search" | "about" | "revise" | "mystudy" | "preferences" | "downloads" | "account";
+type NavKey = "home" | "videos" | "courses" | "lessons" | "notes" | "podcasts" | "search" | "about" | "revise" | "mystudy" | "preferences" | "downloads" | "account" | "interview";
 interface Props {
   title: string;
   description?: string;
@@ -31,6 +31,7 @@ const WORKSPACE = [
 ] as const;
 const TOOLS = [
   { key: "revise", href: `${base}revise/`, label: "Revision", icon: "edit" },
+  { key: "interview", href: `${base}interview/`, label: "Mock interview", icon: "interview" },
   { key: "mystudy", href: `${base}my-study/`, label: "My Study", icon: "bookmark", bookmarks: true },
   { key: "search", href: `${base}search/`, label: "Search", icon: "search" },
   { key: "preferences", href: `${base}preferences/`, label: "Preferences", icon: "user" },
@@ -46,17 +47,18 @@ const BOTTOM = [
 const current = nav === "notes" ? "lessons" : nav === "downloads" && !APP_BUILD ? "podcasts" : nav;
 const CRUMB: Record<NavKey, string> = {
   home: "Home", courses: "Courses", lessons: "Lessons", notes: "Notes", videos: "Videos", podcasts: "Podcasts",
-  revise: "Revision", mystudy: "My Study", search: "Search", preferences: "Preferences", about: "About & help", downloads: "Downloads", account: "Account",
+  revise: "Revision", mystudy: "My Study", search: "Search", preferences: "Preferences", about: "About & help", downloads: "Downloads", account: "Account", interview: "Mock interview",
 };
 const crumb = nav ? CRUMB[nav] : title;
 ---
 <!doctype html>
-<html lang="en" data-base={base} data-app={APP_BUILD ? "android" : undefined}>
+<html lang="en" data-base={base} data-app={APP_BUILD ? "android" : undefined} data-login-page={nav === "account" ? "" : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content="noindex, nofollow" />
     <meta name="theme-color" content="#f4f7fb" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0f1723" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href={`${base}icons/icon.svg`} type="image/svg+xml" />
@@ -80,6 +82,24 @@ const crumb = nav ? CRUMB[nav] : title;
         }
         apply(document);
         document.addEventListener("astro:before-swap", function (e) { apply(e.newDocument); });
+      })();
+      // Members only: without a sign-in from the last 30 days, every page sends you to the sign-in page
+      // (src/client/account.ts does the signing in and keeps this up to date after client-side navigation).
+      (function () {
+        var r = document.documentElement, ok = false;
+        try {
+          var a = JSON.parse(localStorage.getItem("mls.account") || "null");
+          var t = Number(localStorage.getItem("mls.authAt") || 0);
+          // signed in before sign-in became required: the 30 days start now
+          if (a && a.uid && !t) { t = Date.now(); localStorage.setItem("mls.authAt", String(t)); }
+          ok = !!(a && a.uid) && Date.now() - t < 30 * 864e5;
+          if (a && a.uid && !ok) r.dataset.expired = "";
+        } catch (e) {}
+        if (ok) return;
+        r.dataset.locked = "";
+        if (r.hasAttribute("data-login-page")) return;
+        var here = location.pathname + location.search + location.hash;
+        location.replace(r.dataset.base + "account/?next=" + encodeURIComponent(here) + (r.hasAttribute("data-expired") ? "&expired=1" : ""));
       })();
     </script>
     <ClientRouter fallback="swap" />
@@ -144,7 +164,7 @@ const crumb = nav ? CRUMB[nav] : title;
       </main>
 
       <footer class="site-footer">
-        <span>Personal study site. Progress is saved in this browser; <a href={`${base}account/`}>sign in</a> to keep it on every device.</span>
+        <span>Private study site for members. Your progress is saved to your <a href={`${base}account/`}>account</a>.</span>
         <span>
           <a href={`${base}about/`}>About &amp; help</a> ·
           <a href={`${base}preferences/`}>Preferences</a> ·

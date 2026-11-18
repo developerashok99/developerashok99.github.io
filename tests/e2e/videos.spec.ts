@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
+import { useFakeYouTube, yt } from "./fake-yt";
 
 const media = JSON.parse(readFileSync(new URL("../../config/media.json", import.meta.url), "utf8"));
 /** Lesson ids that have a lecture video, in course order (media.json keeps course order). */
@@ -64,5 +65,31 @@ test.describe("videos tab", () => {
     await page.goto(`videos/${ids[1]}/`);
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
+  });
+});
+
+test.describe("lecture progress", () => {
+  test("you resume where you stopped, watching 90% marks the lesson complete, and the playlist shows it", async ({ page }) => {
+    test.skip((page.viewportSize()?.width ?? 0) !== 1440 && (page.viewportSize()?.width ?? 0) !== 390, "one phone and one desktop size");
+    await useFakeYouTube(page);
+    const id = ids[2];
+    await page.goto(`videos/${id}/`);
+    await page.locator("button[data-yt]").click();
+    await expect.poll(() => yt(page).state()).toBe(1);
+    await yt(page).seek(1000);
+    await yt(page).run("pauseVideo");
+    await expect.poll(() => page.evaluate((v) => JSON.parse(localStorage.getItem("mls.lectures") ?? "{}")[v]?.pos, id)).toBe(1000);
+    await page.reload();
+    await expect(page.locator("button[data-yt] small")).toHaveText("Resume at 16:40 · 20% watched");
+    await page.locator("button[data-yt]").click();
+    await expect.poll(async () => (await yt(page).vars())?.start).toBe(1000);
+    // jump near the end: 92% counts as watched, and the lesson is marked complete
+    await expect.poll(() => yt(page).state()).toBe(1);
+    await yt(page).seek(4600);
+    await yt(page).run("pauseVideo");
+    await expect(page.getByRole("button", { name: "Completed" })).toBeVisible();
+    await expect(page.locator(`.video-list a[href$="/videos/${id}/"] .video-list__watched`)).toHaveAttribute("data-done", "true");
+    await page.reload();
+    await expect(page.locator("button[data-yt] small")).toHaveText("Watched ✓ · click to watch again");
   });
 });

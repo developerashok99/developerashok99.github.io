@@ -6,12 +6,11 @@
 import Base from "../layouts/Base.astro";
 import Icon from "../components/Icon.astro";
 import PageHead from "../components/PageHead.astro";
-import { getCourses, getLesson, getLessons, knownIds, readNote } from "../lib/content";
+import { getCourses, getLesson, knownIds } from "../lib/content";
 import { renderMarkdown } from "../lib/markdown";
 import { lessonHasView, lessonPath, withBase } from "../lib/routes";
-import { findSection, parseQuestions } from "../lib/revision";
 import { glossary } from "../lib/glossary";
-import { cardId } from "../lib/srs";
+import { renderedCards } from "../lib/cardsHtml";
 import { dwExercises } from "../lib/dataweave";
 const dwCount = dwExercises().length;
 import { flowExercises } from "../lib/flows";
@@ -22,26 +21,8 @@ const known = knownIds();
 const inline = async (text: string, sid: string) =>
   (await renderMarkdown(text, { kind: "super", sid, base, known })).html.replace(/^<p>|<\/p>\s*$/g, "");
 
-const qCount = new Map<string, number>();
 // flashcards: every interview question of the super-detailed notes, with its answer copied unchanged
-const cards: { id: string; s: string; d: string; l: string; href: string; q: string; a: string }[] = [];
-for (const l of getLessons()) {
-  const src = readNote(l.id, "super");
-  const q = findSection(src, /interview question|questions discussed/i);
-  const qs = q ? parseQuestions(q.body) : [];
-  qCount.set(l.id, qs.length);
-  for (const x of qs) {
-    cards.push({
-      id: cardId(l.id, x.question),
-      s: l.sectionId,
-      d: l.sectionTitle,
-      l: l.label,
-      href: withBase(base, lessonPath(l.id, "revise")) + "#rv-selftest",
-      q: await inline(x.question, l.id),
-      a: (await renderMarkdown(x.answer, { kind: "super", sid: l.id, base, known })).html,
-    });
-  }
-}
+const { cards, perLesson: qCount } = await renderedCards(base);
 // the glossary, rendered (meanings word for word, each with its lessons)
 const sortKey = (k: string) => k.replace(/^[^a-z0-9]+/, "") || k;
 const sorted = await Promise.all(glossary().map(async (e) => ({
@@ -104,6 +85,12 @@ const decks = sections.map((sec) => ({ id: sec.id, title: sec.title, n: cards.fi
         </a>
       )}
     </div>
+
+    <a class="card card--hover iv-promo" href={`${base}interview/`}>
+      <span class="stat-icon" aria-hidden="true"><Icon name="interview" /></span>
+      <span><b>Mock interview</b><span class="small muted">Timed questions, model answers and a score. Practise out loud, like the real thing.</span></span>
+      <Icon name="right" />
+    </a>
 
     {cards.length > 0 && (
       <section aria-labelledby="fc-h" data-flashcards>

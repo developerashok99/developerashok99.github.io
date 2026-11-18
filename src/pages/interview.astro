@@ -1,0 +1,108 @@
+---
+/**
+ * Mock interview: a timed run of interview questions from the notes. Answer out loud (optionally recorded so you can
+ * listen back), reveal the model answer, rate yourself. Sessions are saved and synced; src/client/interview.ts runs it.
+ */
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import PageHead from "../components/PageHead.astro";
+import { getCourses } from "../lib/content";
+import { renderedCards } from "../lib/cardsHtml";
+import { withBase } from "../lib/routes";
+
+const base = import.meta.env.BASE_URL;
+const { cards } = await renderedCards(base);
+const sections = getCourses().flatMap((c) => c.sections).map((s) => ({ id: s.id, title: s.title, n: cards.filter((c) => c.s === s.id).length })).filter((s) => s.n > 0);
+---
+<Base title="Mock interview" nav="interview" description="Practise a MuleSoft interview: timed questions from the notes, model answers and a score">
+  <div class="page interview" data-interview data-src={withBase(base, "interview.json")}>
+    <PageHead eyebrow="Practise out loud" title="Mock interview" sub="Answer each question as you would in a real interview, then compare with the model answer from the notes and rate yourself. Your results are saved to your account." />
+
+    <section class="card iv-setup" data-iv-setup aria-labelledby="iv-setup-h">
+      <h2 id="iv-setup-h">Set up your interview</h2>
+      <div class="iv-grid">
+        <label class="account__field">Topics
+          <select class="input" data-iv-topic>
+            <option value="">Whole course ({cards.length} questions)</option>
+            <option value="done">Only lessons I've completed</option>
+            {sections.map((s) => <option value={s.id}>{s.title} ({s.n})</option>)}
+          </select>
+        </label>
+        <fieldset class="iv-choice">
+          <legend>Questions</legend>
+          <div class="segmented" role="group" aria-label="Number of questions">
+            {[5, 10, 15].map((n) => <button type="button" data-iv-count={n} aria-pressed={n === 10 ? "true" : "false"}>{n}</button>)}
+          </div>
+        </fieldset>
+        <fieldset class="iv-choice">
+          <legend>Time per answer</legend>
+          <div class="segmented" role="group" aria-label="Time per answer">
+            {[{ v: 60, t: "1 min" }, { v: 120, t: "2 min" }, { v: 180, t: "3 min" }, { v: 0, t: "No limit" }].map((o) => <button type="button" data-iv-time={o.v} aria-pressed={o.v === 120 ? "true" : "false"}>{o.t}</button>)}
+          </div>
+        </fieldset>
+      </div>
+      <label class="switch"><input type="checkbox" role="switch" data-iv-focus checked /> Focus on questions I found hard before</label>
+      <label class="switch" data-iv-rec-option hidden><input type="checkbox" role="switch" data-iv-record /> Record my answers so I can listen back (stays on this device)</label>
+      <div class="btn-row">
+        <button class="btn btn--primary btn--lg" type="button" data-iv-start><Icon name="mic" /> Start interview</button>
+      </div>
+      <p class="account__msg" data-iv-setup-msg role="status" hidden></p>
+    </section>
+
+    <section class="card iv-live" data-iv-live hidden aria-labelledby="iv-q-count">
+      <div class="iv-live__top">
+        <p class="iv-live__count" id="iv-q-count"><b data-iv-n>Question 1 of 10</b> <span class="pill pill--blue" data-iv-where></span></p>
+        <p class="iv-timer" data-iv-timer aria-label="Time left" hidden>2:00</p>
+      </div>
+      <div class="progress progress--thin" aria-hidden="true"><span data-iv-bar></span></div>
+      <div class="iv-question" data-iv-q tabindex="-1"></div>
+      <p class="iv-rec" data-iv-rec hidden><span class="iv-rec__dot" aria-hidden="true"></span> Recording your answer…</p>
+      <label class="account__field iv-notes">Key points you'd mention (optional)
+        <textarea class="input" rows="3" data-iv-notes placeholder="Type a few keywords, or just answer out loud"></textarea>
+      </label>
+      <div class="btn-row" data-iv-ask>
+        <button class="btn btn--primary" type="button" data-iv-reveal>I've answered: show the model answer</button>
+        <button class="btn btn--ghost" type="button" data-iv-end>End interview</button>
+      </div>
+      <div class="iv-answer" data-iv-answer hidden>
+        <h3>Model answer <small class="muted" data-iv-from></small></h3>
+        <audio class="iv-playback" data-iv-playback controls hidden></audio>
+        <div class="prose" data-iv-a></div>
+        <div class="iv-rate" role="group" aria-label="How did your answer compare?">
+          <p class="small muted">How did your answer compare?</p>
+          <div class="btn-row">
+            <button class="btn grade grade--again" type="button" data-iv-rate="0">Missed it</button>
+            <button class="btn grade grade--hard" type="button" data-iv-rate="1">Partly</button>
+            <button class="btn grade grade--good" type="button" data-iv-rate="2">Nailed it</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card iv-summary" data-iv-summary hidden aria-labelledby="iv-sum-h" tabindex="-1">
+      <h2 id="iv-sum-h">Interview finished</h2>
+      <div class="iv-score">
+        <strong data-iv-score>0%</strong>
+        <div><p data-iv-breakdown></p><p class="small muted" data-iv-verdict></p></div>
+      </div>
+      <ol class="iv-results" data-iv-results></ol>
+      <p class="small muted">Questions you missed are put back into your flashcard reviews, due now.</p>
+      <div class="btn-row">
+        <button class="btn btn--primary" type="button" data-iv-retry hidden>Practise the ones I missed</button>
+        <button class="btn" type="button" data-iv-again>New interview</button>
+        <a class="btn btn--ghost" href={withBase(base, "revise/")}>Flashcards</a>
+      </div>
+    </section>
+
+    <section aria-labelledby="iv-hist-h" class="iv-history">
+      <div class="section-head"><div><h2 id="iv-hist-h">Your interviews</h2><p>Recent mock interviews and scores</p></div></div>
+      <p class="empty" data-iv-history-empty>No interviews yet. Your first one takes about 15 minutes.</p>
+      <div class="table-wrap" data-iv-history-wrap hidden>
+        <table class="iv-table">
+          <thead><tr><th scope="col">When</th><th scope="col">Topics</th><th scope="col">Questions</th><th scope="col">Score</th><th scope="col">Time</th></tr></thead>
+          <tbody data-iv-history></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</Base>

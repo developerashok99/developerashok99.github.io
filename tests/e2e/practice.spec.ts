@@ -1,7 +1,7 @@
 /** Day-wise practice: Visual Practice, lesson quiz and mistakes, filters, Focus mode, backups, recommendations. */
 import AxeBuilder from "@axe-core/playwright";
 import { readFileSync } from "node:fs";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 
 test.describe("Visual Practice on a lesson", () => {
   test("lists only the activities the lesson has, linking to filtered tools", async ({ page }) => {

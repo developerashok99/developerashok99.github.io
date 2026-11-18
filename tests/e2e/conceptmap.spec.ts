@@ -1,6 +1,6 @@
 /** Concept map (src/client/conceptmap.ts). */
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 
 test.describe("concept map", () => {
   test("explore: the panel lists a term's links and moves to them", async ({ page }) => {

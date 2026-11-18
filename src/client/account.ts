@@ -1,10 +1,11 @@
 /**
- * Sign in to keep progress in sync between devices, and see friends' progress (src/pages/account.astro).
- * Without signing in nothing changes: progress stays in this browser and Firebase is never downloaded.
+ * Members only: every page needs a sign-in from the last 30 days (the check before first paint is in Base.astro).
+ * Signing in keeps progress in sync between devices and shows friends' progress (src/pages/account.astro).
+ * Firebase is only downloaded on the sign-in page and once someone is signed in.
  * The sync rules (who wins when both sides changed) are in src/lib/sync.ts.
  */
 import { SYNC_KEYS, authMessage, initials, reconcile, summarize, type ProfileSummary, type Snapshot } from "../lib/sync";
-import { ACCOUNT_KEY, SYNC_AT_KEY, timeAgo } from "./store";
+import { ACCOUNT_KEY, AUTH_AT_KEY, SIGN_IN_DAYS, SYNC_AT_KEY, timeAgo } from "./store";
 import { pageSignal } from "./page";
 
 export interface AccountUser {
@@ -57,12 +58,39 @@ function saveUser(u: AccountUser | null) {
     if (u) localStorage.setItem(ACCOUNT_KEY, JSON.stringify(u));
     else {
       localStorage.removeItem(ACCOUNT_KEY);
+      localStorage.removeItem(AUTH_AT_KEY);
       // the next sign-in on this device merges with the account again instead of replacing it
       localStorage.removeItem(SYNC_AT_KEY);
     }
   } catch {
     /* storage unavailable */
   }
+}
+
+const DAY = 864e5;
+const authAt = () => Number(localStorage.getItem(AUTH_AT_KEY) || 0);
+/** signed in on this device within the last 30 days */
+export function signedIn(): boolean {
+  try {
+    return !!savedUser() && Date.now() - authAt() < SIGN_IN_DAYS * DAY;
+  } catch {
+    return false;
+  }
+}
+const base = () => document.documentElement.dataset.base ?? "/";
+const onLoginPage = () => document.documentElement.hasAttribute("data-login-page");
+/** Back to the sign-in page, remembering where you were. */
+function toLogin(why?: "expired") {
+  const root = document.documentElement;
+  root.dataset.locked = "";
+  if (onLoginPage()) return render();
+  const here = location.pathname + location.search + location.hash;
+  location.replace(`${base()}account/?next=${encodeURIComponent(here)}${why ? `&${why}=1` : ""}`);
+}
+/** Where to go after signing in: the page you asked for (only pages of this site), or Home. */
+function nextPage(): string {
+  const next = new URLSearchParams(location.search).get("next") ?? "";
+  return next.startsWith(base()) && !next.startsWith("//") && !next.startsWith(`${base()}account/`) ? next : base();
 }
 
 function localSnapshot(): Snapshot {
@@ -172,6 +200,10 @@ function render() {
     el.dataset.state = state.sync;
   }
   for (const el of document.querySelectorAll<HTMLElement>("[data-account-email]")) el.textContent = u?.email ?? "";
+  for (const el of document.querySelectorAll<HTMLElement>("[data-account-until]")) {
+    const until = authAt() + SIGN_IN_DAYS * DAY;
+    el.textContent = u && authAt() ? `Signed in on this device until ${new Date(until).toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" })}` : "";
+  }
   const page = document.querySelector<HTMLElement>("[data-account-page]");
   if (page) {
     page.querySelector<HTMLElement>("[data-account-loading]")!.hidden = state.ready || !!u;
@@ -186,6 +218,12 @@ export function startAccount() {
   if (started) return;
   started = true;
   state.user = savedUser();
+  if (state.user && !signedIn()) {
+    // 30 days are up: sign out here too, so the next sign-in asks for the password
+    state.user = null;
+    saveUser(null);
+    void backend().then((api) => api.signOut()).catch(() => {});
+  }
   if (state.user) connect();
   else state.ready = true;
   window.addEventListener("mls:store", (e) => {
@@ -216,6 +254,7 @@ function connect() {
         state.user = null;
         saveUser(null);
         setSync("off");
+        toLogin();
       }
       render();
       return;
@@ -236,7 +275,7 @@ const PERCENT = (n: number, total: number) => (total ? Math.round((n / total) * 
 async function renderFriends(box: HTMLElement) {
   if (!state.user) return;
   const total = Number(box.dataset.total) || 0;
-  const base = document.documentElement.dataset.base ?? "/";
+  const root = base();
   try {
     const api = await backend();
     const list = (await api.listProfiles()).sort((a, b) => b.completed - a.completed || b.cardsLearned - a.cardsLearned);
@@ -270,7 +309,11 @@ async function renderFriends(box: HTMLElement) {
       bar.append(fill);
       const stats = document.createElement("p");
       stats.className = "friend__stats small";
-      stats.textContent = `${p.completed} of ${total} lessons (${pct}%) · ${p.cardsLearned} cards learned · ${p.quizRight} quiz answers right`;
+      const parts = [`${p.completed} of ${total} lessons (${pct}%)`];
+      if (p.lecturesWatched || p.hoursWatched) parts.push(`${p.lecturesWatched ?? 0} lectures watched (${p.hoursWatched ?? 0} h)`);
+      parts.push(`${p.cardsLearned} cards learned`, `${p.quizRight} quiz answers right`);
+      if (p.interviews) parts.push(`${p.interviews} mock interview${p.interviews === 1 ? "" : "s"}, recent average ${p.interviewScore}%`);
+      stats.textContent = parts.join(" · ");
       body.append(head, bar, stats);
       if (p.lastTitle) {
         const last = document.createElement("p");
@@ -279,7 +322,7 @@ async function renderFriends(box: HTMLElement) {
         if (p.lastHref.startsWith("/")) {
           // the website lives under /mule-learning-web/, the app at /: link to the same page in whichever this is
           const a = document.createElement("a");
-          a.href = base + p.lastHref.replace(/^\/(mule-learning-web\/)?/, "");
+          a.href = root + p.lastHref.replace(/^\/(mule-learning-web\/)?/, "");
           a.textContent = p.lastTitle;
           last.append(a);
         } else last.append(p.lastTitle);
@@ -317,6 +360,7 @@ function setupAccountPage() {
   const form = page.querySelector<HTMLFormElement>("[data-account-signin]")!;
   const msg = page.querySelector<HTMLElement>("[data-account-msg]");
   const friends = page.querySelector<HTMLElement>("[data-friends]");
+  if (new URLSearchParams(location.search).has("expired") && !state.user) say(msg, "You were signed in for 30 days, so please sign in again.");
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -330,9 +374,16 @@ function setupAccountPage() {
       const u = await api.signIn(email, password);
       state.user = u;
       saveUser(u);
+      localStorage.setItem(AUTH_AT_KEY, String(Date.now()));
       form.reset();
+      say(msg, "Signed in. Loading your progress…");
+      // bring the account's progress down before showing any page, so it opens up to date
+      await Promise.race([syncNow(), new Promise((r) => setTimeout(r, 8000))]);
+      if (document.documentElement.hasAttribute("data-locked")) {
+        location.replace(nextPage());
+        return;
+      }
       render();
-      await syncNow();
       if (friends) void renderFriends(friends);
     } catch (err) {
       say(msg, authMessage(errCode(err)), "error");
@@ -375,6 +426,7 @@ function setupAccountPage() {
     saveUser(null);
     setSync("off");
     if (friends) friends.replaceChildren();
+    toLogin();
   }, { signal });
 
   const nameForm = page.querySelector<HTMLFormElement>("[data-account-name-form]");
@@ -435,6 +487,8 @@ function setupAccountPage() {
 /** Called on every page (astro:page-load). */
 export function setupAccount() {
   startAccount();
+  // client-side navigation skips the check in Base.astro, so check again on every page
+  if (!signedIn() && !onLoginPage()) return toLogin(savedUser() ? "expired" : undefined);
   render();
   setupAccountPage();
 }

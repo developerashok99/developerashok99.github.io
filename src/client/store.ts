@@ -22,6 +22,8 @@ export const KEYS = {
   quiz: "mls.quiz", // Record<questionId, QuizResult> lesson quiz answers (src/client/quiz.ts)
   flows: "mls.flows", // Record<exerciseId, "right" | "wrong"> Build the flow results (src/client/flows.ts)
   dw: "mls.dw", // Record<exerciseId, DwResult> DataWeave practice results (src/client/dataweave.ts)
+  lectures: "mls.lectures", // Record<lessonId, LectureProgress> how far each lecture video has been watched
+  interviews: "mls.interviews", // InterviewSession[] mock interviews, newest first (src/client/interview.ts)
   prefs: "mls.prefs", // { theme?, width?, scale?, lessonNav?, videoAutoplay?, lastVideo? }
 } as const;
 
@@ -63,6 +65,9 @@ export function write(key: string, value: unknown): void {
 
 /** signed in on this device (src/client/account.ts): { uid, email, name } */
 export const ACCOUNT_KEY = "mls.account";
+/** when you signed in on this device (ms): sign-in lasts 30 days (checked before first paint in Base.astro) */
+export const AUTH_AT_KEY = "mls.authAt";
+export const SIGN_IN_DAYS = 30;
 /** when each synced kind of progress last changed on this device (ms), for src/lib/sync.ts */
 export const SYNC_AT_KEY = "mls.syncAt";
 const SYNCED = new Set<string>(SYNC_KEYS);
@@ -155,13 +160,14 @@ export function saveReadingProgress(key: string, value: number) {
 
 /** Backup file format. Version 1 files ({ app, exportedAt, data }) and bare data objects are still accepted. */
 export const BACKUP_VERSION = 2;
-const LIST_KEYS = new Set<string>([KEYS.completed, KEYS.bookmarks, KEYS.started, KEYS.recent, KEYS.searches]);
+const LIST_KEYS = new Set<string>([KEYS.completed, KEYS.bookmarks, KEYS.started, KEYS.recent, KEYS.searches, KEYS.interviews]);
 /** what each key holds, in words, for the restore summary */
 export const KEY_NAMES: Record<string, string> = {
   [KEYS.completed]: "completed lessons", [KEYS.bookmarks]: "bookmarks", [KEYS.started]: "lessons in progress", [KEYS.recent]: "recent activity",
   [KEYS.audio]: "podcast positions", [KEYS.video]: "video positions", [KEYS.reading]: "reading positions", [KEYS.player]: "audio player",
   [KEYS.searches]: "recent searches", [KEYS.srs]: "flashcard schedule", [KEYS.srsNew]: "new flashcards today", [KEYS.mapSrs]: "concept-map review schedule",
   [KEYS.quiz]: "quiz answers and mistakes", [KEYS.flows]: "Build-the-flow results", [KEYS.dw]: "DataWeave results", [KEYS.prefs]: "preferences",
+  [KEYS.lectures]: "lecture videos watched", [KEYS.interviews]: "mock interviews",
 };
 
 /** Everything this site stores, for backup / restore / reset on the My study page. */
@@ -328,4 +334,49 @@ export function noteNewStarted() {
 export const newPerDay = () => {
   const n = prefs().newPerDay;
   return typeof n === "number" && n >= 0 && n <= 100 ? n : 15;
+};
+
+// ---- lecture videos (YouTube) ----
+/** how far a lecture has been watched: where you stopped, the furthest point reached, and whether it counts as watched */
+export interface LectureProgress {
+  pos: number;
+  dur: number;
+  max: number;
+  at: number;
+  done?: boolean;
+}
+/** watching 90% counts as watched (the last minutes are often questions and goodbyes) */
+export const WATCHED = 0.9;
+export const lectureProgress = () => read<Record<string, LectureProgress>>(KEYS.lectures, {});
+/** Saves where you are in a lecture. Returns true the moment it first counts as watched. */
+export function saveLectureProgress(id: string, pos: number, dur: number): boolean {
+  if (!(dur > 0)) return false;
+  const all = lectureProgress();
+  const prev = all[id];
+  const max = Math.max(prev?.max ?? 0, Math.floor(pos));
+  const done = !!prev?.done || max >= dur * WATCHED;
+  // near the end: next time it starts from the beginning
+  const p = pos >= dur - 20 ? 0 : Math.floor(pos);
+  if (prev && prev.pos === p && prev.max === max && prev.done === done) return false;
+  all[id] = { pos: p, dur: Math.floor(dur), max, at: Date.now(), done };
+  write(KEYS.lectures, all);
+  return done && !prev?.done;
+}
+
+// ---- mock interviews ----
+/** a finished mock interview: when, how long, and how you rated each answer (2 = nailed it, 1 = partly, 0 = missed) */
+export interface InterviewSession {
+  at: number;
+  secs: number;
+  topic: string;
+  ratings: Record<string, 0 | 1 | 2>;
+}
+export const interviews = () => read<InterviewSession[]>(KEYS.interviews, []).filter((s) => s && typeof s.at === "number" && s.ratings);
+export function saveInterview(s: InterviewSession) {
+  write(KEYS.interviews, [s, ...interviews()].slice(0, 60));
+}
+/** score of a session in percent: nailed = full marks, partly = half */
+export const interviewScore = (s: InterviewSession) => {
+  const r = Object.values(s.ratings);
+  return r.length ? Math.round((r.reduce<number>((a, b) => a + b, 0) / (r.length * 2)) * 100) : 0;
 };

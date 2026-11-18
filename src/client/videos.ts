@@ -4,7 +4,8 @@
  * offers to continue the last video opened.
  */
 import { pageSignal } from "./page";
-import { isBookmarked, isCompleted, prefs, setBookmarked, setCompleted, setPrefs } from "./store";
+import { activeYouTube } from "./media";
+import { isBookmarked, isCompleted, lectureProgress, prefs, saveLectureProgress, setBookmarked, setCompleted, setPrefs, type LectureProgress } from "./store";
 
 /** Set when the user picks a video, so the next page starts playing without a second click. */
 const PLAY_FLAG = "mls.videoPlay";
@@ -86,5 +87,84 @@ export function setupVideos() {
     else if (e.key === "P") go("prev");
   }, { signal });
 
+  setupLectureProgress(page, id, render);
   if (flag()) page.querySelector<HTMLButtonElement>("button[data-yt]")?.click();
+}
+
+/** 1:05:09 / 4:07 */
+export function clock(secs: number): string {
+  const s = Math.max(0, Math.floor(secs));
+  const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60;
+  return h ? `${h}:${String(m).padStart(2, "0")}:${String(r).padStart(2, "0")}` : `${m}:${String(r).padStart(2, "0")}`;
+}
+const percent = (p: LectureProgress) => (p.dur ? Math.min(100, Math.round((p.max / p.dur) * 100)) : 0);
+
+/**
+ * Lecture progress: where you stopped (the video starts there next time), how much you've watched (bars in the playlist),
+ * and watching 90% marks the lesson complete. Saved every few seconds while playing, and synced to your account.
+ */
+function setupLectureProgress(page: HTMLElement, id: string, renderActions: () => void) {
+  const signal = pageSignal();
+  const facade = page.querySelector<HTMLButtonElement>("button[data-yt]");
+  const saved = lectureProgress()[id];
+  // resume where you stopped, unless it's near the start or already finished
+  if (facade && saved && !saved.done && saved.pos > 15) {
+    facade.dataset.start = String(Math.max(Number(facade.dataset.start || 0), saved.pos));
+    const small = facade.querySelector("small");
+    if (small) small.textContent = `Resume at ${clock(saved.pos)} · ${percent(saved)}% watched`;
+  } else if (facade && saved?.done) {
+    const small = facade.querySelector("small");
+    if (small) small.textContent = "Watched ✓ · click to watch again";
+  }
+
+  const renderList = () => {
+    const all = lectureProgress();
+    for (const a of page.querySelectorAll<HTMLAnchorElement>(".video-list a[href]")) {
+      const vid = a.getAttribute("href")!.match(/videos\/([^/]+)\/$/)?.[1];
+      const p = vid ? all[vid] : undefined;
+      let bar = a.querySelector<HTMLElement>(".video-list__watched");
+      if (!p || !p.max) {
+        bar?.remove();
+        continue;
+      }
+      if (!bar) {
+        bar = document.createElement("span");
+        bar.className = "video-list__watched";
+        bar.setAttribute("aria-hidden", "true");
+        bar.append(document.createElement("span"));
+        a.querySelector(".video-list__text")?.append(bar);
+      }
+      bar.dataset.done = String(!!p.done);
+      bar.title = p.done ? "Watched" : `${percent(p)}% watched`;
+      (bar.firstElementChild as HTMLElement).style.width = `${p.done ? 100 : percent(p)}%`;
+    }
+  };
+  renderList();
+
+  const save = () => {
+    const a = activeYouTube();
+    if (!a || a.id !== facade?.dataset.yt) return;
+    const pos = a.player.getCurrentTime?.() || 0;
+    const dur = a.player.getDuration?.() || 0;
+    if (pos < 1 || !dur) return;
+    if (saveLectureProgress(id, pos, dur) && !isCompleted(id)) {
+      setCompleted(id, true);
+      renderActions();
+    }
+    renderList();
+  };
+  const timer = setInterval(() => {
+    const a = activeYouTube();
+    if (a && a.player.getPlayerState?.() === 1) save();
+  }, 5000);
+  signal.addEventListener("abort", () => {
+    save();
+    clearInterval(timer);
+  });
+  // paused, ended or buffering: save now (YouTube states 0 ended, 2 paused)
+  document.addEventListener("mls:yt-state", (e) => {
+    const st = (e as CustomEvent<{ state: number }>).detail.state;
+    if (st === 0 || st === 2) save();
+  }, { signal });
+  document.addEventListener("visibilitychange", () => document.visibilityState === "hidden" && save(), { signal });
 }

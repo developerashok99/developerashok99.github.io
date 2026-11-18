@@ -1,6 +1,6 @@
 /** Course mind map (src/client/mindmap.ts). */
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 
 test.describe("course mind map", () => {
   test("opens to the sections, expands to lessons, and ticks completed ones", async ({ page }) => {

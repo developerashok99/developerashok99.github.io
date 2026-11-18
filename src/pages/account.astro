@@ -10,9 +10,14 @@ import { getLessons } from "../lib/content";
 
 const total = getLessons().length;
 ---
-<Base title="Account" nav="account" description="Sign in to keep your progress on every device and see your friends' progress">
+<Base title="Sign in" nav="account" description="Members sign in to study; progress is saved to your account and you can see your friends' progress">
   <div class="page account" data-account-page>
-    <PageHead eyebrow="Study together" title="Account" sub="Sign in to keep your progress on every device and to see how your friends are doing. Without signing in everything still works and stays in this browser." />
+    <PageHead eyebrow="Study together" title="Account" sub="Your progress is saved to your account, so it is the same on every device. See how your friends are doing below." />
+    <div class="account__brand">
+      <span class="brand__mark" aria-hidden="true">M</span>
+      <h2 class="account__title">Mule Learning Hub</h2>
+      <p>Members only. Sign in to study.</p>
+    </div>
 
     <p class="muted" data-account-loading>Loading…</p>
 
@@ -27,7 +32,7 @@ const total = getLessons().length;
         </div>
         <p class="account__msg" data-account-msg role="status" hidden></p>
       </form>
-      <p class="small muted account__note"><Icon name="info" /> Accounts are added by whoever runs this site. Your progress so far in this browser is kept and joined with your account when you sign in.</p>
+      <p class="small muted account__note"><Icon name="info" /> Accounts are added by whoever runs this site. You stay signed in on this device for 30 days.</p>
     </section>
 
     <div class="account__in" data-account-in hidden>
@@ -38,6 +43,7 @@ const total = getLessons().length;
             <h2 id="ac-you" data-account-name>My learning space</h2>
             <p class="small muted" data-account-email></p>
             <p class="account__sync small" data-account-sync role="status"></p>
+            <p class="small muted" data-account-until></p>
           </div>
         </div>
         <div class="btn-row">

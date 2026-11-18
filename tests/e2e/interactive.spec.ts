@@ -1,6 +1,6 @@
 /** Interactive diagrams (src/client/diagrams.ts) and DataWeave practice (src/client/dataweave.ts). */
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Locator, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "./test";
 
 /** the first drawn flowchart on day 7's detailed notes: HTTP Request → HTTP Listener → Mule Event → next component */
 async function flowchart(page: Page): Promise<Locator> {

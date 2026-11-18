@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Page } from "./test";
 
 /** The real Day 1 lecture from config/media.json, so the test follows whatever link is configured. */
 const media = JSON.parse(readFileSync(new URL("../../config/media.json", import.meta.url), "utf8"));

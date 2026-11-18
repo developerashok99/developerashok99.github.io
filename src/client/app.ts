@@ -25,6 +25,7 @@ import { setupPractice } from "./practice";
 import { setupRecommend } from "./recommend";
 import { setupPreferences } from "./preferences";
 import { setupAccount } from "./account";
+import { setupInterview } from "./interview";
 import { pageSignal } from "./page";
 import { recommend } from "../lib/progress";
 import { bookmarkIds, startedIds, statusOf, completedIds, isBookmarked, isCompleted, prefs, recent, recordVisit, setBookmarked, setCompleted, setPrefs, srsStates, timeAgo } from "./store";
@@ -459,5 +460,6 @@ document.addEventListener("astro:page-load", () => {
   setupRecommend();
   setupPreferences();
   setupAccount();
+  setupInterview();
 });
 window.addEventListener("mls:store", markDone);

@@ -1,6 +1,6 @@
 /** Build the flow (src/client/flows.ts) and the Mule event visualiser (src/client/muleevent.ts). */
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test } from "./test";
 
 const exact = (s: string) => new RegExp(`^${s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`);
 
