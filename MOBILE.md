@@ -29,7 +29,7 @@ A personal study app for the MuleSoft course: the same lessons, notes, slides, f
 
 ## Offline audio
 
-- **Source:** the 60 full-episode MP3s (64 kbps, 298 MB in total) are assets of the GitHub release [`podcast-audio-v1`](https://github.com/developerashok99/mule-learning-web/releases/tag/podcast-audio-v1). They are listed in `config/media.json` (`audioUrl`, `audioBytes`). These are the same narration as the video podcasts. YouTube videos are never downloaded.
+- **Source:** the 60 full-episode MP3s (64 kbps, 298 MB in total) are assets of the GitHub release [`podcast-audio-v1`](https://github.com/developerashok99/developerashok99.github.io/releases/tag/podcast-audio-v1). They are listed in `config/media.json` (`audioUrl`, `audioBytes`). These are the same narration as the video podcasts. YouTube videos are never downloaded.
 - **Storage:** `Directory.Data/podcasts/<id>.mp3`, the app's private files folder, removed when you uninstall the app. Download records (state, size, file) are kept in native Preferences, not localStorage.
 - **Download manager** (`src/lib/downloads.ts`, platform-independent and unit-tested in `tests/unit/downloads.test.ts`):
   - **Queue:** at most 2 downloads at a time; the others wait in order. You choose each episode; nothing downloads on its own.

@@ -12,7 +12,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = path.join(ROOT, "dist");
-const BASE = (process.env.SITE_BASE ?? "/mule-learning-web").replace(/\/?$/, "/");
+const BASE = (process.env.SITE_BASE ?? "/").replace(/\/?$/, "/");
 if (!fs.existsSync(DIST)) {
   console.error("dist/ not found — run npm run build first");
   process.exit(2);

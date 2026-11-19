@@ -43,6 +43,12 @@ const PAGES = [
 ];
 
 test.describe("pages", () => {
+  test("old /mule-learning-web/ links open the same page at the new address", async ({ page }) => {
+    await page.goto("mule-learning-web/lessons/day05/simple/?from=old#overview");
+    await expect(page).toHaveURL(/^https?:\/\/[^/]+\/lessons\/day05\/simple\/\?from=old#overview$/);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  });
+
   for (const path of PAGES) {
     test(`/${path} loads cleanly`, async ({ page }) => {
       const errors = watchErrors(page);
@@ -241,7 +247,7 @@ test.describe("navigation", () => {
     const extra = hasSidebarNav(page)
       ? ([["Lessons", /lessons\/$/], ["Podcasts", /podcasts\/$/], ["Revision", /revise\/$/], ["Search", /search\/$/], ["Preferences", /preferences\/$/]] as const)
       : ([["Audio", /podcasts\/$/]] as const);
-    for (const [name, url] of [...common, ...extra, ["Home", /mule-learning-web\/$/]] as const) {
+    for (const [name, url] of [...common, ...extra, ["Home", /^https?:\/\/[^/]+\/$/]] as const) {
       await mainNav(page).getByRole("link", { name, exact: true }).click();
       await expect(page).toHaveURL(url);
       await expect(mainNav(page).getByRole("link", { name, exact: true })).toHaveAttribute("aria-current", "page");

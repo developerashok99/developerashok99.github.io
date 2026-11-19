@@ -394,7 +394,7 @@ async function renderFriends(box: HTMLElement) {
         last.className = "friend__last small muted";
         last.append("Last opened: ");
         if (p.lastHref.startsWith("/")) {
-          // the website lives under /mule-learning-web/, the app at /: link to the same page in whichever this is
+          // the site root is "/" (profiles saved before the move may still start with /mule-learning-web/)
           const a = document.createElement("a");
           a.href = root + p.lastHref.replace(/^\/(mule-learning-web\/)?/, "");
           a.textContent = p.lastTitle;

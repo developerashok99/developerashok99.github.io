@@ -2,11 +2,11 @@
 import { defineConfig } from "astro/config";
 import { rmSync } from "node:fs";
 
-// GitHub Pages serves this repository at https://developerashok99.github.io/mule-learning-web/.
+// GitHub Pages serves this repository (developerashok99.github.io) at the root: https://developerashok99.github.io/.
 // SITE_BASE can override the path (e.g. "/" for a custom domain).
 // APP_BUILD=1 (npm run build:app) builds the Android app's copy into dist-app/, served from the app's root.
 const app = process.env.APP_BUILD === "1";
-const base = app ? "/" : (process.env.SITE_BASE ?? "/mule-learning-web");
+const base = app ? "/" : (process.env.SITE_BASE ?? "/");
 
 export default defineConfig({
   site: process.env.SITE_URL ?? "https://developerashok99.github.io",

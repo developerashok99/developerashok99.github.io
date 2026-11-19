@@ -1,8 +1,8 @@
 # Mule Learning Hub — personal MuleSoft learning platform
 
-Website: <https://developerashok99.github.io/mule-learning-web/> · Android app: see [MOBILE.md](MOBILE.md)
+Website: <https://developerashok99.github.io/> · Android app: see [MOBILE.md](MOBILE.md)
 
-**Live site:** https://developerashok99.github.io/mule-learning-web/
+**Live site:** https://developerashok99.github.io/
 
 One place to study each lesson of the MuleSoft (Mule 4) course:
 
@@ -78,7 +78,7 @@ The build validates `media.json` and prints every problem it finds: bad YouTube 
 | **Revision studio** (`/revise/`) | **Spaced-repetition flashcards** from the notes' 465 interview questions (answers copied unchanged): Review shows the due cards, then up to N new cards a day (Preferences), and you grade each Again / Hard / Good / Easy. The schedule is a small SM-2-style algorithm, explained on the page (`src/lib/srs.ts`). Browse shows every card; topic decks per section. Also every lesson's Revise page and a filterable A–Z **glossary** (599 terms) |
 | **Lesson overview** | Learning objectives (the lesson's main topics), lecture, **Check yourself** (the first three interview questions with hidden answers), summary podcast and study resources |
 | **My study** (`/my-study/`) | Bookmarks (remove), in progress (mark complete), completed (undo), recently studied, listening history, and **backup / restore / reset** of everything stored |
-| **Podcasts** | 60 episodes: the **video podcast** (Unlisted YouTube videos in the "gc podcast video" playlist) and the same summary as **audio** (MP3s hosted as assets of the [`podcast-audio-v1`](https://github.com/developerashok99/mule-learning-web/releases/tag/podcast-audio-v1) release). Filters by text, section and format; per-episode progress. In the Android app, each episode can be **downloaded for offline listening** (`/downloads/`) |
+| **Podcasts** | 60 episodes: the **video podcast** (Unlisted YouTube videos in the "gc podcast video" playlist) and the same summary as **audio** (MP3s hosted as assets of the [`podcast-audio-v1`](https://github.com/developerashok99/developerashok99.github.io/releases/tag/podcast-audio-v1) release). Filters by text, section and format; per-episode progress. In the Android app, each episode can be **downloaded for offline listening** (`/downloads/`) |
 | **Audio player** | One player for the whole site that keeps playing while you browse (including Back/Forward). It has play/pause, −10 s / +30 s, seek, time, speed 0.75×–2× (remembered), previous/next, resume, loading/buffering/finished/error states and lock-screen controls. It never starts by itself |
 | **Search** | Pagefind full-text search over notes, headings, code and slide captions. Results are **grouped by lesson** (the best page plus "also found in" links), re-ranked so lessons whose title matches come first, with loose single-letter matches filtered out, type filters, and ↓/↑ keyboard navigation. `/` focuses search |
 | **Other** | Dark mode, installable PWA with an offline notice, slide thumbnails (WebP), 404 page, WCAG 2.1 AA checks (axe) in the test suite |
@@ -91,7 +91,7 @@ Progress is stored in the browser's **localStorage**. It does **not** sync betwe
 - **Content pipeline:** `scripts/sync-notes.mjs` copies the Markdown and slide images from the notes repo into `.notes/` and `public/notes-assets/` (both git-ignored). `src/lib/content.ts` reads them at build time. `src/lib/markdown.ts` renders them with unified/remark/rehype and Shiki, and rewrites the notes' GitHub-relative links to site routes (`src/lib/links.ts`). Links between notes, slide folders, slide images and anchors all resolve, and transcripts link to GitHub.
 - **Client JavaScript** is plain TypeScript modules (no UI framework): `src/client/*.ts`. Astro's `ClientRouter` gives client-side navigation, so the audio element (`transition:persist`) survives page changes. Mermaid (large) and Pagefind are loaded on demand.
 - **Search:** [Pagefind](https://pagefind.app) builds a static index after `astro build`.
-- **Hosting:** GitHub Pages under `/mule-learning-web/`. The base path is set in `astro.config.mjs`; every URL is generated with it, and the link checker enforces that.
+- **Hosting:** GitHub Pages at the root of https://developerashok99.github.io/ (this repository is named `developerashok99.github.io`; before November 2026 it was `mule-learning-web` and the site lived under `/mule-learning-web/`, which now redirects). The base path is set in `astro.config.mjs` (`SITE_BASE` can change it); every URL is generated with it, and the link checker enforces that.
 
 Why this shape: the content is ~180 Markdown files plus about 1,200 images that change occasionally, and there is a single reader. A static build is fast, free to host, works offline, and has nothing to keep running. Astro was chosen over reusing MkDocs because the lesson-centred layout (lecture + podcast + notes tabs, persistent audio player, dashboard) needs custom pages and client logic that MkDocs themes make awkward.
 
@@ -138,14 +138,14 @@ Requires Node 22+.
 
 ```bash
 npm ci
-npm run dev          # syncs notes, then http://localhost:4321/mule-learning-web/
+npm run dev          # syncs notes, then http://localhost:4321/
 ```
 
 Search needs the production build (the index is generated after building):
 
 ```bash
 npm run build        # sync + astro build + pagefind
-npm run preview      # http://localhost:4321/mule-learning-web/
+npm run preview      # http://localhost:4321/
 ```
 
 ## Tests
@@ -160,7 +160,7 @@ npm run test:e2e     # Playwright in Google Chrome at 360×800, 390×844, 768×1
 npm run verify       # all of the above
 ```
 
-The e2e tests run against the built site under the real `/mule-learning-web/` base path. `BASE_URL=https://developerashok99.github.io/mule-learning-web/ npm run test:e2e` runs the same suite against the live site (the audio-player tests need the test episode, which the live site leaves out, so they fail there by design).
+The e2e tests run against the built site at the site root, as published. `BASE_URL=https://developerashok99.github.io/ npm run test:e2e` runs the same suite against the live site (the audio-player tests need the test episode, which the live site leaves out, so they fail there by design).
 
 ## Deployment
 

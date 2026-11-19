@@ -1,9 +1,10 @@
-# CLAUDE.md: Mule Learning Hub (mule-learning-web)
+# CLAUDE.md: Mule Learning Hub (repo developerashok99.github.io, formerly mule-learning-web)
 
 A personal MuleSoft (Mule 4) study platform: a website plus an Android app built from the same code.
 
-- **Repo:** https://github.com/developerashok99/mule-learning-web (branch `main`; pushing deploys)
-- **Live site:** https://developerashok99.github.io/mule-learning-web/
+- **Repo:** https://github.com/developerashok99/developerashok99.github.io (branch `main`; pushing deploys)
+- **Live site:** https://developerashok99.github.io/ (site root; base "/" in `astro.config.mjs`)
+- **Moved in Nov 2026** from repo `mule-learning-web` (site under `/mule-learning-web/`). Old addresses land on the 404 page, and an inline script in `Base.astro` redirects them to the same page at the root. `public/mule-learning-web/sw.js` retires the old offline worker. Old profiles may still have `lastHref` starting `/mule-learning-web/`; `account.ts` strips it. The local folder is still named `mule-learning-web`.
 - **Notes source:** https://github.com/developerashok99/green-c-mule-notes, pulled in read-only at build time by `npm run sync` into `.notes/` (gitignored). Never copy the notes into this repo.
 - Other docs here: `README.md` (adding media), `MOBILE.md` (Android app), `DESIGN.md` (tokens, colours, accessibility).
 
@@ -132,7 +133,7 @@ The e2e tests run against `astro preview` of `dist/`, so **rebuild before runnin
   - `window.mlsOrientation` (`@capacitor/screen-orientation`), needed because the WebView doesn't support `screen.orientation.lock`
   - the media session
 - `MainActivity` serves a folder's index.html itself.
-- The version is set in `android/app/build.gradle`. It is now **versionCode 14 / versionName "1.14"**. Bump both for every app release.
+- The version is set in `android/app/build.gradle`. It is now **versionCode 15 / versionName "1.15"**. Bump both for every app release.
 - **Build environment:**
   - `export JAVA_HOME=~/.jdks/jdk-21.0.12.1+1 ANDROID_HOME=~/Android/Sdk` (the system Java is a JRE only)
   - The root disk is nearly full. Free only rebuildable caches, never user data.
@@ -147,7 +148,7 @@ The e2e tests run against `astro preview` of `dist/`, so **rebuild before runnin
   - Publish with (as `developerashok99`; this worked for 1.12):
     ```bash
     cp android/app/build/outputs/apk/debug/app-debug.apk mule-learning-hub-X.Y.apk
-    GH_TOKEN=$(gh auth token --user developerashok99) gh release create app-vX.Y mule-learning-hub-X.Y.apk --repo developerashok99/mule-learning-web \
+    GH_TOKEN=$(gh auth token --user developerashok99) gh release create app-vX.Y mule-learning-hub-X.Y.apk --repo developerashok99/developerashok99.github.io \
       --title "Mule Learning Hub app X.Y (Android, debug build)" --notes "…" --target main --latest
     rm mule-learning-hub-X.Y.apk
     ```

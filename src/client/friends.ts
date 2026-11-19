@@ -23,7 +23,7 @@ let lastWrite = 0;
 let beat: ReturnType<typeof setInterval> | undefined;
 
 const base = () => document.documentElement.dataset.base ?? "/";
-/** the page relative to the site root, the same in the app ("/") and on the website ("/mule-learning-web/") */
+/** the page relative to the site root, the same in the app and on the website */
 const here = () => location.pathname.slice(base().length);
 const pageTitle = () => document.title.replace(/\s*·\s*Mule Learning Hub$/, "") || "Mule Learning Hub";
 const isBattle = (href: string) => href.startsWith("battle/");

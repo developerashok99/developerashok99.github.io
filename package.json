@@ -21,15 +21,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/developerashok99/mule-learning-web.git"
+    "url": "git+https://github.com/developerashok99/developerashok99.github.io.git"
   },
   "keywords": [],
   "author": "",
   "license": "UNLICENSED",
   "bugs": {
-    "url": "https://github.com/developerashok99/mule-learning-web/issues"
+    "url": "https://github.com/developerashok99/developerashok99.github.io/issues"
   },
-  "homepage": "https://github.com/developerashok99/mule-learning-web#readme",
+  "homepage": "https://github.com/developerashok99/developerashok99.github.io#readme",
   "dependencies": {
     "@capacitor/app": "^8.1.2",
     "@capacitor/core": "^8.5.3",
