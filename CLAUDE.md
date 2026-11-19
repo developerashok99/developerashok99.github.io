@@ -143,7 +143,7 @@ The e2e tests run against `astro preview` of `dist/`, so **rebuild before runnin
   - Screenshots don't work in the headless emulator (`dev.screenshot` is black and `page.screenshot` hangs), so check state with `evaluate` and `isVisible` instead.
   - Stop it with `adb emu kill`.
 - **Releases:**
-  - GitHub Releases are named `app-vX.Y`. The latest published one is **app-v1.12** (1.5–1.11 were skipped).
+  - GitHub Releases are named `app-vX.Y`. The latest published one is **app-v1.14** (1.5–1.11 were skipped).
   - Publish with (as `developerashok99`; this worked for 1.12):
     ```bash
     cp android/app/build/outputs/apk/debug/app-debug.apk mule-learning-hub-X.Y.apk
