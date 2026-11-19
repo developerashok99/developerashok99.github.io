@@ -370,7 +370,9 @@ async function scheduleReminders() {
     if ((await LocalNotifications.checkPermissions()).display !== "granted") return;
     const list = planReminders(new Date(), p.reminderTime, studyStreak());
     await LocalNotifications.schedule({
-      notifications: list.map((r) => ({ id: r.id, title: r.title, body: r.body, schedule: { at: r.at, allowWhileIdle: true }, extra: { page: "today/" } })),
+      notifications: list.map((r) => ({ id: r.id, title: r.title, body: r.body, schedule: { at: r.at, allowWhileIdle: true }, extra: { page: "today/" },
+        // a few minutes late is fine for a study reminder; an exact alarm would send people to an Android settings screen
+        isExactNotification: false })),
     });
   } catch (e) {
     console.warn("reminders not scheduled", e);

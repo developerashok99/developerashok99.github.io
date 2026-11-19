@@ -34,6 +34,8 @@ export async function useFakeAccount(target: Page | BrowserContext) {
     };
     (window as unknown as { __mlsAccountBackend: unknown }).__mlsAccountBackend = {
       onUser(cb: (u: unknown) => void) {
+        // a test can make the account report "signed out" for a moment, as Firebase can at start-up
+        (window as unknown as { __fakeAuthReport?: (u: unknown) => void }).__fakeAuthReport = cb;
         const s = load();
         setTimeout(() => cb(s.session ? userOf(s.session) : null), 50);
       },

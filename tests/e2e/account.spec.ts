@@ -123,6 +123,16 @@ test.describe("account and sync, signed in", () => {
     await expect(page).toHaveURL(/account\/\?next=/);
   });
 
+  test("if the account reports signed-out for a moment at start-up, you come straight back to your page", async ({ page }) => {
+    await page.goto("lessons/");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    // what Firebase can do while the phone's network is still starting: "nobody", then the user again on the next page
+    await page.evaluate(() => (window as unknown as { __fakeAuthReport: (u: unknown) => void }).__fakeAuthReport(null));
+    await expect(page).toHaveURL(/lessons\/$/, { timeout: 15_000 });
+    await expect(page.locator("[data-lesson-filter], .lesson-row, main h1").first()).toBeVisible();
+    expect(Number(await page.evaluate(() => localStorage.getItem("mls.authAt")))).toBeGreaterThan(0);
+  });
+
   test("the account page has no accessibility violations", async ({ page }) => {
     await page.goto("account/");
     await expect(page.locator("[data-account-in] [data-account-sync]")).toHaveText(/Synced/);

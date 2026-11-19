@@ -12,7 +12,7 @@ A personal MuleSoft (Mule 4) study platform: a website plus an Android app built
 ```bash
 npm run dev            # sync notes + astro dev
 npm run check          # astro check (0 errors expected; one known deprecation warning in native.ts)
-npm test               # vitest unit tests (190)
+npm test               # vitest unit tests (184)
 npm run build:test     # site build WITH the test-fixture podcast episode; e2e tests need this build
 npm run test:e2e       # Playwright, 5 projects: phone-360, phone-390, tablet-768, tablet-1024, desktop-1440 (~730 tests)
 npm run verify         # everything: check, unit, sync, build:test, links, e2e, build:site

@@ -303,6 +303,8 @@ export function startAccount() {
 }
 
 let connected = false;
+/** set while the sign-in form is signing you in (it handles the time and the page itself) */
+let signingIn = false;
 function connect() {
   if (connected) return;
   connected = true;
@@ -322,6 +324,14 @@ function connect() {
     const name = state.user?.uid === u.uid ? state.user.name : u.name;
     state.user = { ...u, name };
     saveUser(state.user);
+    // Firebase can report "signed out" for a moment at start-up (no network yet) and then the user again: the
+    // sign-in is still valid, so restore its time and, if that sent you to the sign-in page, go back
+    const lost = !signingIn && !authAt();
+    if (lost) localStorage.setItem(AUTH_AT_KEY, String(Date.now()));
+    if (lost && onLoginPage() && document.documentElement.hasAttribute("data-locked")) {
+      void (hasSiteKey() ? Promise.resolve("") : loadSiteKey()).then(() => location.replace(nextPage()));
+      return;
+    }
     if (!hasSiteKey()) void loadSiteKey();
     void syncNow();
   })).catch((e) => {
@@ -434,6 +444,7 @@ function setupAccountPage() {
     const btn = form.querySelector<HTMLButtonElement>("[type=submit]");
     busy(btn, true);
     say(msg, "");
+    signingIn = true;
     try {
       const api = await backend();
       const u = await api.signIn(email, password);
@@ -458,6 +469,7 @@ function setupAccountPage() {
     } catch (err) {
       say(msg, authMessage(errCode(err)), "error");
     } finally {
+      signingIn = false;
       busy(btn, false);
     }
   }, { signal });
