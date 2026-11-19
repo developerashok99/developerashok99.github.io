@@ -1,5 +1,8 @@
 ---
 import PractiseNext from "../components/PractiseNext.astro";
+import GoalCard from "../components/GoalCard.astro";
+import { studyIndexJson } from "../lib/studyIndex";
+import { EXAM_TOPICS } from "../lib/mastery";
 import Base from "../layouts/Base.astro";
 import Icon from "../components/Icon.astro";
 import PageHead from "../components/PageHead.astro";
@@ -49,6 +52,20 @@ const TOOLS = [
     </PageHead>
 
     <div class="section-head section-head--first">
+      <div><h2>Today</h2><p>A short daily session keeps your streak going and moves your exam readiness</p></div>
+    </div>
+    <script is:inline type="application/json" data-study-index set:html={studyIndexJson(base)} />
+    <script is:inline type="application/json" data-exam-topics set:html={JSON.stringify(EXAM_TOPICS)} />
+    <GoalCard>
+      <div class="btn-row goal-card__actions">
+        <a class="btn btn--primary" href={withBase(base, "today/")}><Icon name="zap" /> Start today's session</a>
+        <a class="btn btn--sm" href={withBase(base, "battle/")}><Icon name="users" /> Quiz battle</a>
+      </div>
+      <p class="small goal-card__extra"><a href={withBase(base, "mastery/")} data-home-readiness>Exam readiness</a></p>
+      <p class="small muted goal-card__extra" data-league-line hidden></p>
+    </GoalCard>
+
+    <div class="section-head">
       <div><h2 data-c-heading>Start learning</h2><p>Jump straight back into your course</p></div>
       <a class="btn btn--sm" href={withBase(base, "lessons/")}>All lessons <Icon name="right" /></a>
     </div>

@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import { GOALS } from "../lib/activity";
 import Icon from "../components/Icon.astro";
 import PageHead from "../components/PageHead.astro";
 import { withBase } from "../lib/routes";
@@ -61,6 +62,19 @@ const SCALES = [
         <div class="setting">
           <div><b id="pf-ytc">YouTube's own video controls</b><span class="small">Off: the site's simple controls (no YouTube title or dimming). On: YouTube's controls, whose settings menu lets you choose the quality (720p, 1080p). YouTube doesn't let websites choose it.</span></div>
           <button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="pf-ytc" data-pref-ytcontrols></button>
+        </div>
+        <div class="setting">
+          <div><b id="pf-goal">Daily goal</b><span class="small">Study points to earn each day for your streak. A flashcard is 1 point, a question 1 (+1 if right), a practice exercise 2, and 2 minutes of lecture or podcast 1.</span></div>
+          <div class="segmented" role="group" aria-labelledby="pf-goal">
+            {GOALS.map((g) => <button type="button" data-pref-goal={g.points} aria-pressed="false" title={g.hint}>{g.label} · {g.points}</button>)}
+          </div>
+        </div>
+        <div class="setting app-only">
+          <div><b id="pf-remind">Daily reminder</b><span class="small" data-pref-remind-help>A notification at this time if you haven't reached today's goal yet. Tap it to start today's session.</span></div>
+          <div class="pref-remind">
+            <input class="input input--sm" type="time" value="19:00" aria-label="Reminder time" data-pref-remind-time />
+            <button class="toggle" type="button" role="switch" aria-checked="false" aria-labelledby="pf-remind" data-pref-remind></button>
+          </div>
         </div>
         <div class="setting">
           <div><b id="pf-new">New flashcards per day</b><span class="small">How many new cards a review session may start each day. Due cards are always shown.</span></div>

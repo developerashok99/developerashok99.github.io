@@ -165,7 +165,7 @@ export function setupInterview() {
     saveInterview(session);
     // missed questions come back in the flashcards straight away
     const states = srsStates();
-    for (const q of asked) if (ratings[q.id] === 0) saveCardState(q.id, schedule(states[q.id], "again"));
+    for (const q of asked) if (ratings[q.id] === 0) saveCardState(q.id, schedule(states[q.id], "again"), false);
 
     const sc = scoreOf(asked.map((q) => ratings[q.id]));
     $("[data-iv-score]").textContent = `${sc.percent}%`;

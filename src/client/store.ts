@@ -4,6 +4,7 @@
  * Every read/write is guarded: private browsing or blocked storage just means nothing is remembered.
  */
 import type { CardState } from "../lib/srs";
+import { add, DEFAULT_GOAL, dayKey, merge as mergeActivity, prune, streak, type Activity } from "../lib/activity";
 import { SYNC_KEYS } from "../lib/sync";
 
 export const KEYS = {
@@ -25,6 +26,7 @@ export const KEYS = {
   lectures: "mls.lectures", // Record<lessonId, LectureProgress> how far each lecture video has been watched
   interviews: "mls.interviews", // InterviewSession[] mock interviews, newest first (src/client/interview.ts)
   mcqTests: "mls.mcqTests", // McqTestResult[] MCQ tests taken, newest first (src/client/mcq.ts)
+  activity: "mls.activity", // Activity: study counts per day and device (src/lib/activity.ts), for points, goal and streak
   prefs: "mls.prefs", // { theme?, width?, scale?, lessonNav?, videoAutoplay?, lastVideo? }
 } as const;
 
@@ -94,9 +96,11 @@ const ids = (key: string) => read<string[]>(key, []).filter((x) => typeof x === 
 export const isCompleted = (id: string) => ids(KEYS.completed).includes(id);
 export const completedIds = () => ids(KEYS.completed);
 export function setCompleted(id: string, done: boolean) {
-  const list = ids(KEYS.completed).filter((x) => x !== id);
+  const before = ids(KEYS.completed);
+  const list = before.filter((x) => x !== id);
   if (done) list.push(id);
   write(KEYS.completed, list);
+  if (done && !before.includes(id)) logActivity({ l: 1 });
 }
 
 export const isBookmarked = (id: string) => ids(KEYS.bookmarks).includes(id);
@@ -141,6 +145,7 @@ export function allMediaProgress(kind: "audio" | "video") {
 }
 export function saveMediaProgress(kind: "audio" | "video", id: string, pos: number, dur: number) {
   const all = read<Record<string, MediaProgress>>(KEYS[kind], {});
+  listened(pos - (all[id]?.pos ?? 0));
   const done = dur > 0 && pos >= dur - 3;
   // Finished episodes restart from 0 next time but stay marked as listened.
   all[id] = { pos: done ? 0 : Math.max(0, Math.floor(pos)), dur: Math.floor(dur) || 0, at: Date.now(), done: done || all[id]?.done };
@@ -168,7 +173,7 @@ export const KEY_NAMES: Record<string, string> = {
   [KEYS.audio]: "podcast positions", [KEYS.video]: "video positions", [KEYS.reading]: "reading positions", [KEYS.player]: "audio player",
   [KEYS.searches]: "recent searches", [KEYS.srs]: "flashcard schedule", [KEYS.srsNew]: "new flashcards today", [KEYS.mapSrs]: "concept-map review schedule",
   [KEYS.quiz]: "quiz answers and mistakes", [KEYS.flows]: "Build-the-flow results", [KEYS.dw]: "DataWeave results", [KEYS.prefs]: "preferences",
-  [KEYS.lectures]: "lecture videos watched", [KEYS.interviews]: "mock interviews", [KEYS.mcqTests]: "MCQ tests",
+  [KEYS.lectures]: "lecture videos watched", [KEYS.interviews]: "mock interviews", [KEYS.mcqTests]: "MCQ tests", [KEYS.activity]: "study points and streak",
 };
 
 /** Everything this site stores, for backup / restore / reset on the My study page. */
@@ -258,6 +263,11 @@ export interface Prefs {
   videoNotes?: "simple" | "detailed" | "super";
   /** Revision: new flashcards to introduce per day (default 15) */
   newPerDay?: number;
+  /** study points to reach each day (default 30) */
+  dailyGoal?: number;
+  /** app: a daily reminder at this time ("19:00"), or off */
+  reminder?: boolean;
+  reminderTime?: string;
 }
 /** Recent searches (search page), newest first; a longer query replaces the shorter one it extends. */
 export const recentSearches = () => read<string[]>(KEYS.searches, []).filter((x) => typeof x === "string");
@@ -293,6 +303,7 @@ export const dwResults = () => read<Record<string, DwResult>>(KEYS.dw, {});
 export function saveDwResult(id: string, mode: "p" | "w", result: "right" | "wrong") {
   const all = dwResults();
   write(KEYS.dw, { ...all, [id]: { ...all[id], [mode]: result } });
+  logActivity({ x: 1 });
 }
 
 // ---- lesson quizzes ----
@@ -307,6 +318,7 @@ export const quizResults = () => read<Record<string, QuizResult>>(KEYS.quiz, {})
 export function saveQuizAnswer(id: string, right: boolean) {
   const all = quizResults();
   const prev = all[id] ?? { r: 0, w: 0 };
+  logActivity({ q: 1, r: right ? 1 : 0 });
   write(KEYS.quiz, { ...all, [id]: { r: prev.r + (right ? 1 : 0), w: prev.w + (right ? 0 : 1), last: right ? "right" : "wrong", at: Date.now() } });
 }
 
@@ -314,12 +326,15 @@ export function saveQuizAnswer(id: string, right: boolean) {
 export const flowResults = () => read<Record<string, "right" | "wrong">>(KEYS.flows, {});
 export function saveFlowResult(id: string, result: "right" | "wrong") {
   write(KEYS.flows, { ...flowResults(), [id]: result });
+  logActivity({ x: 1 });
 }
 
 // ---- flashcard review schedule ----
 export const srsStates = () => read<Record<string, CardState>>(KEYS.srs, {});
-export function saveCardState(id: string, state: CardState) {
+/** Saves a card's schedule; `reviewed` = you just reviewed it (earns a study point). */
+export function saveCardState(id: string, state: CardState, reviewed = true) {
   write(KEYS.srs, { ...srsStates(), [id]: state });
+  if (reviewed) logActivity({ c: 1 });
 }
 export const mapStates = () => read<Record<string, CardState>>(KEYS.mapSrs, {});
 export function saveMapState(id: string, state: CardState) {
@@ -356,6 +371,7 @@ export function saveLectureProgress(id: string, pos: number, dur: number): boole
   if (!(dur > 0)) return false;
   const all = lectureProgress();
   const prev = all[id];
+  listened(pos - (prev?.pos ?? 0));
   const max = Math.max(prev?.max ?? 0, Math.floor(pos));
   const done = !!prev?.done || max >= dur * WATCHED;
   // near the end: next time it starts from the beginning
@@ -377,6 +393,7 @@ export interface InterviewSession {
 export const interviews = () => read<InterviewSession[]>(KEYS.interviews, []).filter((s) => s && typeof s.at === "number" && s.ratings);
 export function saveInterview(s: InterviewSession) {
   write(KEYS.interviews, [s, ...interviews()].slice(0, 60));
+  logActivity({ i: Object.keys(s.ratings).length });
 }
 /** score of a session in percent: nailed = full marks, partly = half */
 export const interviewScore = (s: InterviewSession) => {
@@ -397,3 +414,52 @@ export const mcqTests = () => read<McqTestResult[]>(KEYS.mcqTests, []).filter((t
 export function saveMcqTest(t: McqTestResult) {
   write(KEYS.mcqTests, [t, ...mcqTests()].slice(0, 60));
 }
+
+// ---- daily activity: study points, goal and streak (src/lib/activity.ts) ----
+/** this device's id in the activity counts (made once, kept on the device, never synced) */
+function deviceId(): string {
+  try {
+    let id = localStorage.getItem("mls.device");
+    if (!id) {
+      id = Math.random().toString(36).slice(2, 10);
+      localStorage.setItem("mls.device", id);
+    }
+    return id;
+  } catch {
+    return "this";
+  }
+}
+export const dailyGoal = () => {
+  const g = prefs().dailyGoal;
+  return typeof g === "number" && g >= 5 && g <= 200 ? g : DEFAULT_GOAL;
+};
+export const activity = (): Activity => mergeActivity(read<Activity>(KEYS.activity, {}), null);
+/** Adds to today's study counts on this device; fires "mls:activity" so goal rings update at once. */
+export function logActivity(delta: Parameters<typeof add>[3]) {
+  if (!Object.values(delta).some((v) => typeof v === "number" && v > 0)) return;
+  const today = dayKey();
+  const before = streak(activity(), today, dailyGoal());
+  write(KEYS.activity, prune(add(activity(), today, deviceId(), delta, dailyGoal()), today));
+  const after = streak(activity(), today, dailyGoal());
+  window.dispatchEvent(new CustomEvent("mls:activity", { detail: { goalReached: !before.todayMet && after.todayMet, streak: after.current } }));
+}
+export const studyStreak = () => streak(activity(), dayKey(), dailyGoal());
+
+/** listening and watching time: seconds of real playback, counted in small steps (a jump forward isn't listening) */
+let heard = 0;
+let heardTimer: ReturnType<typeof setTimeout> | undefined;
+function listened(secs: number) {
+  if (!(secs > 0 && secs <= 15)) return;
+  heard += secs;
+  // collect for a while, so playback doesn't write the activity every few seconds
+  clearTimeout(heardTimer);
+  if (heard >= 60) flushListened();
+  else heardTimer = setTimeout(flushListened, 20_000);
+}
+function flushListened() {
+  clearTimeout(heardTimer);
+  const s = Math.round(heard);
+  heard = 0;
+  if (s > 0) logActivity({ s });
+}
+if (typeof window !== "undefined" && typeof window.addEventListener === "function") window.addEventListener("pagehide", flushListened);

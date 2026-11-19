@@ -8,6 +8,7 @@
  */
 import { navigate } from "astro:transitions/client";
 import { accountBackend, currentUser, type Invite, type Presence } from "./account";
+import { currentBattle, ensureBattle } from "./battle";
 import { currentRoom, ensureRoom } from "./together";
 import { timeAgo } from "./store";
 
@@ -25,6 +26,10 @@ const base = () => document.documentElement.dataset.base ?? "/";
 /** the page relative to the site root, the same in the app ("/") and on the website ("/mule-learning-web/") */
 const here = () => location.pathname.slice(base().length);
 const pageTitle = () => document.title.replace(/\s*·\s*Mule Learning Hub$/, "") || "Mule Learning Hub";
+const isBattle = (href: string) => href.startsWith("battle/");
+/** the room on this page you can invite friends into: the quiz battle on its page, else watch together */
+const onBattlePage = () => !!document.querySelector("[data-battle]");
+const roomHere = () => (onBattlePage() ? currentBattle()?.code ?? null : currentRoom()?.code ?? null);
 const isOnline = (p: Presence) => !p.away && Date.now() - p.at < ONLINE_MS;
 const others = () => state.presence.filter((p) => p.uid !== currentUser()?.uid);
 
@@ -32,6 +37,7 @@ function myPresence(away = false): Presence | null {
   const u = currentUser();
   if (!u) return null;
   const r = currentRoom();
+  const b = currentBattle();
   return {
     uid: u.uid,
     name: u.name,
@@ -40,7 +46,8 @@ function myPresence(away = false): Presence | null {
     device: document.documentElement.dataset.app === "android" ? "app" : "web",
     page: here(),
     pageTitle: pageTitle(),
-    room: r ? { code: r.code, href: here(), title: pageTitle(), host: r.role === "host" } : null,
+    room: r ? { code: r.code, href: here(), title: pageTitle(), host: r.role === "host" }
+      : b ? { code: b.code, href: "battle/", title: "Quiz battle", host: b.role === "host" } : null,
   };
 }
 
@@ -109,7 +116,7 @@ const initials = (name: string) => name.trim().split(/\s+/).slice(0, 2).map((w) 
 /** "Online · watching Day 5 together" / "Online · Day 12 notes" / "Last seen 2 h ago" */
 function describe(p: Presence): string {
   if (!isOnline(p)) return `Last seen ${timeAgo(p.at)}${p.device === "app" ? " (app)" : ""}`;
-  const where = p.room ? `watching ${p.room.title} together` : p.pageTitle;
+  const where = p.room ? (isBattle(p.room.href) ? "in a quiz battle" : `watching ${p.room.title} together`) : p.pageTitle;
   return `Online${p.device === "app" ? " in the app" : ""} · ${where}`;
 }
 
@@ -157,10 +164,10 @@ function renderFriendRows() {
     slot.replaceChildren();
     if (!p) continue;
     slot.append(el("span", "small", li.classList.contains("friend--me") ? `You: ${describe(p).replace(/^Online( in the app)? · /, "")}` : describe(p)));
-    if (p.room && isOnline(p) && p.uid !== currentUser()?.uid && currentRoom()?.code !== p.room.code) {
+    if (p.room && isOnline(p) && p.uid !== currentUser()?.uid && currentRoom()?.code !== p.room.code && currentBattle()?.code !== p.room.code) {
       const b = el("button", "btn btn--sm btn--primary", "Join");
       b.type = "button";
-      b.setAttribute("aria-label", `Join ${p.name} watching ${p.room.title}`);
+      b.setAttribute("aria-label", isBattle(p.room.href) ? `Join ${p.name}'s quiz battle` : `Join ${p.name} watching ${p.room.title}`);
       b.addEventListener("click", () => joinRoom(p.room!));
       slot.append(b);
     }
@@ -174,7 +181,7 @@ function renderInviteList() {
   const list = box.querySelector("ul")!;
   const friends = others().sort((a, b) => Number(isOnline(b)) - Number(isOnline(a)) || b.at - a.at);
   box.hidden = !friends.length;
-  const room = currentRoom();
+  const room = roomHere() ? { code: roomHere()! } : null;
   list.replaceChildren(...friends.map((p) => {
     const li = el("li", "invite-row");
     li.dataset.online = String(isOnline(p));
@@ -186,7 +193,7 @@ function renderInviteList() {
     const b = el("button", "btn btn--sm", sent ? (sent.status === "accepted" ? "Joining…" : sent.status === "declined" ? "Not now" : "Invited") : "Invite");
     b.type = "button";
     b.disabled = !!sent || p.room?.code === room?.code;
-    b.setAttribute("aria-label", `Invite ${p.name} to watch together`);
+    b.setAttribute("aria-label", onBattlePage() ? `Invite ${p.name} to the quiz battle` : `Invite ${p.name} to watch together`);
     b.addEventListener("click", () => void invite(p, b));
     li.append(who, b);
     return li;
@@ -195,13 +202,13 @@ function renderInviteList() {
 
 async function invite(p: Presence, btn: HTMLButtonElement) {
   const me = currentUser();
-  const code = ensureRoom();
+  const code = onBattlePage() ? ensureBattle() : ensureRoom();
   if (!me || !code) return;
   btn.disabled = true;
   btn.textContent = "Inviting…";
   try {
     await (await accountBackend()).sendInvite({
-      from: me.uid, fromName: me.name, to: p.uid, toName: p.name, code, href: here(), title: pageTitle(), created: Date.now(), status: "pending",
+      from: me.uid, fromName: me.name, to: p.uid, toName: p.name, code, href: onBattlePage() ? "battle/" : here(), title: onBattlePage() ? "Quiz battle" : pageTitle(), created: Date.now(), status: "pending",
     });
     btn.textContent = "Invited";
     void publish(true);
@@ -252,7 +259,7 @@ function renderInvites() {
   const box = document.querySelector<HTMLElement>("[data-invite-pop]");
   if (!box) return;
   const open = state.invites
-    .filter((i) => i.to === me && i.status === "pending" && Date.now() - i.created < INVITE_MS && !seen("dismissed").has(i.id) && currentRoom()?.code !== i.code)
+    .filter((i) => i.to === me && i.status === "pending" && Date.now() - i.created < INVITE_MS && !seen("dismissed").has(i.id) && currentRoom()?.code !== i.code && currentBattle()?.code !== i.code)
     .sort((a, b) => b.created - a.created)[0];
   if (!open) {
     box.hidden = true;
@@ -260,7 +267,8 @@ function renderInvites() {
   }
   if (box.dataset.id === open.id && !box.hidden) return;
   box.dataset.id = open.id;
-  box.querySelector("[data-invite-text]")!.textContent = `${open.fromName} invites you to watch ${open.title} together.`;
+  box.querySelector("[data-invite-text]")!.textContent = isBattle(open.href) ? `${open.fromName} invites you to a quiz battle.` : `${open.fromName} invites you to watch ${open.title} together.`;
+  box.setAttribute("aria-label", isBattle(open.href) ? "Invitation to a quiz battle" : "Invitation to watch together");
   box.hidden = false;
   navigator.vibrate?.(150);
 }

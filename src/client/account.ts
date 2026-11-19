@@ -5,7 +5,7 @@
  * The sync rules (who wins when both sides changed) are in src/lib/sync.ts.
  */
 import { SYNC_KEYS, authMessage, initials, reconcile, summarize, type ProfileSummary, type Snapshot } from "../lib/sync";
-import { ACCOUNT_KEY, AUTH_AT_KEY, SIGN_IN_DAYS, SYNC_AT_KEY, timeAgo } from "./store";
+import { ACCOUNT_KEY, AUTH_AT_KEY, SIGN_IN_DAYS, SYNC_AT_KEY, dailyGoal, timeAgo } from "./store";
 import { pageSignal } from "./page";
 import { SITE_KEY } from "./seal";
 
@@ -210,7 +210,7 @@ export function syncNow(): Promise<void> {
       const result = reconcile(localSnapshot(), remote);
       applyLocal(result.merged, result.localChanged);
       if (result.remoteChanged) await api.putProgress(user.uid, result.merged);
-      await api.putProfile(user.uid, summarize(user.name, result.merged.data));
+      await api.putProfile(user.uid, summarize(user.name, result.merged.data, Date.now(), dailyGoal()));
       state.lastSync = Date.now();
       setSync("synced");
     } catch (e) {
@@ -372,6 +372,7 @@ async function renderFriends(box: HTMLElement) {
       const stats = document.createElement("p");
       stats.className = "friend__stats small";
       const parts = [`${p.completed} of ${total} lessons (${pct}%)`];
+      if (p.streak) parts.unshift(`🔥 ${p.streak}-day streak`);
       if (p.lecturesWatched || p.hoursWatched) parts.push(`${p.lecturesWatched ?? 0} lectures watched (${p.hoursWatched ?? 0} h)`);
       parts.push(`${p.cardsLearned} cards learned`, `${p.quizRight} quiz answers right`);
       if (p.interviews) parts.push(`${p.interviews} mock interview${p.interviews === 1 ? "" : "s"}, recent average ${p.interviewScore}%`);

@@ -1,0 +1,50 @@
+---
+/**
+ * Mastery: how well you know each MuleSoft developer exam topic and each lesson, and an exam-readiness estimate.
+ * Worked out in the browser from your quiz answers and flashcards (src/lib/mastery.ts, src/client/mastery.ts).
+ */
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import PageHead from "../components/PageHead.astro";
+import { getCourses } from "../lib/content";
+import { EXAM_TOPICS } from "../lib/mastery";
+import { withBase } from "../lib/routes";
+import { studyIndexJson } from "../lib/studyIndex";
+
+const base = import.meta.env.BASE_URL;
+const sections = getCourses().flatMap((c) => c.sections).map((s) => ({ title: s.title, lessons: s.lessons }));
+---
+<Base title="Mastery" nav="mastery" description="How well you know each exam topic and lesson, and how ready you are for the MuleSoft developer exam">
+  <div class="page mastery" data-mastery data-today-href={withBase(base, "today/")}>
+    <script is:inline type="application/json" data-study-index set:html={studyIndexJson(base)} />
+    <script is:inline type="application/json" data-exam-topics set:html={JSON.stringify(EXAM_TOPICS)} />
+    <script is:inline type="application/json" data-sections set:html={JSON.stringify(sections)} />
+    <PageHead eyebrow="Know where you stand" title="Mastery" sub="Built only from what you've shown you know: quiz and MCQ answers you got right, and flashcards you remember. Reading and watching don't count here, so the numbers go up by practising." />
+
+    <section class="card readiness" aria-labelledby="rd-h">
+      <div class="goal-ring goal-ring--lg" role="img" data-rd-ring aria-label="Exam readiness 0%">
+        <svg viewBox="0 0 36 36" aria-hidden="true"><circle class="goal-ring__track" cx="18" cy="18" r="15.9155" /><circle class="goal-ring__fill" cx="18" cy="18" r="15.9155" pathLength="100" stroke-dasharray="0 100" data-rd-fill /></svg>
+        <span class="goal-ring__text" aria-hidden="true"><b data-rd-pct>0%</b></span>
+      </div>
+      <div>
+        <p class="eyebrow">MuleSoft Certified Developer – Level 1</p>
+        <h2 id="rd-h">Exam readiness: <span data-rd-label>Just started</span></h2>
+        <p class="muted" data-rd-advice></p>
+        <div class="btn-row">
+          <a class="btn btn--primary btn--sm" href="#" data-rd-weakest><Icon name="target" /> Practise your weakest topic</a>
+          <a class="btn btn--sm" href={withBase(base, "mcq/?preset=exam60")}><Icon name="clock" /> Full mock exam (60 questions, 120 min)</a>
+        </div>
+        <p class="small muted" style="margin:.6rem 0 0">An estimate from this course's questions, not an official score. The real exam passes at 70%.</p>
+      </div>
+    </section>
+
+    <div class="section-head"><div><h2>Exam topics</h2><p>Weakest first. A lesson you haven't been tested on counts as 0.</p></div></div>
+    <ul class="topic-list" data-topics></ul>
+
+    <div class="section-head"><div><h2>Every lesson</h2><p>Open a lesson's self-test to practise it.</p></div></div>
+    <ul class="mastery-legend small" aria-label="Colour key">
+      <li data-band="none">Not tested</li><li data-band="0">Under 40%</li><li data-band="1">40–69%</li><li data-band="2">70–84%</li><li data-band="3">85% and over</li>
+    </ul>
+    <div class="lesson-map" data-lesson-map></div>
+  </div>
+</Base>

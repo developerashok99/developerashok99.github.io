@@ -1,6 +1,6 @@
 /** Preferences page: theme, notes text size and width, video autoplay. Everything is saved with setPrefs. */
 import { pageSignal } from "./page";
-import { prefs, setPrefs } from "./store";
+import { dailyGoal, prefs, setPrefs } from "./store";
 import { rerenderMermaid } from "./mermaid";
 
 export function setupPreferences() {
@@ -20,6 +20,10 @@ export function setupPreferences() {
     page.querySelector("[data-pref-podautoplay]")?.setAttribute("aria-checked", String(p.podcastAutoplay !== false));
     page.querySelector("[data-pref-ytcontrols]")?.setAttribute("aria-checked", String(p.playerControls === "youtube"));
     press("[data-pref-new]", (b) => Number(b.dataset.prefNew) === (p.newPerDay ?? 15));
+    press("[data-pref-goal]", (b) => Number(b.dataset.prefGoal) === dailyGoal());
+    page.querySelector("[data-pref-remind]")?.setAttribute("aria-checked", String(!!p.reminder));
+    const time = page.querySelector<HTMLInputElement>("[data-pref-remind-time]");
+    if (time && document.activeElement !== time) time.value = p.reminderTime ?? "19:00";
   };
 
   page.querySelectorAll<HTMLElement>("[data-pref-theme]").forEach((b) =>
@@ -53,6 +57,26 @@ export function setupPreferences() {
     setPrefs({ playerControls: prefs().playerControls === "youtube" ? "simple" : "youtube" });
     render();
   }, { signal: pageSignal() });
+  page.querySelectorAll<HTMLElement>("[data-pref-goal]").forEach((b) =>
+    b.addEventListener("click", () => {
+      setPrefs({ dailyGoal: Number(b.dataset.prefGoal) });
+      render();
+    }, { signal }));
+  page.querySelector("[data-pref-remind]")?.addEventListener("click", async () => {
+    const on = !prefs().reminder;
+    // Android asks for permission to show notifications the first time
+    if (on && !(await window.mlsReminders?.enable())) {
+      const help = page.querySelector<HTMLElement>("[data-pref-remind-help]");
+      if (help) help.textContent = "Notifications are turned off for this app. Allow them in Android Settings → Apps → Mule Learning Hub → Notifications, then try again.";
+      return;
+    }
+    setPrefs({ reminder: on });
+    render();
+  }, { signal });
+  page.querySelector<HTMLInputElement>("[data-pref-remind-time]")?.addEventListener("change", (e) => {
+    const v = (e.target as HTMLInputElement).value;
+    if (/^\d{2}:\d{2}$/.test(v)) setPrefs({ reminderTime: v });
+  }, { signal });
   page.querySelector("[data-pref-podautoplay]")?.addEventListener("click", () => {
     setPrefs({ podcastAutoplay: prefs().podcastAutoplay === false });
     render();

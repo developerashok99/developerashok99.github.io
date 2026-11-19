@@ -29,6 +29,11 @@ import { setupSeal, unsealDocument } from "./seal";
 import { setupInterview } from "./interview";
 import { setupMcq } from "./mcq";
 import { setupFriends } from "./friends";
+import { setupToday } from "./today";
+import { setupMastery } from "./mastery";
+import { setupBattle } from "./battle";
+import { setupGoal } from "./goal";
+import { setupLeague } from "./league";
 import { pageSignal } from "./page";
 import { recommend } from "../lib/progress";
 import { bookmarkIds, startedIds, statusOf, completedIds, isBookmarked, isCompleted, prefs, recent, recordVisit, setBookmarked, setCompleted, setPrefs, srsStates, timeAgo } from "./store";
@@ -483,6 +488,11 @@ function setupPage() {
   setupPreferences();
   setupInterview();
   setupMcq();
+  setupToday();
+  setupMastery();
+  setupBattle();
+  setupGoal();
+  setupLeague();
   setupFriends();
 }
 window.addEventListener("mls:store", markDone);

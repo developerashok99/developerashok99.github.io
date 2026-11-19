@@ -178,7 +178,7 @@ test.describe("accessibility (axe, WCAG 2.1 AA)", () => {
   // full-page scans of long pages (the Revision page has 599 glossary terms) take up to ~40 s
   test.describe.configure({ timeout: 120_000 });
   for (const scheme of ["light", "dark"] as const) {
-    for (const path of ["", "courses/", "courses/mulesoft/", "lessons/", "lessons/day05/", "lessons/day45/super-detailed/", "lessons/day15/revise/", "search/?q=dataweave", "podcasts/", "podcasts/test-fixture/", "revise/", "revise/dataweave/", "my-study/", "preferences/", "videos/day05/"]) {
+    for (const path of ["", "courses/", "courses/mulesoft/", "lessons/", "lessons/day05/", "lessons/day45/super-detailed/", "lessons/day15/revise/", "search/?q=dataweave", "podcasts/", "podcasts/test-fixture/", "revise/", "revise/dataweave/", "my-study/", "preferences/", "videos/day05/", "today/", "mastery/", "battle/"]) {
       test(`/${path} ${scheme}`, async ({ page }) => {
         test.skip(width(page) !== 390 && width(page) !== 1440, "checked at one phone and one desktop size");
         await page.emulateMedia({ colorScheme: scheme });

@@ -1,0 +1,20 @@
+---
+/** Today's study points against your daily goal, your streak and the last 7 days. Filled in by src/client/goal.ts. */
+import Icon from "./Icon.astro";
+interface Props {
+  compact?: boolean;
+}
+const { compact = false } = Astro.props;
+---
+<section class:list={["card goal-card", { "goal-card--compact": compact }]} data-goal-card aria-label="Daily goal and streak">
+  <div class="goal-ring" role="img" data-goal-ring aria-label="0 of 30 study points today">
+    <svg viewBox="0 0 36 36" aria-hidden="true"><circle class="goal-ring__track" cx="18" cy="18" r="15.9155" /><circle class="goal-ring__fill" cx="18" cy="18" r="15.9155" pathLength="100" stroke-dasharray="0 100" data-goal-fill /></svg>
+    <span class="goal-ring__text" aria-hidden="true"><b data-goal-points>0</b><small>/ <span data-goal-target>30</span></small></span>
+  </div>
+  <div class="goal-card__body">
+    <p class="goal-card__streak"><span class="goal-card__flame" aria-hidden="true"><Icon name="flame" /></span> <b data-goal-streak>0</b> <span data-goal-streak-label>day streak</span></p>
+    <p class="small muted goal-card__msg" data-goal-msg>Study points: a flashcard 1, a question 1 (+1 if right), a practice exercise 2, 2 minutes of lecture or podcast 1.</p>
+    <ol class="goal-week" data-goal-week aria-label="The last 7 days"></ol>
+    <slot />
+  </div>
+</section>

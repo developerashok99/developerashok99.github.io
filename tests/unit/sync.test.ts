@@ -107,3 +107,23 @@ describe("profile summary and names", () => {
     expect(authMessage("auth/configuration-not-found")).toMatch(/isn't switched on yet/);
   });
 });
+
+describe("study activity sync", () => {
+  it("joins both devices' activity instead of the newer one replacing the other", () => {
+    const local = { data: { "mls.activity": { "2026-11-19": { phone: { c: 4 } } } }, at: { "mls.activity": 200 } };
+    const remote = { data: { "mls.activity": { "2026-11-19": { laptop: { q: 3 } } } }, at: { "mls.activity": 100 } };
+    const r = reconcile(local, remote, ["mls.activity"]);
+    expect(r.merged.data["mls.activity"]).toEqual({ "2026-11-19": { phone: { c: 4 }, laptop: { q: 3 } } });
+    expect(r.localChanged).toEqual(["mls.activity"]);
+    expect(r.remoteChanged).toBe(true);
+    // the other device, syncing later, ends up with the same
+    const r2 = reconcile({ data: { "mls.activity": { "2026-11-19": { laptop: { q: 5 } } } }, at: { "mls.activity": 150 } }, r.merged, ["mls.activity"]);
+    expect(r2.merged.data["mls.activity"]).toEqual({ "2026-11-19": { phone: { c: 4 }, laptop: { q: 5 } } });
+  });
+
+  it("puts the streak and this week's points in the friends summary", () => {
+    const now = new Date(2026, 10, 19, 12).getTime();
+    const s = summarize("Ravi", { "mls.activity": { "2026-11-18": { a: { q: 30, g: 30 } }, "2026-11-19": { a: { q: 31 } } } }, now);
+    expect(s).toMatchObject({ streak: 2, weekPoints: 61, week: "2026-11-16", todayPoints: 31 });
+  });
+});

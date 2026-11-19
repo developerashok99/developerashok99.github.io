@@ -8,7 +8,7 @@ import { PASS, SECS_PER_QUESTION, buildTest, checkDraft, mark, textToHtml, type 
 import { accountBackend, currentUser, type McqDoc } from "./account";
 import { pageSignal } from "./page";
 import { fetchSealedJson } from "./seal";
-import { completedIds, mcqTests, quizResults, saveMcqTest, saveQuizAnswer, timeAgo } from "./store";
+import { completedIds, logActivity, mcqTests, quizResults, saveMcqTest, saveQuizAnswer, timeAgo } from "./store";
 import { clock } from "./videos";
 
 let courseP: Promise<Mcq[]> | null = null;
@@ -71,6 +71,12 @@ export function setupMcq() {
       : "Practice: no clock, and the answer is shown after each question.";
   });
   void loadCourse(root.dataset.src!).catch(() => {});
+  // from the Mastery page: a full mock exam (60 questions, 120 minutes, the whole course)
+  if (new URLSearchParams(location.search).get("preset") === "exam60") {
+    root.querySelector<HTMLButtonElement>('[data-mcq-count="60"]')?.click();
+    root.querySelector<HTMLButtonElement>('[data-mcq-mode="exam"]')?.click();
+    $<HTMLSelectElement>("[data-mcq-topic]").value = "";
+  }
 
   // ---- the shared bank ----
   let bank: BankItem[] = [];
@@ -334,6 +340,9 @@ export function setupMcq() {
     const m = mark(questions, answers);
     // course questions count like lesson quiz answers: wrong ones go to the Mistakes page and come back later
     for (const q of questions) if (!q.id.startsWith("bank-") && q.id in answers) saveQuizAnswer(q.id, answers[q.id] === q.a);
+    // friends' questions earn study points too (they have no lesson to count towards)
+    const bankDone = questions.filter((q) => q.id.startsWith("bank-") && q.id in answers);
+    logActivity({ q: bankDone.length, r: bankDone.filter((q) => answers[q.id] === q.a).length });
     saveMcqTest({ at: startedAt, mode, topic: topicName, total: m.total, right: m.right, secs });
 
     run.hidden = true;

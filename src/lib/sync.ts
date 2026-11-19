@@ -7,11 +7,16 @@
  * (time 0) while the account already has it: then both are merged, so nobody loses what they did before signing in.
  */
 
+import { dayKey, merge as mergeActivity, streak, weekOf, weekPoints } from "./activity";
+
 /** the progress that follows you between devices; preferences, recent searches and the audio player stay per device */
 export const SYNC_KEYS = [
   "mls.completed", "mls.bookmarks", "mls.started", "mls.recent", "mls.audio", "mls.video", "mls.reading",
   "mls.srs", "mls.srsNew", "mls.mapSrs", "mls.quiz", "mls.flows", "mls.dw", "mls.lectures", "mls.interviews", "mls.mcqTests",
+  "mls.activity",
 ] as const;
+/** keys whose two sides are always joined, never one replacing the other (each device only adds to its own part) */
+const ALWAYS_MERGE = new Set<string>(["mls.activity"]);
 export type SyncKey = (typeof SYNC_KEYS)[number];
 
 /** one side of a sync: values by key, and when each key last changed (ms) */
@@ -36,6 +41,7 @@ const same = (a: unknown, b: unknown) => JSON.stringify(a) === JSON.stringify(b)
 
 /** Joins two values of one key: lists are united (recent activity keeps one entry per lesson), records keep the newer entry. */
 export function mergeValues(key: string, local: unknown, remote: unknown): unknown {
+  if (ALWAYS_MERGE.has(key) && (local != null || remote != null)) return mergeActivity(local, remote);
   if (local == null) return remote;
   if (remote == null) return local;
   if (Array.isArray(local) && Array.isArray(remote)) {
@@ -80,7 +86,10 @@ export function reconcile(local: Snapshot, remote: Snapshot, keys: readonly stri
     const lt = local.at[key] ?? 0, rt = remote.at[key] ?? 0;
     let value: unknown, at: number;
     if (rv === undefined && lv === undefined && lt === 0) continue;
-    if (lt === 0 && rt > 0 && lv !== undefined) {
+    if (ALWAYS_MERGE.has(key) && lv != null && rv != null) {
+      value = mergeValues(key, lv, rv);
+      at = same(value, rv) ? rt : Math.max(lt, rt, same(value, lv) ? lt : Date.now());
+    } else if (lt === 0 && rt > 0 && lv !== undefined) {
       // this device's progress from before signing in: keep both
       value = mergeValues(key, lv, rv);
       at = same(value, rv) ? rt : Date.now();
@@ -122,10 +131,15 @@ export interface ProfileSummary {
   lastTitle: string;
   lastHref: string;
   updated: number;
+  /** the study streak (days in a row the daily goal was reached), this week's points and which week that is */
+  streak?: number;
+  weekPoints?: number;
+  week?: string;
+  todayPoints?: number;
 }
 
 /** Builds the friends-page summary from synced data. A card counts as learned once its interval reaches 21 days (as in My Study). */
-export function summarize(name: string, data: Snapshot["data"], now = Date.now()): ProfileSummary {
+export function summarize(name: string, data: Snapshot["data"], now = Date.now(), goal?: number): ProfileSummary {
   const list = (k: string) => (Array.isArray(data[k]) ? (data[k] as unknown[]) : []);
   const rec = (k: string) => (isObj(data[k]) ? (data[k] as Record<string, unknown>) : {});
   const recent = list("mls.recent").find(isObj) as Record<string, unknown> | undefined;
@@ -150,7 +164,15 @@ export function summarize(name: string, data: Snapshot["data"], now = Date.now()
     lastTitle: typeof recent?.title === "string" ? recent.title : "",
     lastHref: typeof recent?.href === "string" ? recent.href : "",
     updated: now,
+    ...activitySummary(data["mls.activity"], now, goal),
   };
+}
+
+function activitySummary(raw: unknown, now: number, goal?: number) {
+  const all = mergeActivity(raw, null);
+  const today = dayKey(now);
+  const st = streak(all, today, goal);
+  return { streak: st.current, weekPoints: weekPoints(all, today), week: weekOf(today), todayPoints: st.todayPoints };
 }
 
 /** "ravi.k@gmail.com" → "Ravi K": a friendly default name until you choose one. */

@@ -1,9 +1,10 @@
 /** Home page panels, built only from what this browser has stored (nothing is invented). */
 import { getEpisode } from "./player";
-import { allMediaProgress, bookmarkIds, completedIds, newPerDay, newStartedToday, readingProgress, recent, srsStates, startedIds, timeAgo } from "./store";
+import { allMediaProgress, bookmarkIds, completedIds, newPerDay, newStartedToday, quizResults, readingProgress, recent, srsStates, startedIds, timeAgo } from "./store";
 import { describeWait, queue } from "../lib/srs";
 import { formatClock } from "../lib/duration";
 import { recommend } from "../lib/progress";
+import { lessonMastery, readiness, topicMastery, type LessonInfo } from "../lib/mastery";
 
 interface IndexItem {
   id: string;
@@ -161,6 +162,18 @@ export function setupDashboard() {
   const secs = index.filter((l) => done.has(l.id)).reduce((n, l) => n + (l.secs || 0), 0);
   const hours = $("[data-hours-done]");
   if (hours) hours.textContent = !secs ? "0 h" : secs >= 3600 ? `${(secs / 3600).toFixed(1).replace(/\.0$/, "")} h` : `${Math.round(secs / 60)} min`;
+
+  // ---- exam readiness (from the Mastery page's numbers) ----
+  const rd = $<HTMLAnchorElement>("[data-home-readiness]");
+  if (rd) {
+    try {
+      const info = JSON.parse(dash.querySelector("[data-study-index]")?.textContent || "[]") as LessonInfo[];
+      const r = readiness(topicMastery(lessonMastery(info, quizResults(), srsStates())));
+      rd.textContent = `Exam readiness: ${r.percent}% (${r.label.toLowerCase()}) →`;
+    } catch {
+      /* the link still opens the Mastery page */
+    }
+  }
 
   // ---- flashcard review ----
   const rv = $("[data-review]");

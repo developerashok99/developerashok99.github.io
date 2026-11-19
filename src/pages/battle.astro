@@ -1,0 +1,84 @@
+---
+/**
+ * Quiz battle: friends answer the same questions at the same time; quick right answers score more.
+ * src/client/battle.ts runs it over the same connection as watch together (src/client/rooms.ts);
+ * friends are invited with a pop-up (src/client/friends.ts) or a link.
+ */
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import PageHead from "../components/PageHead.astro";
+import { COUNTS, SECS } from "../lib/battle";
+import { EXAM_TOPICS } from "../lib/mastery";
+import { withBase } from "../lib/routes";
+
+const base = import.meta.env.BASE_URL;
+---
+<Base title="Quiz battle" nav="battle" description="Answer the same MuleSoft questions as your friends, live, against the clock">
+  <div class="page page--read battle" data-battle data-questions={withBase(base, "mcq.json")}>
+    <script is:inline type="application/json" data-exam-topics set:html={JSON.stringify(EXAM_TOPICS)} />
+    <PageHead eyebrow="Play with friends" title="Quiz battle" sub={`Everyone gets the same question at the same time and ${SECS} seconds to answer. A right answer scores 500 points, plus up to 500 more for answering fast.`} />
+
+    <section class="card battle__setup" data-battle-setup aria-labelledby="bt-new">
+      <h2 id="bt-new">Start a battle</h2>
+      <div class="iv-grid">
+        <label class="account__field">Topic
+          <select class="input" data-battle-topic>
+            <option value="">Whole course</option>
+            {EXAM_TOPICS.map((t) => <option value={t.id}>{t.title}</option>)}
+          </select>
+        </label>
+        <fieldset class="iv-choice">
+          <legend>Questions</legend>
+          <div class="segmented" role="group" aria-label="Number of questions">
+            {COUNTS.map((n) => <button type="button" data-battle-count={n} aria-pressed={n === 10 ? "true" : "false"}>{n}</button>)}
+          </div>
+        </fieldset>
+      </div>
+      <div class="btn-row"><button class="btn btn--primary btn--lg" type="button" data-battle-create><Icon name="trophy" /> Create battle</button></div>
+      <p class="small muted">Then invite friends: they get a pop-up in the website or app. Use a phone or video call to talk.</p>
+    </section>
+
+    <section class="card battle__lobby" data-battle-lobby hidden aria-labelledby="bt-lobby">
+      <h2 id="bt-lobby"><span data-battle-lobby-title>Waiting for players</span></h2>
+      <p class="small" data-battle-status role="status" aria-live="polite"></p>
+      <p class="small muted" data-battle-about></p>
+      <ul class="battle__players" data-battle-players aria-label="Players"></ul>
+      <div class="together__share" data-battle-share hidden>
+        <label class="small" for="battle-link">Or send this link</label>
+        <div class="together__row">
+          <input id="battle-link" class="input input--sm" type="text" readonly data-battle-link />
+          <button class="btn btn--sm" type="button" data-battle-copy><Icon name="copy" /><span data-text>Copy link</span></button>
+        </div>
+      </div>
+      <div class="together__friends" data-together-friends hidden>
+        <p class="small"><b>Invite a friend</b>: they get a pop-up and join straight away.</p>
+        <ul class="invite-list"></ul>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn--primary" type="button" data-battle-start hidden><Icon name="play" /> Start the battle</button>
+        <button class="btn btn--sm" type="button" data-battle-leave>Leave</button>
+      </div>
+    </section>
+
+    <section class="card battle__play" data-battle-play hidden aria-labelledby="bt-q">
+      <div class="today__top">
+        <p class="iv-live__count"><b id="bt-q" data-battle-n>Question 1 of 10</b></p>
+        <p class="iv-timer" data-battle-timer aria-label="Seconds left"></p>
+      </div>
+      <div class="progress progress--thin battle__clock" aria-hidden="true"><span data-battle-clock></span></div>
+      <p class="iv-question" data-battle-q tabindex="-1"></p>
+      <div class="quiz__options" data-battle-options role="group" aria-label="Answers"></div>
+      <div class="quiz__feedback" data-battle-feedback role="status" hidden></div>
+      <ol class="battle__board" data-battle-board aria-label="Scores" hidden></ol>
+    </section>
+
+    <section class="card battle__end" data-battle-end hidden aria-labelledby="bt-end" tabindex="-1">
+      <h2 id="bt-end"><Icon name="trophy" /> <span data-battle-winner>Results</span></h2>
+      <ol class="battle__board battle__board--final" data-battle-final></ol>
+      <div class="btn-row">
+        <button class="btn btn--primary" type="button" data-battle-again hidden>Play again</button>
+        <button class="btn" type="button" data-battle-done>Leave</button>
+      </div>
+    </section>
+  </div>
+</Base>

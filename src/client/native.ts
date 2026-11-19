@@ -14,10 +14,13 @@ import { App } from "@capacitor/app";
 import { Network } from "@capacitor/network";
 import { MediaSession } from "@capgo/capacitor-media-session";
 import { ScreenOrientation } from "@capacitor/screen-orientation";
+import { LocalNotifications } from "@capacitor/local-notifications";
+import { navigate } from "astro:transitions/client";
+import { plan as planReminders, DAYS_AHEAD } from "../lib/reminder";
 import { DownloadManager, type Backend, type DownloadRecord } from "../lib/downloads";
 import { formatBytes } from "../lib/duration";
 import { allEpisodes, controls, currentId, getEpisode, isPlaying, refreshSource, setSourceResolver } from "./player";
-import { exportAll, importAll } from "./store";
+import { exportAll, importAll, prefs, studyStreak } from "./store";
 import { confirmSheet, noticeSheet } from "./sheet";
 
 const RECORDS_KEY = "downloads.v1";
@@ -349,6 +352,53 @@ export async function setupNative() {
     else void App.minimizeApp();
   });
 
+  setupReminders();
+
   // keep episode list order handy for debugging from the WebView console
   (window as unknown as { __mlsDownloads?: unknown }).__mlsDownloads = { manager, episodes: allEpisodes };
+}
+
+// ---- the daily study reminder (src/lib/reminder.ts plans it) ----
+const REMINDER_IDS = Array.from({ length: DAYS_AHEAD + 1 }, (_, d) => ({ id: 100 + d }));
+
+/** Replaces the scheduled reminders with fresh ones (or none, when switched off). */
+async function scheduleReminders() {
+  try {
+    await LocalNotifications.cancel({ notifications: REMINDER_IDS });
+    const p = prefs();
+    if (!p.reminder) return;
+    if ((await LocalNotifications.checkPermissions()).display !== "granted") return;
+    const list = planReminders(new Date(), p.reminderTime, studyStreak());
+    await LocalNotifications.schedule({
+      notifications: list.map((r) => ({ id: r.id, title: r.title, body: r.body, schedule: { at: r.at, allowWhileIdle: true }, extra: { page: "today/" } })),
+    });
+  } catch (e) {
+    console.warn("reminders not scheduled", e);
+  }
+}
+
+function setupReminders() {
+  // for the Preferences page and Today's session: switching reminders on asks Android for permission first
+  window.mlsReminders = {
+    async enable() {
+      const now = await LocalNotifications.checkPermissions().catch(() => null);
+      const granted = now?.display === "granted" || (await LocalNotifications.requestPermissions().catch(() => null))?.display === "granted";
+      return granted;
+    },
+    schedule: () => void scheduleReminders(),
+  };
+  // tapping a reminder opens today's session
+  void LocalNotifications.addListener("localNotificationActionPerformed", (a) => {
+    const page = (a.notification.extra as { page?: string } | undefined)?.page;
+    if (page) void navigate(`${document.documentElement.dataset.base ?? "/"}${page}`);
+  });
+  void scheduleReminders();
+  // re-plan when you study (today's reminder goes once the goal is reached), change the setting, or leave the app
+  let t: ReturnType<typeof setTimeout> | undefined;
+  window.addEventListener("mls:activity", () => {
+    clearTimeout(t);
+    t = setTimeout(() => void scheduleReminders(), 3000);
+  });
+  window.addEventListener("mls:store", (e) => (e as CustomEvent<{ key: string }>).detail.key === "mls.prefs" && void scheduleReminders());
+  void App.addListener("pause", () => void scheduleReminders());
 }

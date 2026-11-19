@@ -15,6 +15,8 @@ declare global {
   interface Window {
     /** the Android app (src/client/native.ts): turning the screen for full-screen video, which its WebView can't */
     mlsOrientation?: { landscape(): Promise<void>; release(): Promise<void> };
+    /** the app's daily reminder (src/client/native.ts): enable() asks for notification permission */
+    mlsReminders?: { enable(): Promise<boolean>; schedule(): void };
   }
 }
 /** sideways for full screen: the app's native call, else the browser's (phones' Chrome supports it in full screen) */
