@@ -241,6 +241,8 @@ export interface Prefs {
   lessonNav?: "shown" | "hidden";
   /** Videos tab: play the next video when one ends (default on) */
   videoAutoplay?: boolean;
+  /** audio player: play the next podcast episode when one ends (default on) */
+  podcastAutoplay?: boolean;
   /** Videos tab: the last video opened, for "continue watching" */
   lastVideo?: string;
   /** the left menu on wide screens: open (default) or collapsed to icons */

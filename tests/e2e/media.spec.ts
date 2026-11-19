@@ -115,6 +115,37 @@ test.describe("audio podcast player", () => {
     await expect(page.locator('[data-episode-progress="test-fixture"]').first()).toHaveAttribute("aria-label", "100% listened");
   });
 
+  test("when an episode ends the next one plays, unless that's switched off in Preferences", async ({ page }) => {
+    const real = (media.podcasts as { id: string; title: string; audioUrl?: string; test?: boolean }[]).filter((p) => !p.test && p.audioUrl?.trim());
+    test.skip(real.length < 2, "needs two episodes with audio");
+    const [first, second] = real;
+    // serve the short bundled fixture for every real file, so the test is fast and offline-safe
+    await page.route(/\.mp3(\?.*)?$/, (r) => r.fulfill({ path: "public/test-media/fixture-audio.mp3", contentType: "audio/mpeg" }));
+    const playToEnd = async () => {
+      await page.goto(`podcasts/${first.id}/`);
+      await page.locator(`[data-play-episode="${first.id}"]`).first().click();
+      await expect.poll(async () => (await audioState(page)).t, { timeout: 15_000 }).toBeGreaterThan(0.2);
+      // a routed file can't be seeked (no range requests), so signal the end the way the browser does
+      await page.locator("[data-audio]").evaluate((a: HTMLAudioElement) => a.dispatchEvent(new Event("ended")));
+    };
+    await playToEnd();
+    await expect(player(page).locator("[data-title]")).toHaveText(second.title, { timeout: 10_000 });
+    await expect.poll(async () => (await audioState(page)).paused, { timeout: 10_000 }).toBe(false);
+
+    await page.goto("preferences/");
+    const sw = page.getByRole("switch", { name: "Play the next podcast automatically" });
+    await sw.click();
+    await expect(sw).toHaveAttribute("aria-checked", "false");
+    await page.evaluate((id) => {
+      const a = JSON.parse(localStorage.getItem("mls.audio") || "{}");
+      delete a[id];
+      localStorage.setItem("mls.audio", JSON.stringify(a));
+    }, first.id);
+    await playToEnd();
+    await expect(player(page).locator("[data-status]")).toHaveText("Finished", { timeout: 10_000 });
+    await expect(player(page).locator("[data-title]")).toHaveText(first.title);
+  });
+
   test("episodes without an audio file cannot be played", async ({ page }) => {
     const ep = (media.podcasts as { title: string; audioUrl?: string; test?: boolean }[]).find((p) => !p.test && !p.audioUrl?.trim());
     test.skip(!ep, "every episode has an audio file");

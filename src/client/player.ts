@@ -3,7 +3,7 @@
  * Page buttons only need `data-play-episode="<id>"`; progress bars `data-episode-progress="<id>"`.
  */
 import { formatClock } from "../lib/duration";
-import { KEYS, mediaProgress, read, saveMediaProgress, write } from "./store";
+import { KEYS, mediaProgress, prefs, read, saveMediaProgress, write } from "./store";
 
 export interface EpisodeInfo {
   id: string;
@@ -297,8 +297,23 @@ audio.addEventListener("timeupdate", () => {
 });
 audio.addEventListener("durationchange", renderTime);
 audio.addEventListener("ratechange", updatePositionState);
+/** The episode to play after `from`: the next real one in course order. Offline, only a downloaded one can
+ * play, so it skips ahead to the next episode that is on this device. */
+function nextEpisode(from: EpisodeInfo): EpisodeInfo | null {
+  if (from.test) return null; // the browser-test fixture never leads into the real course
+  const offline = navigator.onLine === false;
+  const i = episodes.findIndex((e) => e.id === from.id);
+  return episodes.slice(i + 1).find((e) => !e.test && (!offline || resolveSrc(e) != null)) ?? null;
+}
+
 audio.addEventListener("ended", () => {
   save(true);
+  const next = current && prefs().podcastAutoplay !== false ? nextEpisode(current) : null;
+  if (next) {
+    load(next.id, true);
+    setStatus(`Playing the next episode`);
+    return;
+  }
   setStatus("Finished");
   renderState();
 });
