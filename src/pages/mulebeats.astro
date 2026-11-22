@@ -1,0 +1,95 @@
+---
+/**
+ * MuleBeats: the study-song library. Lists the published playlists and songs (approved, with audio) from
+ * config/media.json; src/client/mulebeats.ts plays them through the site's one audio player as a queue.
+ */
+import Base from "../layouts/Base.astro";
+import Icon from "../components/Icon.astro";
+import PageHead from "../components/PageHead.astro";
+import { getBeats, getLesson } from "../lib/content";
+import { formatLength } from "../lib/duration";
+import { lessonPath, withBase } from "../lib/routes";
+
+const base = import.meta.env.BASE_URL;
+const { tracks, playlists } = getBeats();
+const byId = new Map(tracks.map((t) => [t.id, t]));
+const TYPE = { summary: "Lesson summary", concept: "Concept song" } as const;
+const first = playlists[0];
+---
+<Base title="MuleBeats" nav="mulebeats" description="Study songs: each lesson's summary and its key concepts, set to music">
+  <div class="page mulebeats" data-mulebeats>
+    <PageHead eyebrow="Learn by ear" title="MuleBeats" sub="Short songs that teach each lesson: one song sums up the whole lesson, others explain a single concept. Each style suits what it teaches: a catchy chant for lists, a story for steps, two voices for comparisons." />
+
+    {playlists.length === 0 ? (
+      <section class="card mb-empty" data-mb-empty>
+        <span class="stat-icon" aria-hidden="true"><Icon name="music" /></span>
+        <div>
+          <h2>No songs yet</h2>
+          <p class="muted">Songs for Days 5 to 10 are being made. Each one is checked before it appears here, so they'll show up as they're approved.</p>
+          <a class="btn btn--sm" href={withBase(base, "podcasts/")}><Icon name="podcast" /> Listen to the podcasts meanwhile</a>
+        </div>
+      </section>
+    ) : (
+      <>
+        <nav class="mb-playlists" aria-label="Playlists">
+          {playlists.map((p, i) => (
+            <button type="button" class="mb-playlist" data-mb-pick={p.id} aria-pressed={i === 0 ? "true" : "false"}>
+              <b>{p.title}</b>
+              <span class="small muted">{p.tracks.length} song{p.tracks.length === 1 ? "" : "s"} · {formatLength(p.tracks.reduce((n, id) => n + (byId.get(id)?.duration ?? 0), 0))}</span>
+            </button>
+          ))}
+        </nav>
+
+        {playlists.map((p, i) => (
+          <section class="card mb-list" data-mb-playlist={p.id} data-title={p.title} hidden={i !== 0} aria-labelledby={`mb-h-${p.id}`}>
+            <div class="mb-list__head">
+              <div>
+                <h2 id={`mb-h-${p.id}`}>{p.title}</h2>
+                {p.description && <p class="small muted">{p.description}</p>}
+              </div>
+              <div class="btn-row">
+                <button class="btn btn--primary btn--sm" type="button" data-mb-play-all><Icon name="play" /> Play all</button>
+                <button class="btn btn--sm" type="button" data-mb-shuffle-all><Icon name="shuffle" /> Shuffle</button>
+              </div>
+            </div>
+            <ol class="mb-tracks">
+              {p.tracks.map((id, n) => {
+                const t = byId.get(id)!;
+                const lesson = getLesson(t.lesson);
+                return (
+                  <li class="mb-track" id={i === 0 ? t.id : undefined} data-mb-track={t.id}>
+                    <button class="play-btn mb-track__play" type="button" data-mb-play={t.id} aria-label={`Play ${t.title}`}>
+                      <Icon name="play" class="play" /><Icon name="pause" class="pause" />
+                    </button>
+                    <div class="mb-track__body">
+                      <p class="mb-track__title"><span class="mb-track__n" aria-hidden="true">{n + 1}</span> <b>{t.title}</b></p>
+                      <p class="mb-track__meta small">
+                        <a href={withBase(base, lessonPath(t.lesson))}>{lesson?.label ?? t.lesson}{lesson ? `: ${lesson.title}` : ""}</a>
+                      </p>
+                      <p class="mb-track__tags small muted">
+                        <span class="pill">{TYPE[t.type]}</span> <span>{t.genre}</span> · <span>{formatLength(t.duration ?? 0)}</span>
+                      </p>
+                      {t.concepts.length > 0 && (
+                        <details class="mb-track__covers small">
+                          <summary>What it covers</summary>
+                          <ul>{t.concepts.map((c) => <li>{c}</li>)}</ul>
+                        </details>
+                      )}
+                      <p class="mb-track__error small" data-mb-error hidden role="status">This song's audio couldn't be loaded. Try again later.</p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        ))}
+
+        <section class="card mb-queue" aria-labelledby="mb-q-h" data-mb-queue hidden>
+          <h2 id="mb-q-h">Up next</h2>
+          <p class="small muted" data-mb-queue-about></p>
+          <ol class="mb-queue__list" data-mb-queue-list></ol>
+        </section>
+      </>
+    )}
+  </div>
+</Base>

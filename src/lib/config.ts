@@ -1,5 +1,6 @@
 import { parseDuration } from "./duration";
 import { parseYouTubeId, parseYouTubePlaylist, parseYouTubeStart, watchUrl } from "./youtube";
+import { parseBeats, type Beats } from "./mulebeats";
 
 export interface CourseSection {
   id: string;
@@ -49,6 +50,8 @@ export interface MediaConfig {
   podcastPlaylist: string | null;
   /** YouTube playlist id of the animated video podcasts, if configured */
   animatedPlaylist: string | null;
+  /** MuleBeats study songs that the site shows (approved, with audio), and their playlists */
+  beats: Beats;
 }
 
 const SLUG = /^[a-z0-9][a-z0-9-]*$/;
@@ -196,6 +199,7 @@ export function parseMedia(raw: unknown, known: string[], opts: { showTestEpisod
       demo: p.demo === true,
     });
   });
+  const beats = parseBeats(raw.mulebeats, known, problems, { showTest, checkUrl: checkMediaUrl }).published;
   if (problems.length) throw new ConfigError(problems);
-  return { lectures, podcasts, podcastPlaylist, animatedPlaylist };
+  return { lectures, podcasts, podcastPlaylist, animatedPlaylist, beats };
 }

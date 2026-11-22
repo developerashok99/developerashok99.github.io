@@ -1062,7 +1062,12 @@ li[data-status="done"] .video-list__mark .m-new { display: none; }
   .player.is-open .player__controls { order: 6; flex: 1 1 auto; justify-content: center; }
   .player.is-open .player__extra { order: 7; }
 }
-@media (max-width: 380px) { .player.is-open .player__controls .hide-xs { display: none; } }
+@media (max-width: 380px) {
+  .player.is-open .player__controls .hide-xs { display: none; }
+  /* a playlist on a small phone: previous / next song matter more than skipping 10 or 30 seconds */
+  .player.is-open[data-kind="song"] .player__controls .hide-xs { display: inline-grid; }
+  .player.is-open[data-kind="song"] .player__controls [data-act="back"], .player.is-open[data-kind="song"] .player__controls [data-act="fwd"] { display: none; }
+}
 body.has-player { --player-h: 4.8rem; }
 @media (max-width: 800px) {
   body.has-player { --player-h: 3.6rem; }
@@ -1874,3 +1879,30 @@ html[data-locked] .invite-pop { display: none !important; }
 .battle [data-battle-ended] { margin: 0 0 1rem; }
 .pref-remind { display: flex; align-items: center; gap: 0.6rem; flex: none; }
 .pref-remind .input { width: auto; }
+
+/* ---------- MuleBeats ---------- */
+.mb-empty { display: flex; gap: 1rem; align-items: flex-start; }
+.mb-empty h2 { margin: 0 0 0.3rem; }
+.mb-playlists { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+.mb-playlist { display: grid; gap: 0.1rem; min-width: 0; padding: 0.6rem 0.9rem; border: 1px solid var(--border-strong); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.mb-playlist[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.mb-list, .mb-queue { margin-bottom: 1.25rem; }
+.mb-list__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+.mb-list__head h2 { margin: 0 0 0.2rem; }
+.mb-list__head p { margin: 0; }
+.mb-tracks { display: grid; gap: 0.5rem; margin: 0; padding: 0; list-style: none; }
+.mb-track { display: flex; gap: 0.75rem; align-items: flex-start; padding: 0.7rem 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); min-width: 0; }
+.mb-track[data-current="true"] { border-color: var(--accent); background: var(--accent-soft); }
+.mb-track__play { flex: none; }
+.mb-track__body { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.mb-track__body p { margin: 0 0 0.2rem; }
+.mb-track__n { color: var(--text-muted); font: 700 0.85rem var(--mono); margin-right: 0.2rem; }
+.mb-track__covers ul { margin: 0.3rem 0 0; padding-left: 1.2rem; }
+.mb-track__error { color: var(--danger); }
+.mb-queue h2 { margin-top: 0; }
+.mb-queue__list { margin: 0; padding-left: 1.4rem; display: grid; gap: 0.25rem; }
+.mb-queue__item { padding: 0.2rem 0; border: 0; background: none; color: var(--link); font: inherit; text-align: left; cursor: pointer; text-decoration: underline; }
+.repeat-btn { position: relative; }
+.repeat-btn__one { display: none; position: absolute; right: 0.2rem; bottom: 0.15rem; font: 800 0.6rem var(--mono); }
+.repeat-btn[data-repeat="one"] .repeat-btn__one { display: block; }
+.player [data-act="shuffle"][aria-pressed="true"], .player .repeat-btn:not([data-repeat="off"]) { color: var(--accent); }

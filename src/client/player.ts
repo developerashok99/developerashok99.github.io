@@ -4,6 +4,7 @@
  */
 import { formatClock } from "../lib/duration";
 import { KEYS, mediaProgress, prefs, read, saveMediaProgress, write } from "./store";
+import { afterEnd, REPEATS, shuffled, stepIndex, type Repeat } from "../lib/mulebeats";
 
 export interface EpisodeInfo {
   id: string;
@@ -15,6 +16,9 @@ export interface EpisodeInfo {
   duration: number | null;
   lessons: { id: string; label: string; href: string }[];
   test: boolean;
+  /** MuleBeats songs ("song") play in playlists; podcast episodes have no kind */
+  kind?: "song";
+  genre?: string;
 }
 
 const SPEEDS = [0.75, 1, 1.25, 1.5, 1.75, 2];
@@ -40,6 +44,75 @@ let seeking = false;
 let lastSave = 0;
 
 export const getEpisode = (id: string) => episodes.find((e) => e.id === id) ?? null;
+/** podcast episodes, in course order: the previous / next order when no playlist is playing */
+const podcastList = () => episodes.filter((e) => e.kind !== "song");
+
+// ---- the play queue (MuleBeats playlists) ----
+interface Queue {
+  /** the playlist's own order, and the order it plays in (shuffled or not) */
+  ids: string[];
+  order: string[];
+  name: string;
+}
+const saved = read<{ queue?: Queue; shuffle?: boolean; repeat?: Repeat }>(KEYS.player, {});
+let queue: Queue | null = saved.queue && Array.isArray(saved.queue.ids) && Array.isArray(saved.queue.order) ? saved.queue : null;
+let shuffleOn = saved.shuffle === true;
+let repeat: Repeat = REPEATS.includes(saved.repeat as Repeat) ? (saved.repeat as Repeat) : "off";
+/** a playlist is playing: the current song is in the queue */
+const inQueue = () => !!queue && !!current && queue.order.includes(current.id);
+
+function persistQueue() {
+  write(KEYS.player, { ...read(KEYS.player, {}), queue, shuffle: shuffleOn, repeat });
+}
+/** For the MuleBeats page: what's playing and what comes next. */
+export function queueInfo() {
+  return { name: queue?.name ?? "", order: inQueue() ? [...queue!.order] : [], current: current?.id ?? null, shuffle: shuffleOn, repeat, playing: isPlaying() };
+}
+function queueChanged() {
+  renderQueueControls();
+  document.dispatchEvent(new CustomEvent("mls:queue"));
+}
+
+/** Plays a playlist from `startId` (or from the start; shuffled order starts at a random song when shuffle is on). */
+export function playQueue(ids: string[], startId: string | null, name: string, opts: { shuffle?: boolean } = {}) {
+  const list = ids.filter((id) => getEpisode(id));
+  if (!list.length) return;
+  if (opts.shuffle != null) shuffleOn = opts.shuffle;
+  const start = startId && list.includes(startId) ? startId : shuffleOn ? list[Math.floor(Math.random() * list.length)] : list[0];
+  queue = { ids: list, order: shuffleOn ? shuffled(list, start) : list, name };
+  persistQueue();
+  if (current?.id === start) void play();
+  else load(start, true);
+  queueChanged();
+}
+export function setShuffle(on: boolean) {
+  shuffleOn = on;
+  if (queue) queue = { ...queue, order: on ? shuffled(queue.ids, current?.id ?? null) : queue.ids };
+  persistQueue();
+  queueChanged();
+}
+export function cycleRepeat() {
+  repeat = REPEATS[(REPEATS.indexOf(repeat) + 1) % REPEATS.length];
+  persistQueue();
+  queueChanged();
+}
+
+function renderQueueControls() {
+  const on = inQueue();
+  root.querySelectorAll<HTMLElement>("[data-queue-only]").forEach((b) => (b.hidden = !on));
+  const sh = root.querySelector<HTMLButtonElement>('[data-act="shuffle"]');
+  sh?.setAttribute("aria-pressed", String(shuffleOn));
+  sh?.setAttribute("aria-label", shuffleOn ? "Shuffle: on" : "Shuffle: off");
+  const rp = root.querySelector<HTMLButtonElement>('[data-act="repeat"]');
+  if (rp) {
+    rp.dataset.repeat = repeat;
+    rp.setAttribute("aria-label", `Repeat: ${repeat === "one" ? "this song" : repeat === "all" ? "the playlist" : "off"}`);
+  }
+  const song = current?.kind === "song";
+  root.querySelector('[data-act="prev"]')?.setAttribute("aria-label", song ? "Previous song" : "Previous episode");
+  root.querySelector('[data-act="next"]')?.setAttribute("aria-label", song ? "Next song" : "Next episode");
+  root.dataset.kind = song ? "song" : "podcast";
+}
 export const allEpisodes = () => episodes;
 
 /** Where an episode's audio comes from; the app swaps in the downloaded file (src/client/downloads.ts). */
@@ -159,11 +232,15 @@ export function load(id: string, autoplay: boolean): boolean {
   }
   save(true);
   current = ep;
+  if (queue && !queue.order.includes(ep.id)) {
+    queue = null;
+    persistQueue();
+  }
   titleEl.textContent = ep.title;
   titleEl.href = ep.href;
   audio.src = srcOf(ep);
-  const saved = mediaProgress("audio", ep.id);
-  const startAt = saved?.pos ?? 0;
+  // a song starts from the top each time; an episode resumes where you stopped
+  const startAt = ep.kind === "song" ? 0 : mediaProgress("audio", ep.id)?.pos ?? 0;
   const applyStart = () => {
     if (startAt > 0 && startAt < duration() - 2) audio.currentTime = startAt;
     renderTime();
@@ -178,6 +255,7 @@ export function load(id: string, autoplay: boolean): boolean {
   updateMediaSession();
   if (autoplay) void play();
   renderState();
+  queueChanged();
   return true;
 }
 
@@ -217,8 +295,15 @@ export function toggle(id?: string) {
 
 function step(dir: 1 | -1) {
   if (!current) return;
-  const i = episodes.findIndex((e) => e.id === current!.id);
-  const target = episodes[i + dir];
+  if (inQueue()) {
+    const order = queue!.order;
+    const j = stepIndex(order.indexOf(current.id), order.length, dir, repeat);
+    if (j != null) load(order[j], !audio.paused || audio.ended);
+    return;
+  }
+  const list = podcastList();
+  const i = list.findIndex((e) => e.id === current!.id);
+  const target = list[i + dir];
   if (target) load(target.id, !audio.paused);
 }
 
@@ -259,6 +344,8 @@ root.addEventListener("click", (e) => {
   else if (act === "prev") step(-1);
   else if (act === "next") step(1);
   else if (act === "close") close();
+  else if (act === "shuffle") setShuffle(!shuffleOn);
+  else if (act === "repeat") cycleRepeat();
   else if (act === "expand") expand(!root.classList.contains("is-open"));
   else if (act === "speed") {
     const i = SPEEDS.indexOf(audio.playbackRate);
@@ -303,11 +390,24 @@ function nextEpisode(from: EpisodeInfo): EpisodeInfo | null {
   if (from.test) return null; // the browser-test fixture never leads into the real course
   const offline = navigator.onLine === false;
   const i = episodes.findIndex((e) => e.id === from.id);
-  return episodes.slice(i + 1).find((e) => !e.test && (!offline || resolveSrc(e) != null)) ?? null;
+  return episodes.slice(i + 1).find((e) => !e.test && e.kind !== "song" && (!offline || resolveSrc(e) != null)) ?? null;
 }
 
 audio.addEventListener("ended", () => {
   save(true);
+  // a playlist: the next song, the same one again (repeat one), back to the start (repeat all), or the end
+  if (inQueue()) {
+    const order = queue!.order;
+    const j = afterEnd(order.indexOf(current!.id), order.length, repeat);
+    if (j == null) {
+      setStatus("End of playlist");
+      renderState();
+    } else if (order[j] === current!.id) {
+      audio.currentTime = 0;
+      void play();
+    } else load(order[j], true);
+    return;
+  }
   const next = current && prefs().podcastAutoplay !== false ? nextEpisode(current) : null;
   if (next) {
     load(next.id, true);
@@ -326,6 +426,7 @@ audio.addEventListener("error", () => {
     : code === 4 ? "the file was not found or its format isn't supported" : code === 2 ? "a network error occurred" : "it could not be decoded";
   setStatus(`Can't play: ${why}`, "error");
   renderState();
+  document.dispatchEvent(new CustomEvent("mls:player-error", { detail: { id: current.id } }));
 });
 
 if ("mediaSession" in navigator) {

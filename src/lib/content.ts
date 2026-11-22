@@ -5,6 +5,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { parseCourses, parseMedia, type Course, type Episode, type Lecture } from "./config";
+import type { Beats } from "./mulebeats";
 import { NOTES_GITHUB } from "./links";
 import type { NoteLevel } from "./routes";
 
@@ -48,7 +49,7 @@ function readJson<T>(file: string): T {
   return JSON.parse(fs.readFileSync(file, "utf8")) as T;
 }
 
-let cache: { manifest: Manifest; courses: Course[]; lessons: Lesson[]; byId: Map<string, Lesson>; podcasts: Episode[]; podcastPlaylist: string | null; animatedPlaylist: string | null } | null = null;
+let cache: { manifest: Manifest; courses: Course[]; lessons: Lesson[]; byId: Map<string, Lesson>; podcasts: Episode[]; podcastPlaylist: string | null; animatedPlaylist: string | null; beats: Beats } | null = null;
 
 function load() {
   if (cache) return cache;
@@ -92,7 +93,7 @@ function load() {
     l.prev = lessons[i - 1]?.id ?? null;
     l.next = lessons[i + 1]?.id ?? null;
   });
-  cache = { manifest, courses, lessons, byId: new Map(lessons.map((l) => [l.id, l])), podcasts: media.podcasts, podcastPlaylist: media.podcastPlaylist, animatedPlaylist: media.animatedPlaylist };
+  cache = { manifest, courses, lessons, byId: new Map(lessons.map((l) => [l.id, l])), podcasts: media.podcasts, podcastPlaylist: media.podcastPlaylist, animatedPlaylist: media.animatedPlaylist, beats: media.beats };
   return cache;
 }
 
@@ -104,6 +105,8 @@ export const getPodcasts = () => load().podcasts;
 export const getPodcastPlaylist = () => load().podcastPlaylist;
 export const getAnimatedPlaylist = () => load().animatedPlaylist;
 export const getManifest = () => load().manifest;
+/** MuleBeats songs and playlists the site shows (approved, with audio; test songs only in test builds) */
+export const getBeats = () => load().beats;
 export const knownIds = () => new Set(load().lessons.map((l) => l.id));
 
 export function readNote(id: string, level: NoteLevel): string | null {

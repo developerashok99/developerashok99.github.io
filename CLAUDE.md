@@ -103,6 +103,12 @@ The e2e tests run against `astro preview` of `dist/`, so **rebuild before runnin
 - **Reminders** (app only): `@capacitor/local-notifications`; `src/lib/reminder.ts` plans the next few days; `native.ts` schedules them, re-plans on activity, prefs change and pause, and opens `today/` on tap. Preferences has the switch and time (`prefs.reminder`, `reminderTime`); `window.mlsReminders.enable()` asks for permission.
 - **Podcast auto-play**: the next episode plays when one ends (offline in the app: the next downloaded one). `prefs.podcastAutoplay`. The test fixture episode never leads into the course.
 
+### MuleBeats (study songs; Stage 1, not yet released)
+
+- Manifest: `config/media.json` → `mulebeats` {tracks, playlists}, parsed by `src/lib/mulebeats.ts` `parseBeats` (called from `parseMedia`; mistakes stop the build). Only `status: "approved"` songs with `audioUrl` and `duration` are published (`publish`); `test: true` songs only in test builds. `planStyle` picks genre/length from objective and complexity. Days 5–10 have 16 planned songs and no audio yet, so the live page shows the empty state.
+- Page `/mulebeats/` (`src/pages/mulebeats.astro`, `src/client/mulebeats.ts`). Songs join the shared audio player's list (`AudioPlayer.astro`, `kind: "song"`) and play as a queue: `player.ts` `playQueue`, `setShuffle`, `cycleRepeat`, `queueInfo`, event `mls:queue`, `mls:player-error`. Pure queue helpers `stepIndex`, `afterEnd`, `shuffled`. Podcasts never step into songs; playing a podcast ends the queue. Songs start from the top (no resume). Lock-screen next/previous use the same `step()`.
+- Tests: `tests/unit/mulebeats.test.ts`, `tests/e2e/mulebeats.spec.ts` (empty-state test runs only with `MULEBEATS_EMPTY=1` against a production build).
+
 ### Menu toggle (`setupNavToggle` in app.ts)
 
 - **Wide screens:** the button collapses the sidebar to icons (`data-nav="collapsed"`, remembered).

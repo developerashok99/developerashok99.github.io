@@ -60,6 +60,22 @@ Each episode under `podcasts` has both formats, because they are the same summar
 - The episode called **"Player test (fixture media)"** (`"test": true`) uses tiny synthetic files in `public/test-media/` (a 30-second tone and test pattern). It exists only for the browser tests: `npm run build:test` builds the site with it (`SHOW_TEST_EPISODES=true`), while `npm run build` and the published site leave the episode and `test-media/` out (`"showTestEpisodes": false`).
 - **Video podcasts** are the Unlisted YouTube videos in the "gc podcast video" playlist (`"podcastPlaylist"`). "Open on YouTube" opens each one inside that playlist.
 
+### MuleBeats songs (study songs)
+
+Songs live in `config/media.json` under `"mulebeats"`. Each song is first listed as `"status": "planned"` with what it
+must teach (`concepts`), its `lesson`, `type` (`summary` or `concept`), `objective` (`recall-list`, `process`,
+`contrast` or `concept`) and `complexity` (1–3). Those choose the genre and target length (`src/lib/mulebeats.ts`,
+`planStyle`); set `genre` yourself to override it. Planned songs never appear on the site.
+
+To publish a song once it's made and reviewed:
+
+1. Upload the MP3 to a GitHub Release of this repository (like the podcasts), e.g. `mulebeats-v1`.
+2. Set its `audioUrl` to the asset's download URL, `duration` to its real length (`2:45`), and `status` to `"approved"`.
+3. Add its id to a playlist in `"playlists"` (playlists only show their approved songs; an empty one is hidden).
+
+The build stops with a clear message for duplicate ids, unknown lessons, bad durations, an approved song without
+audio, or a playlist naming a song that doesn't exist.
+
 ### Check your edit
 
 The build validates `media.json` and prints every problem it finds: bad YouTube links, unknown lesson ids, duplicate episode ids, malformed durations. To check locally before pushing, run `npm test`. A mistake fails the GitHub Action and leaves the current site online.

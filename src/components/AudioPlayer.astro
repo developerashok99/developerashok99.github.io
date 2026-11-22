@@ -5,7 +5,7 @@
  * Logic: src/client/player.ts
  */
 import Icon from "./Icon.astro";
-import { getLesson, getPodcasts } from "../lib/content";
+import { getBeats, getLesson, getPodcasts } from "../lib/content";
 import { lessonPath, podcastPath, withBase } from "../lib/routes";
 
 const base = import.meta.env.BASE_URL;
@@ -22,9 +22,22 @@ const episodes = getPodcasts()
     lessons: p.lessons.map((l) => ({ id: l, label: getLesson(l)?.label ?? l, href: withBase(base, lessonPath(l)) })),
     test: p.test,
   }));
+// MuleBeats songs share the player; they play as playlists (a queue), never in the podcast next/previous order.
+const songs = getBeats().tracks.map((t) => ({
+  id: t.id,
+  title: t.title,
+  src: withBase(base, t.audioUrl!),
+  bytes: null,
+  href: withBase(base, `mulebeats/#${t.id}`),
+  duration: t.duration,
+  lessons: [{ id: t.lesson, label: getLesson(t.lesson)?.label ?? t.lesson, href: withBase(base, lessonPath(t.lesson)) }],
+  test: t.test,
+  kind: "song",
+  genre: t.genre,
+}));
 ---
 <div id="audio-player" class="player" data-player hidden transition:persist aria-label="Audio podcast player" role="region">
-  <script is:inline type="application/json" data-episodes set:html={JSON.stringify(episodes).replace(/</g, "\\u003c")} />
+  <script is:inline type="application/json" data-episodes set:html={JSON.stringify([...episodes, ...songs]).replace(/</g, "\\u003c")} />
   <audio preload="metadata" data-audio></audio>
   <div class="player__inner">
     <span class="player__cover" aria-hidden="true"><Icon name="podcast" /></span>
@@ -48,6 +61,8 @@ const episodes = getPodcasts()
       <span data-total>0:00</span>
     </div>
     <div class="player__extra">
+      <button class="icon-btn" type="button" data-act="shuffle" data-queue-only hidden aria-pressed="false" aria-label="Shuffle"><Icon name="shuffle" /></button>
+      <button class="icon-btn repeat-btn" type="button" data-act="repeat" data-queue-only hidden data-repeat="off" aria-label="Repeat: off"><Icon name="repeat" /><span class="repeat-btn__one" aria-hidden="true">1</span></button>
       <button class="icon-btn speed-btn" type="button" data-act="speed" aria-label="Playback speed 1x">1×</button>
       <button class="icon-btn" type="button" data-act="close" aria-label="Close player"><Icon name="close" /></button>
     </div>

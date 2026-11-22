@@ -1095,5 +1095,393 @@
       "audioUrl": "https://github.com/developerashok99/developerashok99.github.io/releases/download/podcast-audio-v1/interview-part3-explained-full.mp3",
       "audioBytes": 4779173
     }
-  ]
+  ],
+  "mulebeats": {
+    "$comment": "MuleBeats study songs. Songs are made by hand, reviewed, then set to status \"approved\" with their audioUrl (a GitHub Release asset, like the podcast MP3s) and real duration. Only approved songs reach the site; planned and review songs are the to-do list. objective (recall-list | process | contrast | concept) and complexity (1-3) choose the genre and target length (src/lib/mulebeats.ts planStyle); genre can be set to override. Songs with test: true exist only in test builds.",
+    "tracks": [
+      {
+        "id": "beat-day05-summary",
+        "title": "Listener, Logger, Database",
+        "lesson": "day05",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "HTTP Listener is the source that starts the flow",
+          "Logger shows what is happening, even with no business purpose",
+          "Database connector Select operation",
+          "A dynamic SELECT query, never hard-coded",
+          "Transform Message turns the Java result into JSON",
+          "Run vs Debug when deploying"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day05-dynamic-query",
+        "title": "Keep the Query Dynamic",
+        "lesson": "day05",
+        "type": "concept",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Hard-coded values only ever return one answer",
+          "Read the value from the request instead",
+          "Then Transform Message from Java to JSON"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day05-run-debug",
+        "title": "Run or Debug",
+        "lesson": "day05",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 1,
+        "concepts": [
+          "Run deploys the app and just runs it",
+          "Debug stops at breakpoints so you can inspect the Mule event"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day06-summary",
+        "title": "Speak HTTP",
+        "lesson": "day06",
+        "type": "summary",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "HTTP vs HTTPS: HTTPS encrypts, so a sniffer sees nothing readable",
+          "Five core methods: GET, POST, PUT, PATCH, DELETE",
+          "URL anatomy: protocol, host, port, path, query",
+          "The rest of a request: params, headers, body, authorization",
+          "Response codes and JSON"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day06-methods",
+        "title": "GET POST PUT PATCH DELETE",
+        "lesson": "day06",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 1,
+        "concepts": [
+          "GET reads",
+          "POST creates",
+          "PUT replaces the whole resource (or creates it)",
+          "PATCH changes part of it",
+          "DELETE removes it"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day06-https",
+        "title": "Lock It with HTTPS",
+        "lesson": "day06",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 1,
+        "concepts": [
+          "Plain HTTP can be read by anyone sniffing the network",
+          "HTTPS encrypts the traffic"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day07-summary",
+        "title": "Inside the Mule Event",
+        "lesson": "day07",
+        "type": "summary",
+        "objective": "concept",
+        "complexity": 3,
+        "concepts": [
+          "The HTTP Listener turns a request into a Mule event",
+          "A Mule event carries a message and variables",
+          "The message is payload plus attributes",
+          "How an HTTP request maps onto the event",
+          "The overwrite problem: a new payload replaces the old one"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day07-three-parts",
+        "title": "Payload, Attributes, Variables",
+        "lesson": "day07",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "Payload: the body, the main data",
+          "Attributes: metadata such as headers, query and URI params",
+          "Variables: values you keep for later in the flow"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day07-set-vs-transform",
+        "title": "Set Variable or Transform Message",
+        "lesson": "day07",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "Set Payload / Set Variable set one thing",
+          "Transform Message can set the payload and variables in one place",
+          "Know which to use and why"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day08-summary",
+        "title": "Every Folder Has a Job",
+        "lesson": "day08",
+        "type": "summary",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "Maven gives every Mule 4 project the same structure",
+          "src/main/mule holds the flows",
+          "src/main/java is rare and fine not to know",
+          "src/main/resources holds properties and other files",
+          "src/test/munit and src/test/resources are for tests",
+          "pom.xml describes the project"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day08-pom",
+        "title": "Group, Artifact, Version",
+        "lesson": "day08",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 2,
+        "concepts": [
+          "POM is the Project Object Model",
+          "Identity: group ID, artifact ID, version, packaging",
+          "Dependencies and plugins are declared there"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day09-summary",
+        "title": "A Tour of Anypoint Studio",
+        "lesson": "day09",
+        "type": "summary",
+        "objective": "recall-list",
+        "complexity": 1,
+        "concepts": [
+          "Package Explorer on the left",
+          "The canvas in the middle",
+          "The Mule Palette on the right",
+          "Tabs at the bottom",
+          "The top menu bar"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day09-bottom-tabs",
+        "title": "Console, Problems, Debugger",
+        "lesson": "day09",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 1,
+        "concepts": [
+          "Console shows logs and errors",
+          "Problems lists what is wrong in the project",
+          "Mule Debugger lets you inspect the event step by step",
+          "MUnit coverage and errors for tests"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day10-summary",
+        "title": "Path or Question Mark",
+        "lesson": "day10",
+        "type": "summary",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "URI parameters identify one exact resource, in the path",
+          "Query parameters filter, sort and paginate, after the question mark",
+          "The decision rule between them",
+          "Strict validation rejects anything not declared"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day10-filter-sort-page",
+        "title": "Filter, Sort, Paginate",
+        "lesson": "day10",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "Filter narrows the results",
+          "Sort orders them",
+          "Pagination uses offset and limit"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day10-strict",
+        "title": "Strict Validation Keeps You Safe",
+        "lesson": "day10",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 2,
+        "concepts": [
+          "The misconception: extra parameters are harmless",
+          "Strict validation rejects undeclared parameters",
+          "Why it matters for security"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-test-one",
+        "title": "Test song one",
+        "lesson": "day05",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Fixture audio for the browser tests"
+        ],
+        "genre": "Test tone",
+        "status": "approved",
+        "audioUrl": "test-media/fixture-audio.mp3",
+        "duration": "0:30",
+        "test": true
+      },
+      {
+        "id": "beat-test-two",
+        "title": "Test song two",
+        "lesson": "day06",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 1,
+        "concepts": [
+          "Fixture audio for the browser tests"
+        ],
+        "genre": "Test tone",
+        "status": "approved",
+        "audioUrl": "test-media/fixture-audio.mp3",
+        "duration": "0:30",
+        "test": true
+      },
+      {
+        "id": "beat-test-three",
+        "title": "Test song three",
+        "lesson": "day07",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 1,
+        "concepts": [
+          "Fixture audio for the browser tests"
+        ],
+        "genre": "Test tone",
+        "status": "approved",
+        "audioUrl": "test-media/fixture-audio.mp3",
+        "duration": "0:30",
+        "test": true
+      },
+      {
+        "id": "beat-test-missing",
+        "title": "Test song with no audio file",
+        "lesson": "day08",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "Its audio file doesn't exist, to test the error state"
+        ],
+        "genre": "Test tone",
+        "status": "approved",
+        "audioUrl": "test-media/missing-song.mp3",
+        "duration": "0:30",
+        "test": true
+      }
+    ],
+    "playlists": [
+      {
+        "id": "days-05-10",
+        "title": "Days 5–10: every song",
+        "description": "Lesson summaries and concept songs for Days 5 to 10, in course order.",
+        "tracks": [
+          "beat-day05-summary",
+          "beat-day05-dynamic-query",
+          "beat-day05-run-debug",
+          "beat-day06-summary",
+          "beat-day06-methods",
+          "beat-day06-https",
+          "beat-day07-summary",
+          "beat-day07-three-parts",
+          "beat-day07-set-vs-transform",
+          "beat-day08-summary",
+          "beat-day08-pom",
+          "beat-day09-summary",
+          "beat-day09-bottom-tabs",
+          "beat-day10-summary",
+          "beat-day10-filter-sort-page",
+          "beat-day10-strict"
+        ]
+      },
+      {
+        "id": "days-05-10-summaries",
+        "title": "Days 5–10: lesson summaries",
+        "description": "One song per lesson: the whole lesson in about three minutes.",
+        "tracks": [
+          "beat-day05-summary",
+          "beat-day06-summary",
+          "beat-day07-summary",
+          "beat-day08-summary",
+          "beat-day09-summary",
+          "beat-day10-summary"
+        ]
+      },
+      {
+        "id": "test-playlist",
+        "title": "Test playlist",
+        "description": "For the browser tests.",
+        "tracks": [
+          "beat-test-one",
+          "beat-test-two",
+          "beat-test-three",
+          "beat-test-missing"
+        ]
+      }
+    ]
+  }
 }

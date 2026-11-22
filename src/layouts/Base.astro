@@ -6,7 +6,7 @@ import { getCourses, getManifest } from "../lib/content";
 import { APP_BUILD } from "../lib/routes";
 import "../styles/global.css";
 
-type NavKey = "home" | "videos" | "courses" | "lessons" | "notes" | "podcasts" | "search" | "about" | "revise" | "mystudy" | "preferences" | "downloads" | "account" | "interview" | "mcq" | "today" | "mastery" | "battle";
+type NavKey = "home" | "videos" | "courses" | "lessons" | "notes" | "podcasts" | "search" | "about" | "revise" | "mystudy" | "preferences" | "downloads" | "account" | "interview" | "mcq" | "today" | "mastery" | "battle" | "mulebeats";
 interface Props {
   title: string;
   description?: string;
@@ -26,6 +26,7 @@ const WORKSPACE = [
   { key: "lessons", href: `${base}lessons/`, label: "Lessons", icon: "lessons" },
   { key: "videos", href: `${base}videos/`, label: "Videos", icon: "video" },
   { key: "podcasts", href: `${base}podcasts/`, label: "Podcasts", icon: "podcast" },
+  { key: "mulebeats", href: `${base}mulebeats/`, label: "MuleBeats", icon: "music" },
   // offline audio lives in the app
   ...(APP_BUILD ? [DOWNLOADS] : []),
 ] as const;
@@ -52,7 +53,7 @@ const current = nav === "notes" ? "lessons" : nav === "downloads" && !APP_BUILD 
 const CRUMB: Record<NavKey, string> = {
   home: "Home", courses: "Courses", lessons: "Lessons", notes: "Notes", videos: "Videos", podcasts: "Podcasts",
   revise: "Revision", mystudy: "My Study", search: "Search", preferences: "Preferences", about: "About & help", downloads: "Downloads", account: "Account", interview: "Mock interview", mcq: "MCQ tests",
-  today: "Today's session", mastery: "Mastery", battle: "Quiz battle",
+  today: "Today's session", mastery: "Mastery", battle: "Quiz battle", mulebeats: "MuleBeats",
 };
 const crumb = nav ? CRUMB[nav] : title;
 ---
