@@ -1370,6 +1370,383 @@
         "duration": ""
       },
       {
+        "id": "beat-day11-summary",
+        "title": "Call Someone Else's API",
+        "lesson": "day11",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "HTTP Listener receives requests; HTTP Request calls out to another API",
+          "HTTP Request is how system and process APIs talk in API-led connectivity",
+          "Test the third-party API in Postman before touching Mule",
+          "Build the flow: listener, request (with the API key), transform",
+          "Check the real outgoing request in the debugger",
+          "The call's response overwrites the payload"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day11-listener-vs-request",
+        "title": "Listener or Request",
+        "lesson": "day11",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 1,
+        "concepts": [
+          "The Listener waits for calls coming in",
+          "The Request makes a call going out"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day12-summary",
+        "title": "Shape the Response",
+        "lesson": "day12",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Transform Message builds the final response",
+          "Find where each value really sits in the response",
+          "Try DataWeave in the Playground first",
+          "Kelvin to Celsius: subtract 273.15",
+          "Target Variable keeps the original payload",
+          "Response Timeout stops a slow call from hanging"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day12-target-variable",
+        "title": "Save It in a Target Variable",
+        "lesson": "day12",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 2,
+        "concepts": [
+          "Propagation: every call's result replaces the payload",
+          "A Target Variable stores the result in a variable instead",
+          "So the original payload survives"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day12-timeout",
+        "title": "Don't Wait Forever",
+        "lesson": "day12",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "Response Timeout is how long to wait for the other API",
+          "Past it, the call fails instead of hanging the flow"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day13-summary",
+        "title": "Try Again, Then Check",
+        "lesson": "day13",
+        "type": "summary",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "Reconnection strategy: what to do when the other side is down",
+          "Options: Standard (a set number of retries), None, Forever",
+          "Response Validator decides which status codes count as success"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day13-reconnect",
+        "title": "Standard, None, Forever",
+        "lesson": "day13",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 1,
+        "concepts": [
+          "Standard: retry a set number of times, a set time apart",
+          "None: fail at once",
+          "Forever: keep retrying"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day14-summary",
+        "title": "One App, Every Environment",
+        "lesson": "day14",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Never hard-code values that change per environment",
+          "A property file per environment: .yaml or .properties, no real difference",
+          "Configuration Properties global element",
+          "Reference properties as ${name}",
+          "Pass the environment name at deploy time",
+          "Encrypt secrets with Secure Properties"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day14-four-steps",
+        "title": "Four Steps to Properties",
+        "lesson": "day14",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "Step 1: a property file for each environment",
+          "Step 2: a Configuration Properties global element",
+          "Step 3: reference the property in each component",
+          "Step 4: supply the environment name in the Run/Debug configuration"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day14-secure",
+        "title": "Keep Secrets Secret",
+        "lesson": "day14",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 2,
+        "concepts": [
+          "Sensitive values are encrypted",
+          "Secure Properties decrypts them at runtime with a key",
+          "The key is supplied at deployment, never stored with the code"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day15-summary",
+        "title": "When Things Go Wrong",
+        "lesson": "day15",
+        "type": "summary",
+        "objective": "concept",
+        "complexity": 3,
+        "concepts": [
+          "The default error handler vs your own",
+          "Every response, success or error, comes from somewhere you choose",
+          "The error object: description and type",
+          "On Error Propagate returns an error to the caller",
+          "Build a custom error response for each error type",
+          "ANY must always go last"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day15-any-last",
+        "title": "ANY Goes Last",
+        "lesson": "day15",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 1,
+        "concepts": [
+          "Handlers are checked from the top",
+          "ANY matches everything",
+          "So specific error types first, ANY at the end"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day16-summary",
+        "title": "Propagate or Continue",
+        "lesson": "day16",
+        "type": "summary",
+        "objective": "contrast",
+        "complexity": 3,
+        "concepts": [
+          "On Error Propagate: the flow fails and the error goes to the caller",
+          "On Error Continue: handle it and return success",
+          "Error mapping turns one error type into your own",
+          "Three levels: flow, project (global) and component (Try scope)",
+          "Raise Error is for business-rule errors",
+          "Choice Router routes on a condition"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day16-levels",
+        "title": "Flow, Global, Try",
+        "lesson": "day16",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "Flow-level handlers cover one flow",
+          "A global handler covers the whole project",
+          "A Try scope handles errors around just a few components"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day16-raise-error",
+        "title": "Raise Your Own Error",
+        "lesson": "day16",
+        "type": "concept",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Check a business rule with a Choice Router",
+          "When it fails, Raise Error with your own type",
+          "A handler turns it into the right response"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day17-summary",
+        "title": "Where Does It Run?",
+        "lesson": "day17",
+        "type": "summary",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "Four strategies: CloudHub, on-premises, hybrid, Runtime Fabric",
+          "Control plane: who provides the management tools",
+          "Runtime plane: where the app actually runs",
+          "Load balancing and scaling: one server isn't enough"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day17-planes",
+        "title": "Control Plane, Runtime Plane",
+        "lesson": "day17",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "CloudHub: MuleSoft runs both planes",
+          "On-premises: you run both",
+          "Hybrid: MuleSoft's control plane, your runtime",
+          "Runtime Fabric: containers"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day18-summary",
+        "title": "Life in CloudHub",
+        "lesson": "day18",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "CloudHub is integration platform as a service",
+          "A worker is the deployment unit",
+          "vCore is how workers are sized and billed",
+          "Deploy from Runtime Manager, field by field",
+          "CloudHub 1.0 vs 2.0",
+          "Read the logs in Runtime Manager"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day18-scaling",
+        "title": "Wider or Bigger",
+        "lesson": "day18",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "Horizontal scaling: more workers for more requests",
+          "Vertical scaling: bigger workers for bigger requests"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day19-summary",
+        "title": "Running It Yourself",
+        "lesson": "day19",
+        "type": "summary",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "Download Mule Runtime standalone",
+          "apps/: drop the app here to deploy",
+          "bin/: start and stop the server",
+          "conf/wrapper.conf: runtime properties",
+          "domains/: shared configuration across apps",
+          "logs/: system and per-app logs"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day19-folders",
+        "title": "apps, bin, conf, domains, logs",
+        "lesson": "day19",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 1,
+        "concepts": [
+          "apps deploys",
+          "bin starts and stops",
+          "conf configures",
+          "domains shares",
+          "logs records"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day20-summary",
+        "title": "Hybrid: Their Controls, Your Server",
+        "lesson": "day20",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Hybrid: control plane in Anypoint, runtime on your server",
+          "Register the server in three steps",
+          "Then deploy to it from Runtime Manager",
+          "Troubleshoot patiently, one step at a time",
+          "Use the MuleSoft community and meetups"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-test-one",
         "title": "Test song one",
         "lesson": "day05",
@@ -1459,8 +1836,37 @@
         ]
       },
       {
-        "id": "days-05-10-summaries",
-        "title": "Days 5–10: lesson summaries",
+        "id": "days-11-20",
+        "title": "Days 11–20: every song",
+        "description": "Lesson summaries and concept songs for Days 11 to 20, in course order.",
+        "tracks": [
+          "beat-day11-summary",
+          "beat-day11-listener-vs-request",
+          "beat-day12-summary",
+          "beat-day12-target-variable",
+          "beat-day12-timeout",
+          "beat-day13-summary",
+          "beat-day13-reconnect",
+          "beat-day14-summary",
+          "beat-day14-four-steps",
+          "beat-day14-secure",
+          "beat-day15-summary",
+          "beat-day15-any-last",
+          "beat-day16-summary",
+          "beat-day16-levels",
+          "beat-day16-raise-error",
+          "beat-day17-summary",
+          "beat-day17-planes",
+          "beat-day18-summary",
+          "beat-day18-scaling",
+          "beat-day19-summary",
+          "beat-day19-folders",
+          "beat-day20-summary"
+        ]
+      },
+      {
+        "id": "lesson-summaries",
+        "title": "Lesson summaries",
         "description": "One song per lesson: the whole lesson in about three minutes.",
         "tracks": [
           "beat-day05-summary",
@@ -1468,7 +1874,17 @@
           "beat-day07-summary",
           "beat-day08-summary",
           "beat-day09-summary",
-          "beat-day10-summary"
+          "beat-day10-summary",
+          "beat-day11-summary",
+          "beat-day12-summary",
+          "beat-day13-summary",
+          "beat-day14-summary",
+          "beat-day15-summary",
+          "beat-day16-summary",
+          "beat-day17-summary",
+          "beat-day18-summary",
+          "beat-day19-summary",
+          "beat-day20-summary"
         ]
       },
       {
