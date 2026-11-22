@@ -139,7 +139,7 @@ The e2e tests run against `astro preview` of `dist/`, so **rebuild before runnin
   - `window.mlsOrientation` (`@capacitor/screen-orientation`), needed because the WebView doesn't support `screen.orientation.lock`
   - the media session
 - `MainActivity` serves a folder's index.html itself.
-- The version is set in `android/app/build.gradle`. It is now **versionCode 16 / versionName "1.16"**. Bump both for every app release.
+- The version is set in `android/app/build.gradle`. It is now **versionCode 17 / versionName "1.17"**. Bump both for every app release.
 - **Build environment:**
   - `export JAVA_HOME=~/.jdks/jdk-21.0.12.1+1 ANDROID_HOME=~/Android/Sdk` (the system Java is a JRE only)
   - The root disk is nearly full. Free only rebuildable caches, never user data.
