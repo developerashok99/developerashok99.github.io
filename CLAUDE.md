@@ -103,7 +103,7 @@ The e2e tests run against `astro preview` of `dist/`, so **rebuild before runnin
 - **Reminders** (app only): `@capacitor/local-notifications`; `src/lib/reminder.ts` plans the next few days; `native.ts` schedules them, re-plans on activity, prefs change and pause, and opens `today/` on tap. Preferences has the switch and time (`prefs.reminder`, `reminderTime`); `window.mlsReminders.enable()` asks for permission.
 - **Podcast auto-play**: the next episode plays when one ends (offline in the app: the next downloaded one). `prefs.podcastAutoplay`. The test fixture episode never leads into the course.
 
-### MuleBeats (study songs; Stage 1, not yet released)
+### MuleBeats (study songs; Stage 1, released in app 1.16)
 
 - Manifest: `config/media.json` → `mulebeats` {tracks, playlists}, parsed by `src/lib/mulebeats.ts` `parseBeats` (called from `parseMedia`; mistakes stop the build). Only `status: "approved"` songs with `audioUrl` and `duration` are published (`publish`); `test: true` songs only in test builds. `planStyle` picks genre/length from objective and complexity. All 60 lessons have planned songs (130: a summary per lesson plus concept songs) and no audio yet, so the live page shows the empty state.
 - Page `/mulebeats/` (`src/pages/mulebeats.astro`, `src/client/mulebeats.ts`). Songs join the shared audio player's list (`AudioPlayer.astro`, `kind: "song"`) and play as a queue: `player.ts` `playQueue`, `setShuffle`, `cycleRepeat`, `queueInfo`, event `mls:queue`, `mls:player-error`. Pure queue helpers `stepIndex`, `afterEnd`, `shuffled`. Podcasts never step into songs; playing a podcast ends the queue. Songs start from the top (no resume). Lock-screen next/previous use the same `step()`.
@@ -150,7 +150,7 @@ The e2e tests run against `astro preview` of `dist/`, so **rebuild before runnin
   - Screenshots don't work in the headless emulator (`dev.screenshot` is black and `page.screenshot` hangs), so check state with `evaluate` and `isVisible` instead.
   - Stop it with `adb emu kill`.
 - **Releases:**
-  - GitHub Releases are named `app-vX.Y`. The latest published one is **app-v1.15** (1.5–1.11 were skipped).
+  - GitHub Releases are named `app-vX.Y`. The latest published one is **app-v1.16** (1.5–1.11 were skipped).
   - Publish with (as `developerashok99`; this worked for 1.12):
     ```bash
     cp android/app/build/outputs/apk/debug/app-debug.apk mule-learning-hub-X.Y.apk
