@@ -105,7 +105,7 @@ The e2e tests run against `astro preview` of `dist/`, so **rebuild before runnin
 
 ### MuleBeats (study songs; Stage 1, not yet released)
 
-- Manifest: `config/media.json` → `mulebeats` {tracks, playlists}, parsed by `src/lib/mulebeats.ts` `parseBeats` (called from `parseMedia`; mistakes stop the build). Only `status: "approved"` songs with `audioUrl` and `duration` are published (`publish`); `test: true` songs only in test builds. `planStyle` picks genre/length from objective and complexity. Days 5–20 have 38 planned songs and no audio yet, so the live page shows the empty state.
+- Manifest: `config/media.json` → `mulebeats` {tracks, playlists}, parsed by `src/lib/mulebeats.ts` `parseBeats` (called from `parseMedia`; mistakes stop the build). Only `status: "approved"` songs with `audioUrl` and `duration` are published (`publish`); `test: true` songs only in test builds. `planStyle` picks genre/length from objective and complexity. All 60 lessons have planned songs (130: a summary per lesson plus concept songs) and no audio yet, so the live page shows the empty state.
 - Page `/mulebeats/` (`src/pages/mulebeats.astro`, `src/client/mulebeats.ts`). Songs join the shared audio player's list (`AudioPlayer.astro`, `kind: "song"`) and play as a queue: `player.ts` `playQueue`, `setShuffle`, `cycleRepeat`, `queueInfo`, event `mls:queue`, `mls:player-error`. Pure queue helpers `stepIndex`, `afterEnd`, `shuffled`. Podcasts never step into songs; playing a podcast ends the queue. Songs start from the top (no resume). Lock-screen next/previous use the same `step()`.
 - Tests: `tests/unit/mulebeats.test.ts`, `tests/e2e/mulebeats.spec.ts` (empty-state test runs only with `MULEBEATS_EMPTY=1` against a production build).
 

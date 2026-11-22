@@ -70,7 +70,7 @@ describe("MuleBeats manifest", () => {
     expect(() => parseMedia({ podcasts: [], mulebeats: { tracks: [song({ lesson: "nope" })] } }, known)).toThrow(/lesson "nope" does not exist/);
   });
 
-  it("the real config/media.json manifest is valid, covers Days 5–20, and publishes nothing that isn't approved", () => {
+  it("the real config/media.json manifest is valid, covers every lesson, and publishes nothing that isn't approved", () => {
     const ROOT = path.resolve(__dirname, "../..");
     const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, ".notes/manifest.json"), "utf8")) as { sessions: Record<string, unknown> };
     const media = JSON.parse(fs.readFileSync(path.join(ROOT, "config/media.json"), "utf8"));
@@ -78,7 +78,8 @@ describe("MuleBeats manifest", () => {
     const r = parseBeats(media.mulebeats, Object.keys(manifest.sessions), problems, { checkUrl: checkMediaUrl });
     expect(problems).toEqual([]);
     const lessons = new Set(r.all.tracks.filter((t) => !t.test).map((t) => t.lesson));
-    expect([...lessons].sort()).toEqual(["day05", "day06", "day07", "day08", "day09", "day10", "day11", "day12", "day13", "day14", "day15", "day16", "day17", "day18", "day19", "day20"]);
+    // every lesson of the course has at least a summary song planned
+    expect([...lessons].sort()).toEqual(Object.keys(manifest.sessions).sort());
     for (const id of lessons) expect(r.all.tracks.some((t) => t.lesson === id && t.type === "summary")).toBe(true);
     for (const t of r.published.tracks) expect(t.status === "approved" && !!t.audioUrl && !!t.duration && !t.test).toBe(true);
   });

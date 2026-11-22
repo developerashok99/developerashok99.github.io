@@ -1100,6 +1100,171 @@
     "$comment": "MuleBeats study songs. Songs are made by hand, reviewed, then set to status \"approved\" with their audioUrl (a GitHub Release asset, like the podcast MP3s) and real duration. Only approved songs reach the site; planned and review songs are the to-do list. objective (recall-list | process | contrast | concept) and complexity (1-3) choose the genre and target length (src/lib/mulebeats.ts planStyle); genre can be set to override. Songs with test: true exist only in test builds.",
     "tracks": [
       {
+        "id": "beat-day01-summary",
+        "title": "Systems That Talk",
+        "lesson": "day01",
+        "type": "summary",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "MuleSoft connects systems that speak different languages",
+          "Like an interpreter between two people",
+          "An order on a shopping site touches many systems at once",
+          "Most integration projects share the same common needs",
+          "Why MuleSoft, and why it's a good career"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day01-interpreter",
+        "title": "The Interpreter in the Middle",
+        "lesson": "day01",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "Two people, two languages: someone has to translate",
+          "MuleSoft is that translator between applications"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day02-summary",
+        "title": "API or Integration",
+        "lesson": "day02",
+        "type": "summary",
+        "objective": "contrast",
+        "complexity": 1,
+        "concepts": [
+          "A MuleSoft developer builds APIs and integrations",
+          "API: someone asks and gets an answer now (a balance check)",
+          "Integration: a job that moves data on its own (a nightly sync)",
+          "Anypoint Platform and its parts",
+          "What you need to practise"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day02-api-vs-integration",
+        "title": "Ask Now or Run Tonight",
+        "lesson": "day02",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 1,
+        "concepts": [
+          "An API answers a request straight away",
+          "An integration runs by itself, often on a schedule"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day03-summary",
+        "title": "Order at the Counter",
+        "lesson": "day03",
+        "type": "summary",
+        "objective": "concept",
+        "complexity": 2,
+        "concepts": [
+          "An API is the waiter between you and the kitchen",
+          "Every web service is an API, not every API is a web service",
+          "Data formats: JSON, XML, CSV",
+          "Caching keeps repeated answers fast",
+          "REST and SOAP"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day03-rest-vs-soap",
+        "title": "REST or SOAP",
+        "lesson": "day03",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "REST: light, uses HTTP methods, usually JSON",
+          "SOAP: strict contract (WSDL), always XML"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day03-formats",
+        "title": "JSON, XML, CSV",
+        "lesson": "day03",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 1,
+        "concepts": [
+          "JSON: curly braces, keys and values",
+          "XML: tags, used by SOAP",
+          "CSV: rows and commas, used for files"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day04-summary",
+        "title": "From Spaghetti to API-Led",
+        "lesson": "day04",
+        "type": "summary",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "The API lifecycle in six steps, like building a house",
+          "Point-to-point breaks down as systems grow",
+          "An ESB sits in the middle",
+          "Monolith vs microservices",
+          "API-led connectivity: experience, process, system"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day04-three-layers",
+        "title": "Experience, Process, System",
+        "lesson": "day04",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "System APIs unlock each back-end system",
+          "Process APIs combine them into business logic",
+          "Experience APIs shape data for each app"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day04-lifecycle",
+        "title": "Six Steps of an API",
+        "lesson": "day04",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "Design, simulate, validate",
+          "Build, test, secure",
+          "Deploy, then manage and monitor"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day05-summary",
         "title": "Listener, Logger, Database",
         "lesson": "day05",
@@ -1747,6 +1912,1357 @@
         "duration": ""
       },
       {
+        "id": "beat-day21-summary",
+        "title": "Design Before You Build",
+        "lesson": "day21",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Three stages: design, implement, manage",
+          "RAML vs OAS",
+          "The employee use case and its operations",
+          "REST and the right HTTP method for each operation",
+          "Where each security policy goes, layer by layer"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day21-raml-vs-oas",
+        "title": "RAML or OAS",
+        "lesson": "day21",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 1,
+        "concepts": [
+          "Both describe an API's contract before any code",
+          "RAML is MuleSoft's favourite; OAS (Swagger) is the wider standard"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day22-summary",
+        "title": "Name It Right",
+        "lesson": "day22",
+        "type": "summary",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "How many APIs for several consumers and systems",
+          "Naming conventions for experience, process and system APIs",
+          "Field rules in the schema",
+          "Tokens and correlation IDs go in headers, not the body",
+          "Sequence diagrams and field-mapping sheets"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day22-headers",
+        "title": "Not in the Body",
+        "lesson": "day22",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "Tokens and correlation IDs travel in headers",
+          "The body carries the business data"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day23-summary",
+        "title": "Writing RAML",
+        "lesson": "day23",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Design Center and its four 'create new' options",
+          "Resources are plural nouns, never verbs",
+          "Indentation matters in RAML",
+          "Headers like transactionId and origin",
+          "enum limits a value to a fixed list"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day23-nouns",
+        "title": "Plural Nouns, No Verbs",
+        "lesson": "day23",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 1,
+        "concepts": [
+          "/employees, not /getEmployee",
+          "The HTTP method already says the action"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day24-summary",
+        "title": "Keep RAML Tidy",
+        "lesson": "day24",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Move examples into their own files",
+          "Move data types out too, a different mechanism",
+          "Reuse what's shared, keep what's not",
+          "Templates save time"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day24-externalise",
+        "title": "Examples and Types in Their Own Files",
+        "lesson": "day24",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "!include pulls an example file in",
+          "Data types are declared once and referenced by name"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day25-summary",
+        "title": "Traits and Fragments",
+        "lesson": "day25",
+        "type": "summary",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "Traits reuse method-level pieces inside one API",
+          "Fragments share pieces across the whole organisation",
+          "Publish a fragment to Exchange",
+          "Mocking service and Postman for testers"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day25-trait-vs-fragment",
+        "title": "One API or Everyone",
+        "lesson": "day25",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "A trait is reused inside one API spec",
+          "A fragment is published and reused by every team"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day26-summary",
+        "title": "Publish to Exchange",
+        "lesson": "day26",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Publish the spec to Exchange so others can find it",
+          "Assets and versions in Exchange",
+          "Import the published API into Studio",
+          "APIkit generates flows from the spec",
+          "Never rename the generated flows"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day26-golden-rule",
+        "title": "Don't Rename the Flows",
+        "lesson": "day26",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "APIkit routes by the generated flow names",
+          "Rename one and the router can't find it"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day27-summary",
+        "title": "Build It for Real",
+        "lesson": "day27",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 3,
+        "concepts": [
+          "Split the project into common and implementation",
+          "One global config file",
+          "Reuse the error handler",
+          "Build POST, PATCH and GET",
+          "Database connector with property files and secure properties"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day27-common-impl",
+        "title": "Common and Implementation",
+        "lesson": "day27",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 1,
+        "concepts": [
+          "common holds shared config and error handling",
+          "implementation holds the business flows"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day28-summary",
+        "title": "Log Like a Pro",
+        "lesson": "day28",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Create initial variables at the start of the flow",
+          "JSON Logger as a shared custom connector",
+          "Log levels: info, debug, error",
+          "app.name and flow.name instead of hard-coded text",
+          "Start, middle and end loggers; elapsed time with now()"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day28-levels",
+        "title": "Info, Debug, Error",
+        "lesson": "day28",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 1,
+        "concepts": [
+          "Info: the normal story",
+          "Debug: the details when you need them",
+          "Error: when something breaks"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day29-summary",
+        "title": "Hide the Sensitive Bits",
+        "lesson": "day29",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "The mask function hides sensitive fields in logs",
+          "Mask once at the connector configuration",
+          "Read the MuleSoft docs well",
+          "Set up the real database and its property files",
+          "Root accounts vs service accounts"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day29-mask",
+        "title": "Mask It",
+        "lesson": "day29",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "Import mask from DataWeave's values module",
+          "Replace sensitive values with *** before logging"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day30-summary",
+        "title": "Finish the API",
+        "lesson": "day30",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Remove Variable frees memory",
+          "PATCH with an UPDATE query",
+          "Keep RAML and implementation responses the same",
+          "The Validation module",
+          "GET: SELECT, then map the Java array to JSON",
+          "Not found is still a success response"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day30-not-found",
+        "title": "Not Found Isn't an Error",
+        "lesson": "day30",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "An empty result is a valid answer",
+          "Return a clear message with a success code"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day31-summary",
+        "title": "Meet API Manager",
+        "lesson": "day31",
+        "type": "summary",
+        "objective": "concept",
+        "complexity": 2,
+        "concepts": [
+          "A gateway is a watchman in front of the API",
+          "Flex Gateway vs Mule Gateway",
+          "Proxy vs no proxy",
+          "Runtime Manager and API Manager working together",
+          "The policy catalogue"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day31-gateway",
+        "title": "The Watchman at the Gate",
+        "lesson": "day31",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "Every request passes the gateway first",
+          "Policies decide who gets in and how often"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day32-summary",
+        "title": "Slow Down the Traffic",
+        "lesson": "day32",
+        "type": "summary",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "401 (who are you?) vs 400 (bad request)",
+          "Rate limiting with a fixed window",
+          "Rate limiting SLA: tiers per consumer",
+          "Spike control queues instead of rejecting",
+          "HTTP caching and JSON threat protection"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day32-rate-vs-spike",
+        "title": "Reject or Queue",
+        "lesson": "day32",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "Rate limiting rejects requests over the limit",
+          "Spike control queues them and lets them through later"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day33-summary",
+        "title": "OAuth in Four Roles",
+        "lesson": "day33",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 3,
+        "concepts": [
+          "OAuth 2.0 is about authorisation",
+          "Authentication: who you are; authorisation: what you may do",
+          "Authorization code grant: sign in with another account",
+          "Four roles: resource owner, client, authorisation server, resource server",
+          "Access tokens, scopes, redirect URI"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day33-authn-authz",
+        "title": "Who You Are, What You Can Do",
+        "lesson": "day33",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 1,
+        "concepts": [
+          "Authentication checks identity, like hotel check-in",
+          "Authorisation checks permission, like your room key"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day33-four-roles",
+        "title": "Four OAuth Roles",
+        "lesson": "day33",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "Resource owner: the user",
+          "Client: the app asking",
+          "Authorisation server: issues tokens",
+          "Resource server: holds the data"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day34-summary",
+        "title": "Tokens Everywhere",
+        "lesson": "day34",
+        "type": "summary",
+        "objective": "contrast",
+        "complexity": 3,
+        "concepts": [
+          "Client credentials: server to server, no user",
+          "Store the token in the Object Store, not a variable",
+          "Resource owner password grant",
+          "JWT: header, payload, signature",
+          "JWT validation checks the signature locally"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day34-jwt",
+        "title": "Header, Payload, Signature",
+        "lesson": "day34",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "Three parts separated by dots",
+          "The signature proves nobody changed it",
+          "Validate with the public key"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day35-summary",
+        "title": "Apply a Policy",
+        "lesson": "day35",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "One procedure for every policy",
+          "Create the API instance in API Manager",
+          "Autodiscovery links the app to the instance",
+          "Deploy to CloudHub 2.0",
+          "Shared space vs private space"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day35-autodiscovery",
+        "title": "Autodiscovery Links Them",
+        "lesson": "day35",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "The app carries the API instance ID",
+          "So policies in API Manager apply to it"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day36-summary",
+        "title": "Lock the Door",
+        "lesson": "day36",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Fix the hanging deployment: name vs artifactId",
+          "Get the app active",
+          "Basic authentication",
+          "Client ID enforcement"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day36-client-id",
+        "title": "Client ID and Secret",
+        "lesson": "day36",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "Each consumer gets a client ID and secret",
+          "Requests without them are refused"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day37-summary",
+        "title": "More Guards at the Gate",
+        "lesson": "day37",
+        "type": "summary",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "CloudHub 1.0 vs 2.0",
+          "IP allow list and block list",
+          "JSON and XML threat protection",
+          "Rate limiting and SLA tiers",
+          "Policy order matters",
+          "Spike control"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day37-policy-order",
+        "title": "Order Matters",
+        "lesson": "day37",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "Policies run in the order listed",
+          "Put cheap checks first"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day38-summary",
+        "title": "Cache and Check Tokens",
+        "lesson": "day38",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "HTTP caching policy",
+          "JWT validation with Auth0",
+          "Read a token on jwt.io",
+          "Cache tokens instead of asking every time"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day38-caching",
+        "title": "Remember the Answer",
+        "lesson": "day38",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "Caching stores a response for a while",
+          "Repeat requests are answered without the back end"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day39-summary",
+        "title": "Test with MUnit",
+        "lesson": "day39",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "MUnit tests flows in isolation",
+          "Unit testing is the developer's job; QA tests more broadly",
+          "MUnit runs in CI/CD",
+          "Mocks, spies, asserts",
+          "Record a test, run it, check coverage"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day39-mock-spy-assert",
+        "title": "Mock, Spy, Assert",
+        "lesson": "day39",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 1,
+        "concepts": [
+          "Mock replaces a real call with a fake answer",
+          "Spy watches what goes in and out",
+          "Assert checks the result"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day40-summary",
+        "title": "Cover Every Path",
+        "lesson": "day40",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Tests for PATCH and POST",
+          "Tests for the error handlers",
+          "Assert the right values",
+          "Run everything for full coverage"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day40-coverage",
+        "title": "Every Path Tested",
+        "lesson": "day40",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "Coverage shows which processors ran in tests",
+          "Test the error paths too, not just success"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day41-summary",
+        "title": "Talking to SOAP",
+        "lesson": "day41",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Some systems still speak SOAP",
+          "The WSDL describes the service",
+          "Web Service Consumer configuration",
+          "Build the XML request with DataWeave",
+          "Read the SOAP response"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day41-wsdl",
+        "title": "Read the WSDL",
+        "lesson": "day41",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "The WSDL lists the operations and messages",
+          "The connector reads it so you don't have to"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day42-summary",
+        "title": "All at Once",
+        "lesson": "day42",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Scatter-Gather runs routes in parallel",
+          "Properties: timeout, max concurrency",
+          "Output: a result for each route",
+          "Variables from routes are merged",
+          "Errors: one failed route fails the whole"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day42-parallel",
+        "title": "Scatter, Then Gather",
+        "lesson": "day42",
+        "type": "concept",
+        "objective": "process",
+        "complexity": 1,
+        "concepts": [
+          "Send to every route at the same time",
+          "Collect all the results into one"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day43-summary",
+        "title": "Async and First DataWeave",
+        "lesson": "day43",
+        "type": "summary",
+        "objective": "concept",
+        "complexity": 2,
+        "concepts": [
+          "Async scope runs work without waiting",
+          "The main flow carries on",
+          "DataWeave Playground",
+          "Script anatomy: header, three dashes, body",
+          "Selectors pick values out"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day43-selectors",
+        "title": "Dot, Star, Index",
+        "lesson": "day43",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "payload.name picks one field",
+          "payload.*name picks it from every item",
+          "payload[0] picks by position"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day44-summary",
+        "title": "DataWeave Logic",
+        "lesson": "day44",
+        "type": "summary",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "Variables with var",
+          "Operators",
+          "default fills in missing values; ++ joins",
+          "if/else and match",
+          "filter and filterObject"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day44-default",
+        "title": "Default Saves the Day",
+        "lesson": "day44",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "payload.city default 'Unknown'",
+          "Use it whenever a field might be missing"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day45-summary",
+        "title": "Map, Group, Reduce",
+        "lesson": "day45",
+        "type": "summary",
+        "objective": "recall-list",
+        "complexity": 3,
+        "concepts": [
+          "map changes every item of an array",
+          "mapObject changes every key and value",
+          "distinctBy and groupBy",
+          "reduce folds a list into one value",
+          "orderBy, pluck, update; dates and numbers"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day45-map-vs-mapobject",
+        "title": "map or mapObject",
+        "lesson": "day45",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "map works on arrays: item and index",
+          "mapObject works on objects: value, key, index"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day45-reduce",
+        "title": "Fold It Down",
+        "lesson": "day45",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 3,
+        "concepts": [
+          "reduce walks the array with an accumulator",
+          "Each step returns the new accumulator",
+          "Great for totals"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day46-summary",
+        "title": "Hello Salesforce",
+        "lesson": "day46",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Salesforce is a CRM",
+          "Objects, records and fields",
+          "Connect with basic auth and a security token",
+          "Query with SOQL"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day46-soql",
+        "title": "SOQL in a Line",
+        "lesson": "day46",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "SELECT fields FROM Object WHERE condition",
+          "Like SQL, but for Salesforce objects"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day47-summary",
+        "title": "Create, Upsert, Listen",
+        "lesson": "day47",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Create records",
+          "Read the results and the errors",
+          "Upsert creates or updates by an external ID",
+          "On New / On Modified Object listen for changes",
+          "The Scheduler starts flows on a timer"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day47-upsert",
+        "title": "Upsert",
+        "lesson": "day47",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "Update if it exists, insert if it doesn't",
+          "Matched by an external ID"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day48-summary",
+        "title": "One at a Time",
+        "lesson": "day48",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 1,
+        "concepts": [
+          "For Each loops over a collection",
+          "The payload inside is one item",
+          "Collection and batch size settings",
+          "After the loop the original payload comes back"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day48-payload-back",
+        "title": "The Payload Comes Back",
+        "lesson": "day48",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "For Each doesn't change the outer payload",
+          "Collect results in a variable if you need them"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day49-summary",
+        "title": "Insert Faster",
+        "lesson": "day49",
+        "type": "summary",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "For Each with a database insert",
+          "Bulk insert sends all rows at once",
+          "Parallel For Each",
+          "Max concurrency limits the threads"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day49-bulk",
+        "title": "One by One or All at Once",
+        "lesson": "day49",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 1,
+        "concepts": [
+          "For Each insert: one database call per row",
+          "Bulk insert: one call for all rows"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day50-summary",
+        "title": "Batch Jobs",
+        "lesson": "day50",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 3,
+        "concepts": [
+          "Batch handles big volumes of records",
+          "Phases: load and dispatch, process, on complete",
+          "Batch job, batch step, batch aggregator",
+          "Failed records don't stop the others",
+          "On Complete reports the totals"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day50-phases",
+        "title": "Load, Process, Complete",
+        "lesson": "day50",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "Load and dispatch splits the input into records",
+          "Process runs each record through the steps",
+          "On Complete gives the summary"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day51-summary",
+        "title": "Messages in a Queue",
+        "lesson": "day51",
+        "type": "summary",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "JMS sends messages through a broker (ActiveMQ)",
+          "Queue: one consumer gets each message",
+          "Topic: every subscriber gets it",
+          "Publish, consume, listen; acknowledgement modes",
+          "VM connector for inside one app"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day51-queue-vs-topic",
+        "title": "Queue or Topic",
+        "lesson": "day51",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 1,
+        "concepts": [
+          "A queue delivers each message to one consumer",
+          "A topic broadcasts to all subscribers"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day52-summary",
+        "title": "The Object Store",
+        "lesson": "day52",
+        "type": "summary",
+        "objective": "concept",
+        "complexity": 2,
+        "concepts": [
+          "Object Store keeps key-value data",
+          "Cache an access token until it expires",
+          "Transient (memory) vs persistent (survives restarts)",
+          "Watermarking remembers where you stopped"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day52-transient",
+        "title": "Transient or Persistent",
+        "lesson": "day52",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 1,
+        "concepts": [
+          "Transient lives in memory and is lost on restart",
+          "Persistent survives restarts"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day53-summary",
+        "title": "Remember Where You Stopped",
+        "lesson": "day53",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Read the last watermark from the Object Store",
+          "Fetch only newer records",
+          "Process them",
+          "Store the new watermark"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day53-watermark",
+        "title": "The Watermark",
+        "lesson": "day53",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "A watermark is the last value you processed",
+          "Next run starts after it, so nothing is read twice"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day54-summary",
+        "title": "Files Over FTP",
+        "lesson": "day54",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "FTP server with FileZilla",
+          "Read a CSV into the database",
+          "FTP operations: list, read, write, move",
+          "Write database rows to a file",
+          "File vs FTP vs SFTP"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day54-file-ftp-sftp",
+        "title": "File, FTP, SFTP",
+        "lesson": "day54",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 1,
+        "concepts": [
+          "File: a local folder",
+          "FTP: a remote server, not encrypted",
+          "SFTP: a remote server over SSH, encrypted"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day55-summary",
+        "title": "Ship It Automatically",
+        "lesson": "day55",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "CI/CD builds and deploys on every change",
+          "Jenkins runs the pipeline",
+          "Code lives in a repository",
+          "Set up the software",
+          "Push the project to GitHub"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day55-ci-cd",
+        "title": "Build, Test, Deploy",
+        "lesson": "day55",
+        "type": "concept",
+        "objective": "process",
+        "complexity": 1,
+        "concepts": [
+          "Continuous integration builds and tests every change",
+          "Continuous delivery deploys it"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day57-summary",
+        "title": "Buckets in the Cloud",
+        "lesson": "day57",
+        "type": "summary",
+        "objective": "process",
+        "complexity": 2,
+        "concepts": [
+          "Amazon S3 stores objects in buckets",
+          "Access keys connect MuleSoft to AWS",
+          "Create a bucket, put and get objects",
+          "The Amazon S3 connector"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day57-buckets",
+        "title": "Buckets and Objects",
+        "lesson": "day57",
+        "type": "concept",
+        "objective": "concept",
+        "complexity": 1,
+        "concepts": [
+          "A bucket is a container",
+          "An object is a file and its metadata, found by its key"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day58-summary",
+        "title": "Logs and More DataWeave",
+        "lesson": "day58",
+        "type": "summary",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "Logging levels and where to set them",
+          "Debug and verbose logging",
+          "flatten and flatMap",
+          "Your own DataWeave functions",
+          "Writing XML and CSV"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day58-flatten",
+        "title": "flatten or flatMap",
+        "lesson": "day58",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "flatten turns nested arrays into one array",
+          "flatMap maps each item and flattens in one go"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-interview-part1-summary",
+        "title": "Get the Interview",
+        "lesson": "interview-part1",
+        "type": "summary",
+        "objective": "recall-list",
+        "complexity": 2,
+        "concepts": [
+          "A clear résumé and cover letter",
+          "The three opening questions, starting with 'tell me about yourself'",
+          "Web services questions",
+          "Parameters, methods and status codes"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-interview-part1-intro",
+        "title": "Tell Me About Yourself",
+        "lesson": "interview-part1",
+        "type": "concept",
+        "objective": "process",
+        "complexity": 1,
+        "concepts": [
+          "Who you are and your experience",
+          "What you built with MuleSoft",
+          "Why this role"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-interview-part2-summary",
+        "title": "The Hard Questions",
+        "lesson": "interview-part2",
+        "type": "summary",
+        "objective": "recall-list",
+        "complexity": 3,
+        "concepts": [
+          "RAML questions",
+          "API Manager and policies",
+          "OAuth 2.0 and JWT",
+          "Error handling",
+          "DataWeave"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-interview-part2-propagate-continue",
+        "title": "Propagate vs Continue (Interview Edition)",
+        "lesson": "interview-part2",
+        "type": "concept",
+        "objective": "contrast",
+        "complexity": 2,
+        "concepts": [
+          "Propagate: the caller gets an error",
+          "Continue: the caller gets a success response"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-interview-part3-summary",
+        "title": "Ready for the Panel",
+        "lesson": "interview-part3",
+        "type": "summary",
+        "objective": "recall-list",
+        "complexity": 3,
+        "concepts": [
+          "More DataWeave",
+          "API-led connectivity",
+          "Runtime Manager and deployment",
+          "Clusters, networks and load balancers",
+          "HTTPS and TLS"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-interview-part3-api-led",
+        "title": "API-Led in One Breath",
+        "lesson": "interview-part3",
+        "type": "concept",
+        "objective": "recall-list",
+        "complexity": 1,
+        "concepts": [
+          "System APIs unlock data",
+          "Process APIs orchestrate",
+          "Experience APIs serve each channel"
+        ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-test-one",
         "title": "Test song one",
         "lesson": "day05",
@@ -1813,6 +3329,23 @@
     ],
     "playlists": [
       {
+        "id": "days-01-04",
+        "title": "Days 1–4: every song",
+        "description": "Lesson summaries and concept songs for Days 1 to 4, in course order.",
+        "tracks": [
+          "beat-day01-summary",
+          "beat-day01-interpreter",
+          "beat-day02-summary",
+          "beat-day02-api-vs-integration",
+          "beat-day03-summary",
+          "beat-day03-rest-vs-soap",
+          "beat-day03-formats",
+          "beat-day04-summary",
+          "beat-day04-three-layers",
+          "beat-day04-lifecycle"
+        ]
+      },
+      {
         "id": "days-05-10",
         "title": "Days 5–10: every song",
         "description": "Lesson summaries and concept songs for Days 5 to 10, in course order.",
@@ -1865,10 +3398,131 @@
         ]
       },
       {
+        "id": "days-21-30",
+        "title": "Days 21–30: every song",
+        "description": "Lesson summaries and concept songs for Days 21 to 30, in course order.",
+        "tracks": [
+          "beat-day21-summary",
+          "beat-day21-raml-vs-oas",
+          "beat-day22-summary",
+          "beat-day22-headers",
+          "beat-day23-summary",
+          "beat-day23-nouns",
+          "beat-day24-summary",
+          "beat-day24-externalise",
+          "beat-day25-summary",
+          "beat-day25-trait-vs-fragment",
+          "beat-day26-summary",
+          "beat-day26-golden-rule",
+          "beat-day27-summary",
+          "beat-day27-common-impl",
+          "beat-day28-summary",
+          "beat-day28-levels",
+          "beat-day29-summary",
+          "beat-day29-mask",
+          "beat-day30-summary",
+          "beat-day30-not-found"
+        ]
+      },
+      {
+        "id": "days-31-40",
+        "title": "Days 31–40: every song",
+        "description": "Lesson summaries and concept songs for Days 31 to 40, in course order.",
+        "tracks": [
+          "beat-day31-summary",
+          "beat-day31-gateway",
+          "beat-day32-summary",
+          "beat-day32-rate-vs-spike",
+          "beat-day33-summary",
+          "beat-day33-authn-authz",
+          "beat-day33-four-roles",
+          "beat-day34-summary",
+          "beat-day34-jwt",
+          "beat-day35-summary",
+          "beat-day35-autodiscovery",
+          "beat-day36-summary",
+          "beat-day36-client-id",
+          "beat-day37-summary",
+          "beat-day37-policy-order",
+          "beat-day38-summary",
+          "beat-day38-caching",
+          "beat-day39-summary",
+          "beat-day39-mock-spy-assert",
+          "beat-day40-summary",
+          "beat-day40-coverage"
+        ]
+      },
+      {
+        "id": "days-41-50",
+        "title": "Days 41–50: every song",
+        "description": "Lesson summaries and concept songs for Days 41 to 50, in course order.",
+        "tracks": [
+          "beat-day41-summary",
+          "beat-day41-wsdl",
+          "beat-day42-summary",
+          "beat-day42-parallel",
+          "beat-day43-summary",
+          "beat-day43-selectors",
+          "beat-day44-summary",
+          "beat-day44-default",
+          "beat-day45-summary",
+          "beat-day45-map-vs-mapobject",
+          "beat-day45-reduce",
+          "beat-day46-summary",
+          "beat-day46-soql",
+          "beat-day47-summary",
+          "beat-day47-upsert",
+          "beat-day48-summary",
+          "beat-day48-payload-back",
+          "beat-day49-summary",
+          "beat-day49-bulk",
+          "beat-day50-summary",
+          "beat-day50-phases"
+        ]
+      },
+      {
+        "id": "days-51-58",
+        "title": "Days 51–58: every song",
+        "description": "Lesson summaries and concept songs for Days 51 to 58, in course order.",
+        "tracks": [
+          "beat-day51-summary",
+          "beat-day51-queue-vs-topic",
+          "beat-day52-summary",
+          "beat-day52-transient",
+          "beat-day53-summary",
+          "beat-day53-watermark",
+          "beat-day54-summary",
+          "beat-day54-file-ftp-sftp",
+          "beat-day55-summary",
+          "beat-day55-ci-cd",
+          "beat-day57-summary",
+          "beat-day57-buckets",
+          "beat-day58-summary",
+          "beat-day58-flatten"
+        ]
+      },
+      {
+        "id": "interview-prep",
+        "title": "Interview preparation",
+        "description": "Songs for the three interview-preparation parts.",
+        "tracks": [
+          "beat-interview-part1-summary",
+          "beat-interview-part1-intro",
+          "beat-interview-part2-summary",
+          "beat-interview-part2-propagate-continue",
+          "beat-interview-part3-summary",
+          "beat-interview-part3-api-led"
+        ]
+      },
+      {
         "id": "lesson-summaries",
         "title": "Lesson summaries",
         "description": "One song per lesson: the whole lesson in about three minutes.",
         "tracks": [
+          "beat-day01-summary",
+          "beat-day02-summary",
+          "beat-day03-summary",
+          "beat-day04-summary",
           "beat-day05-summary",
           "beat-day06-summary",
           "beat-day07-summary",
@@ -1884,7 +3538,47 @@
           "beat-day17-summary",
           "beat-day18-summary",
           "beat-day19-summary",
-          "beat-day20-summary"
+          "beat-day20-summary",
+          "beat-day21-summary",
+          "beat-day22-summary",
+          "beat-day23-summary",
+          "beat-day24-summary",
+          "beat-day25-summary",
+          "beat-day26-summary",
+          "beat-day27-summary",
+          "beat-day28-summary",
+          "beat-day29-summary",
+          "beat-day30-summary",
+          "beat-day31-summary",
+          "beat-day32-summary",
+          "beat-day33-summary",
+          "beat-day34-summary",
+          "beat-day35-summary",
+          "beat-day36-summary",
+          "beat-day37-summary",
+          "beat-day38-summary",
+          "beat-day39-summary",
+          "beat-day40-summary",
+          "beat-day41-summary",
+          "beat-day42-summary",
+          "beat-day43-summary",
+          "beat-day44-summary",
+          "beat-day45-summary",
+          "beat-day46-summary",
+          "beat-day47-summary",
+          "beat-day48-summary",
+          "beat-day49-summary",
+          "beat-day50-summary",
+          "beat-day51-summary",
+          "beat-day52-summary",
+          "beat-day53-summary",
+          "beat-day54-summary",
+          "beat-day55-summary",
+          "beat-day57-summary",
+          "beat-day58-summary",
+          "beat-interview-part1-summary",
+          "beat-interview-part2-summary",
+          "beat-interview-part3-summary"
         ]
       },
       {
