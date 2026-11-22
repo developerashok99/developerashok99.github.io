@@ -4,13 +4,30 @@
  */
 import { currentId, getEpisode, isPlaying, playQueue, queueInfo, toggle } from "./player";
 import { pageSignal } from "./page";
+import { prefs, setPrefs } from "./store";
 
 export function setupMuleBeats() {
   const root = document.querySelector<HTMLElement>("[data-mulebeats]");
   if (!root || root.querySelector("[data-mb-empty]")) return;
   const signal = pageSignal();
   const lists = [...root.querySelectorAll<HTMLElement>("[data-mb-playlist]")];
-  const idsOf = (list: HTMLElement) => [...list.querySelectorAll<HTMLElement>("[data-mb-track]")].map((li) => li.dataset.mbTrack!);
+  /** the songs of a playlist in the language chosen (all of them when "All") */
+  const idsOf = (list: HTMLElement) => [...list.querySelectorAll<HTMLElement>("[data-mb-track]")].filter((li) => !li.hidden).map((li) => li.dataset.mbTrack!);
+
+  // the language switch: remembered on this device
+  const setLang = (lang: string) => {
+    for (const b of root.querySelectorAll<HTMLElement>("[data-mb-lang]")) b.setAttribute("aria-pressed", String(b.dataset.mbLang === lang));
+    for (const li of root.querySelectorAll<HTMLElement>("[data-mb-track]")) li.hidden = !!lang && li.dataset.lang !== lang;
+    for (const l of lists) {
+      const n = l.querySelectorAll("[data-mb-track]:not([hidden])").length;
+      l.querySelector<HTMLElement>("[data-mb-none]")!.hidden = n > 0;
+      l.querySelectorAll<HTMLButtonElement>("[data-mb-play-all], [data-mb-shuffle-all]").forEach((b) => (b.disabled = n === 0));
+    }
+    for (const c of root.querySelectorAll<HTMLElement>("[data-mb-count]")) {
+      const n = Number(c.dataset[lang === "en" ? "nEn" : lang === "te" ? "nTe" : "nAll"]) || 0;
+      c.textContent = `${n} song${n === 1 ? "" : "s"}`;
+    }
+  };
   /** songs whose audio failed this visit */
   const failed = new Set<string>();
 
@@ -57,6 +74,12 @@ export function setupMuleBeats() {
 
   root.addEventListener("click", (e) => {
     const el = e.target as Element;
+    const langBtn = el.closest<HTMLElement>("[data-mb-lang]");
+    if (langBtn) {
+      setLang(langBtn.dataset.mbLang ?? "");
+      setPrefs({ beatsLang: langBtn.dataset.mbLang ?? "" });
+      return;
+    }
     const pickBtn = el.closest<HTMLElement>("[data-mb-pick]");
     if (pickBtn) return pick(pickBtn.dataset.mbPick!);
     const list = el.closest<HTMLElement>("[data-mb-playlist]");
@@ -82,6 +105,9 @@ export function setupMuleBeats() {
   const audio = document.querySelector<HTMLAudioElement>("[data-audio]");
   for (const ev of ["play", "pause", "playing", "ended"]) audio?.addEventListener(ev, render, { signal });
 
+  const saved = prefs().beatsLang ?? "";
+  if (root.querySelector(`[data-mb-lang="${saved}"]`)) setLang(saved);
+  else setLang("");
   // opened from a song link (mulebeats/#beat-…): show the playlist that has it
   const hash = decodeURIComponent(location.hash.slice(1));
   const withSong = hash && lists.find((l) => idsOf(l).includes(hash));

@@ -263,6 +263,8 @@ export interface Prefs {
   videoNotes?: "simple" | "detailed" | "super";
   /** Revision: new flashcards to introduce per day (default 15) */
   newPerDay?: number;
+  /** MuleBeats: songs shown in one language ("en", "te") or all ("") */
+  beatsLang?: string;
   /** study points to reach each day (default 30) */
   dailyGoal?: number;
   /** app: a daily reminder at this time ("19:00"), or off */

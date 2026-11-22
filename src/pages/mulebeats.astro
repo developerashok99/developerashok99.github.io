@@ -9,12 +9,14 @@ import PageHead from "../components/PageHead.astro";
 import { getBeats, getLesson } from "../lib/content";
 import { formatLength } from "../lib/duration";
 import { lessonPath, withBase } from "../lib/routes";
+import { LANGUAGE_NAMES } from "../lib/mulebeats";
 
 const base = import.meta.env.BASE_URL;
 const { tracks, playlists } = getBeats();
 const byId = new Map(tracks.map((t) => [t.id, t]));
 const TYPE = { summary: "Lesson summary", concept: "Concept song" } as const;
-const first = playlists[0];
+const languages = [...new Set(tracks.map((t) => t.language))];
+const count = (ids: string[], lang?: string) => ids.filter((id) => !lang || byId.get(id)?.language === lang).length;
 ---
 <Base title="MuleBeats" nav="mulebeats" description="Study songs: each lesson's summary and its key concepts, set to music">
   <div class="page mulebeats" data-mulebeats>
@@ -31,11 +33,20 @@ const first = playlists[0];
       </section>
     ) : (
       <>
+        {languages.length > 1 && (
+          <div class="mb-lang" role="group" aria-label="Song language">
+            <span class="small muted">Language</span>
+            <div class="segmented">
+              <button type="button" data-mb-lang="" aria-pressed="true">All</button>
+              {languages.map((l) => <button type="button" data-mb-lang={l} aria-pressed="false" lang={l}>{LANGUAGE_NAMES[l]}</button>)}
+            </div>
+          </div>
+        )}
         <nav class="mb-playlists" aria-label="Playlists">
           {playlists.map((p, i) => (
             <button type="button" class="mb-playlist" data-mb-pick={p.id} aria-pressed={i === 0 ? "true" : "false"}>
               <b>{p.title}</b>
-              <span class="small muted">{p.tracks.length} song{p.tracks.length === 1 ? "" : "s"} · {formatLength(p.tracks.reduce((n, id) => n + (byId.get(id)?.duration ?? 0), 0))}</span>
+              <span class="small muted" data-mb-count data-n-all={count(p.tracks)} data-n-en={count(p.tracks, "en")} data-n-te={count(p.tracks, "te")}>{p.tracks.length} song{p.tracks.length === 1 ? "" : "s"}</span>
             </button>
           ))}
         </nav>
@@ -57,17 +68,17 @@ const first = playlists[0];
                 const t = byId.get(id)!;
                 const lesson = getLesson(t.lesson);
                 return (
-                  <li class="mb-track" id={i === 0 ? t.id : undefined} data-mb-track={t.id}>
+                  <li class="mb-track" id={i === 0 ? t.id : undefined} data-mb-track={t.id} data-lang={t.language}>
                     <button class="play-btn mb-track__play" type="button" data-mb-play={t.id} aria-label={`Play ${t.title}`}>
                       <Icon name="play" class="play" /><Icon name="pause" class="pause" />
                     </button>
                     <div class="mb-track__body">
-                      <p class="mb-track__title"><span class="mb-track__n" aria-hidden="true">{n + 1}</span> <b>{t.title}</b></p>
+                      <p class="mb-track__title"><b lang={t.language}>{t.title}</b></p>
                       <p class="mb-track__meta small">
                         <a href={withBase(base, lessonPath(t.lesson))}>{lesson?.label ?? t.lesson}{lesson ? `: ${lesson.title}` : ""}</a>
                       </p>
                       <p class="mb-track__tags small muted">
-                        <span class="pill">{TYPE[t.type]}</span> <span>{t.genre}</span> · <span>{formatLength(t.duration ?? 0)}</span>
+                        <span class="pill">{TYPE[t.type]}</span> <span class="pill pill--blue" lang={t.language}>{LANGUAGE_NAMES[t.language]}</span> <span>{t.genre}</span> · <span>{formatLength(t.duration ?? 0)}</span>
                       </p>
                       {t.concepts.length > 0 && (
                         <details class="mb-track__covers small">
@@ -81,6 +92,7 @@ const first = playlists[0];
                 );
               })}
             </ol>
+            <p class="small muted" data-mb-none hidden>No songs in this language in this playlist yet.</p>
           </section>
         ))}
 

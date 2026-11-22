@@ -1097,7 +1097,7 @@
     }
   ],
   "mulebeats": {
-    "$comment": "MuleBeats study songs. Songs are made by hand, reviewed, then set to status \"approved\" with their audioUrl (a GitHub Release asset, like the podcast MP3s) and real duration. Only approved songs reach the site; planned and review songs are the to-do list. objective (recall-list | process | contrast | concept) and complexity (1-3) choose the genre and target length (src/lib/mulebeats.ts planStyle); genre can be set to override. Songs with test: true exist only in test builds.",
+    "$comment": "MuleBeats study songs. Songs are made by hand, reviewed, then set to status \"approved\" with their audioUrl (a GitHub Release asset, like the podcast MP3s) and real duration. Only approved songs reach the site; planned and review songs are the to-do list. objective (recall-list | process | contrast | concept) and complexity (1-3) choose the genre and target length (src/lib/mulebeats.ts planStyle); genre can be set to override. Songs with test: true exist only in test builds. Songs can be in English (\"en\", the default) or Telugu (\"te\"): a Telugu version sets versionOf to the English song's id and takes its lesson, type and concepts; its title defaults to the original's with (తెలుగు).",
     "tracks": [
       {
         "id": "beat-day01-summary",
@@ -1118,6 +1118,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day01-summary-te",
+        "versionOf": "beat-day01-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day01-interpreter",
         "title": "The Interpreter in the Middle",
         "lesson": "day01",
@@ -1128,6 +1136,14 @@
           "Two people, two languages: someone has to translate",
           "MuleSoft is that translator between applications"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day01-interpreter-te",
+        "versionOf": "beat-day01-interpreter",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1151,6 +1167,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day02-summary-te",
+        "versionOf": "beat-day02-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day02-api-vs-integration",
         "title": "Ask Now or Run Tonight",
         "lesson": "day02",
@@ -1161,6 +1185,14 @@
           "An API answers a request straight away",
           "An integration runs by itself, often on a schedule"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day02-api-vs-integration-te",
+        "versionOf": "beat-day02-api-vs-integration",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1184,6 +1216,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day03-summary-te",
+        "versionOf": "beat-day03-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day03-rest-vs-soap",
         "title": "REST or SOAP",
         "lesson": "day03",
@@ -1194,6 +1234,14 @@
           "REST: light, uses HTTP methods, usually JSON",
           "SOAP: strict contract (WSDL), always XML"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day03-rest-vs-soap-te",
+        "versionOf": "beat-day03-rest-vs-soap",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1210,6 +1258,14 @@
           "XML: tags, used by SOAP",
           "CSV: rows and commas, used for files"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day03-formats-te",
+        "versionOf": "beat-day03-formats",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1233,6 +1289,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day04-summary-te",
+        "versionOf": "beat-day04-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day04-three-layers",
         "title": "Experience, Process, System",
         "lesson": "day04",
@@ -1249,6 +1313,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day04-three-layers-te",
+        "versionOf": "beat-day04-three-layers",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day04-lifecycle",
         "title": "Six Steps of an API",
         "lesson": "day04",
@@ -1260,6 +1332,14 @@
           "Build, test, secure",
           "Deploy, then manage and monitor"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day04-lifecycle-te",
+        "versionOf": "beat-day04-lifecycle",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1284,6 +1364,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day05-summary-te",
+        "versionOf": "beat-day05-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day05-dynamic-query",
         "title": "Keep the Query Dynamic",
         "lesson": "day05",
@@ -1300,6 +1388,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day05-dynamic-query-te",
+        "versionOf": "beat-day05-dynamic-query",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day05-run-debug",
         "title": "Run or Debug",
         "lesson": "day05",
@@ -1310,6 +1406,14 @@
           "Run deploys the app and just runs it",
           "Debug stops at breakpoints so you can inspect the Mule event"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day05-run-debug-te",
+        "versionOf": "beat-day05-run-debug",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1333,6 +1437,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day06-summary-te",
+        "versionOf": "beat-day06-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day06-methods",
         "title": "GET POST PUT PATCH DELETE",
         "lesson": "day06",
@@ -1351,6 +1463,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day06-methods-te",
+        "versionOf": "beat-day06-methods",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day06-https",
         "title": "Lock It with HTTPS",
         "lesson": "day06",
@@ -1361,6 +1481,14 @@
           "Plain HTTP can be read by anyone sniffing the network",
           "HTTPS encrypts the traffic"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day06-https-te",
+        "versionOf": "beat-day06-https",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1384,6 +1512,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day07-summary-te",
+        "versionOf": "beat-day07-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day07-three-parts",
         "title": "Payload, Attributes, Variables",
         "lesson": "day07",
@@ -1400,6 +1536,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day07-three-parts-te",
+        "versionOf": "beat-day07-three-parts",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day07-set-vs-transform",
         "title": "Set Variable or Transform Message",
         "lesson": "day07",
@@ -1411,6 +1555,14 @@
           "Transform Message can set the payload and variables in one place",
           "Know which to use and why"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day07-set-vs-transform-te",
+        "versionOf": "beat-day07-set-vs-transform",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1435,6 +1587,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day08-summary-te",
+        "versionOf": "beat-day08-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day08-pom",
         "title": "Group, Artifact, Version",
         "lesson": "day08",
@@ -1446,6 +1606,14 @@
           "Identity: group ID, artifact ID, version, packaging",
           "Dependencies and plugins are declared there"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day08-pom-te",
+        "versionOf": "beat-day08-pom",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1469,6 +1637,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day09-summary-te",
+        "versionOf": "beat-day09-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day09-bottom-tabs",
         "title": "Console, Problems, Debugger",
         "lesson": "day09",
@@ -1481,6 +1657,14 @@
           "Mule Debugger lets you inspect the event step by step",
           "MUnit coverage and errors for tests"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day09-bottom-tabs-te",
+        "versionOf": "beat-day09-bottom-tabs",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1503,6 +1687,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day10-summary-te",
+        "versionOf": "beat-day10-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day10-filter-sort-page",
         "title": "Filter, Sort, Paginate",
         "lesson": "day10",
@@ -1519,6 +1711,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day10-filter-sort-page-te",
+        "versionOf": "beat-day10-filter-sort-page",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day10-strict",
         "title": "Strict Validation Keeps You Safe",
         "lesson": "day10",
@@ -1530,6 +1730,14 @@
           "Strict validation rejects undeclared parameters",
           "Why it matters for security"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day10-strict-te",
+        "versionOf": "beat-day10-strict",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1554,6 +1762,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day11-summary-te",
+        "versionOf": "beat-day11-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day11-listener-vs-request",
         "title": "Listener or Request",
         "lesson": "day11",
@@ -1564,6 +1780,14 @@
           "The Listener waits for calls coming in",
           "The Request makes a call going out"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day11-listener-vs-request-te",
+        "versionOf": "beat-day11-listener-vs-request",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1588,6 +1812,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day12-summary-te",
+        "versionOf": "beat-day12-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day12-target-variable",
         "title": "Save It in a Target Variable",
         "lesson": "day12",
@@ -1604,6 +1836,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day12-target-variable-te",
+        "versionOf": "beat-day12-target-variable",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day12-timeout",
         "title": "Don't Wait Forever",
         "lesson": "day12",
@@ -1614,6 +1854,14 @@
           "Response Timeout is how long to wait for the other API",
           "Past it, the call fails instead of hanging the flow"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day12-timeout-te",
+        "versionOf": "beat-day12-timeout",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1635,6 +1883,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day13-summary-te",
+        "versionOf": "beat-day13-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day13-reconnect",
         "title": "Standard, None, Forever",
         "lesson": "day13",
@@ -1646,6 +1902,14 @@
           "None: fail at once",
           "Forever: keep retrying"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day13-reconnect-te",
+        "versionOf": "beat-day13-reconnect",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1670,6 +1934,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day14-summary-te",
+        "versionOf": "beat-day14-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day14-four-steps",
         "title": "Four Steps to Properties",
         "lesson": "day14",
@@ -1687,6 +1959,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day14-four-steps-te",
+        "versionOf": "beat-day14-four-steps",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day14-secure",
         "title": "Keep Secrets Secret",
         "lesson": "day14",
@@ -1698,6 +1978,14 @@
           "Secure Properties decrypts them at runtime with a key",
           "The key is supplied at deployment, never stored with the code"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day14-secure-te",
+        "versionOf": "beat-day14-secure",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1722,6 +2010,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day15-summary-te",
+        "versionOf": "beat-day15-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day15-any-last",
         "title": "ANY Goes Last",
         "lesson": "day15",
@@ -1733,6 +2029,14 @@
           "ANY matches everything",
           "So specific error types first, ANY at the end"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day15-any-last-te",
+        "versionOf": "beat-day15-any-last",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1757,6 +2061,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day16-summary-te",
+        "versionOf": "beat-day16-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day16-levels",
         "title": "Flow, Global, Try",
         "lesson": "day16",
@@ -1773,6 +2085,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day16-levels-te",
+        "versionOf": "beat-day16-levels",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day16-raise-error",
         "title": "Raise Your Own Error",
         "lesson": "day16",
@@ -1784,6 +2104,14 @@
           "When it fails, Raise Error with your own type",
           "A handler turns it into the right response"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day16-raise-error-te",
+        "versionOf": "beat-day16-raise-error",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1806,6 +2134,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day17-summary-te",
+        "versionOf": "beat-day17-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day17-planes",
         "title": "Control Plane, Runtime Plane",
         "lesson": "day17",
@@ -1818,6 +2154,14 @@
           "Hybrid: MuleSoft's control plane, your runtime",
           "Runtime Fabric: containers"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day17-planes-te",
+        "versionOf": "beat-day17-planes",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1842,6 +2186,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day18-summary-te",
+        "versionOf": "beat-day18-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day18-scaling",
         "title": "Wider or Bigger",
         "lesson": "day18",
@@ -1852,6 +2204,14 @@
           "Horizontal scaling: more workers for more requests",
           "Vertical scaling: bigger workers for bigger requests"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day18-scaling-te",
+        "versionOf": "beat-day18-scaling",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1876,6 +2236,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day19-summary-te",
+        "versionOf": "beat-day19-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day19-folders",
         "title": "apps, bin, conf, domains, logs",
         "lesson": "day19",
@@ -1889,6 +2257,14 @@
           "domains shares",
           "logs records"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day19-folders-te",
+        "versionOf": "beat-day19-folders",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1912,6 +2288,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day20-summary-te",
+        "versionOf": "beat-day20-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day21-summary",
         "title": "Design Before You Build",
         "lesson": "day21",
@@ -1930,6 +2314,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day21-summary-te",
+        "versionOf": "beat-day21-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day21-raml-vs-oas",
         "title": "RAML or OAS",
         "lesson": "day21",
@@ -1940,6 +2332,14 @@
           "Both describe an API's contract before any code",
           "RAML is MuleSoft's favourite; OAS (Swagger) is the wider standard"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day21-raml-vs-oas-te",
+        "versionOf": "beat-day21-raml-vs-oas",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1963,6 +2363,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day22-summary-te",
+        "versionOf": "beat-day22-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day22-headers",
         "title": "Not in the Body",
         "lesson": "day22",
@@ -1973,6 +2381,14 @@
           "Tokens and correlation IDs travel in headers",
           "The body carries the business data"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day22-headers-te",
+        "versionOf": "beat-day22-headers",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -1996,6 +2412,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day23-summary-te",
+        "versionOf": "beat-day23-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day23-nouns",
         "title": "Plural Nouns, No Verbs",
         "lesson": "day23",
@@ -2006,6 +2430,14 @@
           "/employees, not /getEmployee",
           "The HTTP method already says the action"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day23-nouns-te",
+        "versionOf": "beat-day23-nouns",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2028,6 +2460,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day24-summary-te",
+        "versionOf": "beat-day24-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day24-externalise",
         "title": "Examples and Types in Their Own Files",
         "lesson": "day24",
@@ -2038,6 +2478,14 @@
           "!include pulls an example file in",
           "Data types are declared once and referenced by name"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day24-externalise-te",
+        "versionOf": "beat-day24-externalise",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2060,6 +2508,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day25-summary-te",
+        "versionOf": "beat-day25-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day25-trait-vs-fragment",
         "title": "One API or Everyone",
         "lesson": "day25",
@@ -2070,6 +2526,14 @@
           "A trait is reused inside one API spec",
           "A fragment is published and reused by every team"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day25-trait-vs-fragment-te",
+        "versionOf": "beat-day25-trait-vs-fragment",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2093,6 +2557,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day26-summary-te",
+        "versionOf": "beat-day26-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day26-golden-rule",
         "title": "Don't Rename the Flows",
         "lesson": "day26",
@@ -2103,6 +2575,14 @@
           "APIkit routes by the generated flow names",
           "Rename one and the router can't find it"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day26-golden-rule-te",
+        "versionOf": "beat-day26-golden-rule",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2126,6 +2606,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day27-summary-te",
+        "versionOf": "beat-day27-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day27-common-impl",
         "title": "Common and Implementation",
         "lesson": "day27",
@@ -2136,6 +2624,14 @@
           "common holds shared config and error handling",
           "implementation holds the business flows"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day27-common-impl-te",
+        "versionOf": "beat-day27-common-impl",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2159,6 +2655,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day28-summary-te",
+        "versionOf": "beat-day28-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day28-levels",
         "title": "Info, Debug, Error",
         "lesson": "day28",
@@ -2170,6 +2674,14 @@
           "Debug: the details when you need them",
           "Error: when something breaks"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day28-levels-te",
+        "versionOf": "beat-day28-levels",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2193,6 +2705,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day29-summary-te",
+        "versionOf": "beat-day29-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day29-mask",
         "title": "Mask It",
         "lesson": "day29",
@@ -2203,6 +2723,14 @@
           "Import mask from DataWeave's values module",
           "Replace sensitive values with *** before logging"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day29-mask-te",
+        "versionOf": "beat-day29-mask",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2227,6 +2755,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day30-summary-te",
+        "versionOf": "beat-day30-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day30-not-found",
         "title": "Not Found Isn't an Error",
         "lesson": "day30",
@@ -2237,6 +2773,14 @@
           "An empty result is a valid answer",
           "Return a clear message with a success code"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day30-not-found-te",
+        "versionOf": "beat-day30-not-found",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2260,6 +2804,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day31-summary-te",
+        "versionOf": "beat-day31-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day31-gateway",
         "title": "The Watchman at the Gate",
         "lesson": "day31",
@@ -2270,6 +2822,14 @@
           "Every request passes the gateway first",
           "Policies decide who gets in and how often"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day31-gateway-te",
+        "versionOf": "beat-day31-gateway",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2293,6 +2853,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day32-summary-te",
+        "versionOf": "beat-day32-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day32-rate-vs-spike",
         "title": "Reject or Queue",
         "lesson": "day32",
@@ -2303,6 +2871,14 @@
           "Rate limiting rejects requests over the limit",
           "Spike control queues them and lets them through later"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day32-rate-vs-spike-te",
+        "versionOf": "beat-day32-rate-vs-spike",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2326,6 +2902,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day33-summary-te",
+        "versionOf": "beat-day33-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day33-authn-authz",
         "title": "Who You Are, What You Can Do",
         "lesson": "day33",
@@ -2336,6 +2920,14 @@
           "Authentication checks identity, like hotel check-in",
           "Authorisation checks permission, like your room key"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day33-authn-authz-te",
+        "versionOf": "beat-day33-authn-authz",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2353,6 +2945,14 @@
           "Authorisation server: issues tokens",
           "Resource server: holds the data"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day33-four-roles-te",
+        "versionOf": "beat-day33-four-roles",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2376,6 +2976,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day34-summary-te",
+        "versionOf": "beat-day34-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day34-jwt",
         "title": "Header, Payload, Signature",
         "lesson": "day34",
@@ -2387,6 +2995,14 @@
           "The signature proves nobody changed it",
           "Validate with the public key"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day34-jwt-te",
+        "versionOf": "beat-day34-jwt",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2410,6 +3026,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day35-summary-te",
+        "versionOf": "beat-day35-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day35-autodiscovery",
         "title": "Autodiscovery Links Them",
         "lesson": "day35",
@@ -2420,6 +3044,14 @@
           "The app carries the API instance ID",
           "So policies in API Manager apply to it"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day35-autodiscovery-te",
+        "versionOf": "beat-day35-autodiscovery",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2442,6 +3074,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day36-summary-te",
+        "versionOf": "beat-day36-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day36-client-id",
         "title": "Client ID and Secret",
         "lesson": "day36",
@@ -2452,6 +3092,14 @@
           "Each consumer gets a client ID and secret",
           "Requests without them are refused"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day36-client-id-te",
+        "versionOf": "beat-day36-client-id",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2476,6 +3124,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day37-summary-te",
+        "versionOf": "beat-day37-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day37-policy-order",
         "title": "Order Matters",
         "lesson": "day37",
@@ -2486,6 +3142,14 @@
           "Policies run in the order listed",
           "Put cheap checks first"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day37-policy-order-te",
+        "versionOf": "beat-day37-policy-order",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2508,6 +3172,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day38-summary-te",
+        "versionOf": "beat-day38-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day38-caching",
         "title": "Remember the Answer",
         "lesson": "day38",
@@ -2518,6 +3190,14 @@
           "Caching stores a response for a while",
           "Repeat requests are answered without the back end"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day38-caching-te",
+        "versionOf": "beat-day38-caching",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2541,6 +3221,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day39-summary-te",
+        "versionOf": "beat-day39-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day39-mock-spy-assert",
         "title": "Mock, Spy, Assert",
         "lesson": "day39",
@@ -2552,6 +3240,14 @@
           "Spy watches what goes in and out",
           "Assert checks the result"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day39-mock-spy-assert-te",
+        "versionOf": "beat-day39-mock-spy-assert",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2574,6 +3270,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day40-summary-te",
+        "versionOf": "beat-day40-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day40-coverage",
         "title": "Every Path Tested",
         "lesson": "day40",
@@ -2584,6 +3288,14 @@
           "Coverage shows which processors ran in tests",
           "Test the error paths too, not just success"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day40-coverage-te",
+        "versionOf": "beat-day40-coverage",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2607,6 +3319,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day41-summary-te",
+        "versionOf": "beat-day41-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day41-wsdl",
         "title": "Read the WSDL",
         "lesson": "day41",
@@ -2617,6 +3337,14 @@
           "The WSDL lists the operations and messages",
           "The connector reads it so you don't have to"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day41-wsdl-te",
+        "versionOf": "beat-day41-wsdl",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2640,6 +3368,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day42-summary-te",
+        "versionOf": "beat-day42-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day42-parallel",
         "title": "Scatter, Then Gather",
         "lesson": "day42",
@@ -2650,6 +3386,14 @@
           "Send to every route at the same time",
           "Collect all the results into one"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day42-parallel-te",
+        "versionOf": "beat-day42-parallel",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2673,6 +3417,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day43-summary-te",
+        "versionOf": "beat-day43-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day43-selectors",
         "title": "Dot, Star, Index",
         "lesson": "day43",
@@ -2684,6 +3436,14 @@
           "payload.*name picks it from every item",
           "payload[0] picks by position"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day43-selectors-te",
+        "versionOf": "beat-day43-selectors",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2707,6 +3467,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day44-summary-te",
+        "versionOf": "beat-day44-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day44-default",
         "title": "Default Saves the Day",
         "lesson": "day44",
@@ -2717,6 +3485,14 @@
           "payload.city default 'Unknown'",
           "Use it whenever a field might be missing"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day44-default-te",
+        "versionOf": "beat-day44-default",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2740,6 +3516,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day45-summary-te",
+        "versionOf": "beat-day45-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day45-map-vs-mapobject",
         "title": "map or mapObject",
         "lesson": "day45",
@@ -2750,6 +3534,14 @@
           "map works on arrays: item and index",
           "mapObject works on objects: value, key, index"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day45-map-vs-mapobject-te",
+        "versionOf": "beat-day45-map-vs-mapobject",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2766,6 +3558,14 @@
           "Each step returns the new accumulator",
           "Great for totals"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day45-reduce-te",
+        "versionOf": "beat-day45-reduce",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2788,6 +3588,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day46-summary-te",
+        "versionOf": "beat-day46-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day46-soql",
         "title": "SOQL in a Line",
         "lesson": "day46",
@@ -2798,6 +3606,14 @@
           "SELECT fields FROM Object WHERE condition",
           "Like SQL, but for Salesforce objects"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day46-soql-te",
+        "versionOf": "beat-day46-soql",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2821,6 +3637,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day47-summary-te",
+        "versionOf": "beat-day47-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day47-upsert",
         "title": "Upsert",
         "lesson": "day47",
@@ -2831,6 +3655,14 @@
           "Update if it exists, insert if it doesn't",
           "Matched by an external ID"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day47-upsert-te",
+        "versionOf": "beat-day47-upsert",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2853,6 +3685,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day48-summary-te",
+        "versionOf": "beat-day48-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day48-payload-back",
         "title": "The Payload Comes Back",
         "lesson": "day48",
@@ -2863,6 +3703,14 @@
           "For Each doesn't change the outer payload",
           "Collect results in a variable if you need them"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day48-payload-back-te",
+        "versionOf": "beat-day48-payload-back",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2885,6 +3733,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day49-summary-te",
+        "versionOf": "beat-day49-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day49-bulk",
         "title": "One by One or All at Once",
         "lesson": "day49",
@@ -2895,6 +3751,14 @@
           "For Each insert: one database call per row",
           "Bulk insert: one call for all rows"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day49-bulk-te",
+        "versionOf": "beat-day49-bulk",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2918,6 +3782,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day50-summary-te",
+        "versionOf": "beat-day50-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day50-phases",
         "title": "Load, Process, Complete",
         "lesson": "day50",
@@ -2929,6 +3801,14 @@
           "Process runs each record through the steps",
           "On Complete gives the summary"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day50-phases-te",
+        "versionOf": "beat-day50-phases",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2952,6 +3832,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day51-summary-te",
+        "versionOf": "beat-day51-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day51-queue-vs-topic",
         "title": "Queue or Topic",
         "lesson": "day51",
@@ -2962,6 +3850,14 @@
           "A queue delivers each message to one consumer",
           "A topic broadcasts to all subscribers"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day51-queue-vs-topic-te",
+        "versionOf": "beat-day51-queue-vs-topic",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -2984,6 +3880,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day52-summary-te",
+        "versionOf": "beat-day52-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day52-transient",
         "title": "Transient or Persistent",
         "lesson": "day52",
@@ -2994,6 +3898,14 @@
           "Transient lives in memory and is lost on restart",
           "Persistent survives restarts"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day52-transient-te",
+        "versionOf": "beat-day52-transient",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -3016,6 +3928,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day53-summary-te",
+        "versionOf": "beat-day53-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day53-watermark",
         "title": "The Watermark",
         "lesson": "day53",
@@ -3026,6 +3946,14 @@
           "A watermark is the last value you processed",
           "Next run starts after it, so nothing is read twice"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day53-watermark-te",
+        "versionOf": "beat-day53-watermark",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -3049,6 +3977,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day54-summary-te",
+        "versionOf": "beat-day54-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day54-file-ftp-sftp",
         "title": "File, FTP, SFTP",
         "lesson": "day54",
@@ -3060,6 +3996,14 @@
           "FTP: a remote server, not encrypted",
           "SFTP: a remote server over SSH, encrypted"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day54-file-ftp-sftp-te",
+        "versionOf": "beat-day54-file-ftp-sftp",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -3083,6 +4027,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day55-summary-te",
+        "versionOf": "beat-day55-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day55-ci-cd",
         "title": "Build, Test, Deploy",
         "lesson": "day55",
@@ -3093,6 +4045,14 @@
           "Continuous integration builds and tests every change",
           "Continuous delivery deploys it"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day55-ci-cd-te",
+        "versionOf": "beat-day55-ci-cd",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -3115,6 +4075,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day57-summary-te",
+        "versionOf": "beat-day57-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day57-buckets",
         "title": "Buckets and Objects",
         "lesson": "day57",
@@ -3125,6 +4093,14 @@
           "A bucket is a container",
           "An object is a file and its metadata, found by its key"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day57-buckets-te",
+        "versionOf": "beat-day57-buckets",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -3148,6 +4124,14 @@
         "duration": ""
       },
       {
+        "id": "beat-day58-summary-te",
+        "versionOf": "beat-day58-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-day58-flatten",
         "title": "flatten or flatMap",
         "lesson": "day58",
@@ -3158,6 +4142,14 @@
           "flatten turns nested arrays into one array",
           "flatMap maps each item and flattens in one go"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-day58-flatten-te",
+        "versionOf": "beat-day58-flatten",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -3180,6 +4172,14 @@
         "duration": ""
       },
       {
+        "id": "beat-interview-part1-summary-te",
+        "versionOf": "beat-interview-part1-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-interview-part1-intro",
         "title": "Tell Me About Yourself",
         "lesson": "interview-part1",
@@ -3191,6 +4191,14 @@
           "What you built with MuleSoft",
           "Why this role"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-interview-part1-intro-te",
+        "versionOf": "beat-interview-part1-intro",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -3214,6 +4222,14 @@
         "duration": ""
       },
       {
+        "id": "beat-interview-part2-summary-te",
+        "versionOf": "beat-interview-part2-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-interview-part2-propagate-continue",
         "title": "Propagate vs Continue (Interview Edition)",
         "lesson": "interview-part2",
@@ -3224,6 +4240,14 @@
           "Propagate: the caller gets an error",
           "Continue: the caller gets a success response"
         ],
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
+        "id": "beat-interview-part2-propagate-continue-te",
+        "versionOf": "beat-interview-part2-propagate-continue",
+        "language": "te",
         "status": "planned",
         "audioUrl": "",
         "duration": ""
@@ -3247,6 +4271,14 @@
         "duration": ""
       },
       {
+        "id": "beat-interview-part3-summary-te",
+        "versionOf": "beat-interview-part3-summary",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-interview-part3-api-led",
         "title": "API-Led in One Breath",
         "lesson": "interview-part3",
@@ -3263,6 +4295,14 @@
         "duration": ""
       },
       {
+        "id": "beat-interview-part3-api-led-te",
+        "versionOf": "beat-interview-part3-api-led",
+        "language": "te",
+        "status": "planned",
+        "audioUrl": "",
+        "duration": ""
+      },
+      {
         "id": "beat-test-one",
         "title": "Test song one",
         "lesson": "day05",
@@ -3272,6 +4312,17 @@
         "concepts": [
           "Fixture audio for the browser tests"
         ],
+        "genre": "Test tone",
+        "status": "approved",
+        "audioUrl": "test-media/fixture-audio.mp3",
+        "duration": "0:30",
+        "test": true
+      },
+      {
+        "id": "beat-test-one-te",
+        "versionOf": "beat-test-one",
+        "language": "te",
+        "title": "Test song one (తెలుగు)",
         "genre": "Test tone",
         "status": "approved",
         "audioUrl": "test-media/fixture-audio.mp3",
@@ -3334,15 +4385,25 @@
         "description": "Lesson summaries and concept songs for Days 1 to 4, in course order.",
         "tracks": [
           "beat-day01-summary",
+          "beat-day01-summary-te",
           "beat-day01-interpreter",
+          "beat-day01-interpreter-te",
           "beat-day02-summary",
+          "beat-day02-summary-te",
           "beat-day02-api-vs-integration",
+          "beat-day02-api-vs-integration-te",
           "beat-day03-summary",
+          "beat-day03-summary-te",
           "beat-day03-rest-vs-soap",
+          "beat-day03-rest-vs-soap-te",
           "beat-day03-formats",
+          "beat-day03-formats-te",
           "beat-day04-summary",
+          "beat-day04-summary-te",
           "beat-day04-three-layers",
-          "beat-day04-lifecycle"
+          "beat-day04-three-layers-te",
+          "beat-day04-lifecycle",
+          "beat-day04-lifecycle-te"
         ]
       },
       {
@@ -3351,21 +4412,37 @@
         "description": "Lesson summaries and concept songs for Days 5 to 10, in course order.",
         "tracks": [
           "beat-day05-summary",
+          "beat-day05-summary-te",
           "beat-day05-dynamic-query",
+          "beat-day05-dynamic-query-te",
           "beat-day05-run-debug",
+          "beat-day05-run-debug-te",
           "beat-day06-summary",
+          "beat-day06-summary-te",
           "beat-day06-methods",
+          "beat-day06-methods-te",
           "beat-day06-https",
+          "beat-day06-https-te",
           "beat-day07-summary",
+          "beat-day07-summary-te",
           "beat-day07-three-parts",
+          "beat-day07-three-parts-te",
           "beat-day07-set-vs-transform",
+          "beat-day07-set-vs-transform-te",
           "beat-day08-summary",
+          "beat-day08-summary-te",
           "beat-day08-pom",
+          "beat-day08-pom-te",
           "beat-day09-summary",
+          "beat-day09-summary-te",
           "beat-day09-bottom-tabs",
+          "beat-day09-bottom-tabs-te",
           "beat-day10-summary",
+          "beat-day10-summary-te",
           "beat-day10-filter-sort-page",
-          "beat-day10-strict"
+          "beat-day10-filter-sort-page-te",
+          "beat-day10-strict",
+          "beat-day10-strict-te"
         ]
       },
       {
@@ -3374,27 +4451,49 @@
         "description": "Lesson summaries and concept songs for Days 11 to 20, in course order.",
         "tracks": [
           "beat-day11-summary",
+          "beat-day11-summary-te",
           "beat-day11-listener-vs-request",
+          "beat-day11-listener-vs-request-te",
           "beat-day12-summary",
+          "beat-day12-summary-te",
           "beat-day12-target-variable",
+          "beat-day12-target-variable-te",
           "beat-day12-timeout",
+          "beat-day12-timeout-te",
           "beat-day13-summary",
+          "beat-day13-summary-te",
           "beat-day13-reconnect",
+          "beat-day13-reconnect-te",
           "beat-day14-summary",
+          "beat-day14-summary-te",
           "beat-day14-four-steps",
+          "beat-day14-four-steps-te",
           "beat-day14-secure",
+          "beat-day14-secure-te",
           "beat-day15-summary",
+          "beat-day15-summary-te",
           "beat-day15-any-last",
+          "beat-day15-any-last-te",
           "beat-day16-summary",
+          "beat-day16-summary-te",
           "beat-day16-levels",
+          "beat-day16-levels-te",
           "beat-day16-raise-error",
+          "beat-day16-raise-error-te",
           "beat-day17-summary",
+          "beat-day17-summary-te",
           "beat-day17-planes",
+          "beat-day17-planes-te",
           "beat-day18-summary",
+          "beat-day18-summary-te",
           "beat-day18-scaling",
+          "beat-day18-scaling-te",
           "beat-day19-summary",
+          "beat-day19-summary-te",
           "beat-day19-folders",
-          "beat-day20-summary"
+          "beat-day19-folders-te",
+          "beat-day20-summary",
+          "beat-day20-summary-te"
         ]
       },
       {
@@ -3403,25 +4502,45 @@
         "description": "Lesson summaries and concept songs for Days 21 to 30, in course order.",
         "tracks": [
           "beat-day21-summary",
+          "beat-day21-summary-te",
           "beat-day21-raml-vs-oas",
+          "beat-day21-raml-vs-oas-te",
           "beat-day22-summary",
+          "beat-day22-summary-te",
           "beat-day22-headers",
+          "beat-day22-headers-te",
           "beat-day23-summary",
+          "beat-day23-summary-te",
           "beat-day23-nouns",
+          "beat-day23-nouns-te",
           "beat-day24-summary",
+          "beat-day24-summary-te",
           "beat-day24-externalise",
+          "beat-day24-externalise-te",
           "beat-day25-summary",
+          "beat-day25-summary-te",
           "beat-day25-trait-vs-fragment",
+          "beat-day25-trait-vs-fragment-te",
           "beat-day26-summary",
+          "beat-day26-summary-te",
           "beat-day26-golden-rule",
+          "beat-day26-golden-rule-te",
           "beat-day27-summary",
+          "beat-day27-summary-te",
           "beat-day27-common-impl",
+          "beat-day27-common-impl-te",
           "beat-day28-summary",
+          "beat-day28-summary-te",
           "beat-day28-levels",
+          "beat-day28-levels-te",
           "beat-day29-summary",
+          "beat-day29-summary-te",
           "beat-day29-mask",
+          "beat-day29-mask-te",
           "beat-day30-summary",
-          "beat-day30-not-found"
+          "beat-day30-summary-te",
+          "beat-day30-not-found",
+          "beat-day30-not-found-te"
         ]
       },
       {
@@ -3430,26 +4549,47 @@
         "description": "Lesson summaries and concept songs for Days 31 to 40, in course order.",
         "tracks": [
           "beat-day31-summary",
+          "beat-day31-summary-te",
           "beat-day31-gateway",
+          "beat-day31-gateway-te",
           "beat-day32-summary",
+          "beat-day32-summary-te",
           "beat-day32-rate-vs-spike",
+          "beat-day32-rate-vs-spike-te",
           "beat-day33-summary",
+          "beat-day33-summary-te",
           "beat-day33-authn-authz",
+          "beat-day33-authn-authz-te",
           "beat-day33-four-roles",
+          "beat-day33-four-roles-te",
           "beat-day34-summary",
+          "beat-day34-summary-te",
           "beat-day34-jwt",
+          "beat-day34-jwt-te",
           "beat-day35-summary",
+          "beat-day35-summary-te",
           "beat-day35-autodiscovery",
+          "beat-day35-autodiscovery-te",
           "beat-day36-summary",
+          "beat-day36-summary-te",
           "beat-day36-client-id",
+          "beat-day36-client-id-te",
           "beat-day37-summary",
+          "beat-day37-summary-te",
           "beat-day37-policy-order",
+          "beat-day37-policy-order-te",
           "beat-day38-summary",
+          "beat-day38-summary-te",
           "beat-day38-caching",
+          "beat-day38-caching-te",
           "beat-day39-summary",
+          "beat-day39-summary-te",
           "beat-day39-mock-spy-assert",
+          "beat-day39-mock-spy-assert-te",
           "beat-day40-summary",
-          "beat-day40-coverage"
+          "beat-day40-summary-te",
+          "beat-day40-coverage",
+          "beat-day40-coverage-te"
         ]
       },
       {
@@ -3458,26 +4598,47 @@
         "description": "Lesson summaries and concept songs for Days 41 to 50, in course order.",
         "tracks": [
           "beat-day41-summary",
+          "beat-day41-summary-te",
           "beat-day41-wsdl",
+          "beat-day41-wsdl-te",
           "beat-day42-summary",
+          "beat-day42-summary-te",
           "beat-day42-parallel",
+          "beat-day42-parallel-te",
           "beat-day43-summary",
+          "beat-day43-summary-te",
           "beat-day43-selectors",
+          "beat-day43-selectors-te",
           "beat-day44-summary",
+          "beat-day44-summary-te",
           "beat-day44-default",
+          "beat-day44-default-te",
           "beat-day45-summary",
+          "beat-day45-summary-te",
           "beat-day45-map-vs-mapobject",
+          "beat-day45-map-vs-mapobject-te",
           "beat-day45-reduce",
+          "beat-day45-reduce-te",
           "beat-day46-summary",
+          "beat-day46-summary-te",
           "beat-day46-soql",
+          "beat-day46-soql-te",
           "beat-day47-summary",
+          "beat-day47-summary-te",
           "beat-day47-upsert",
+          "beat-day47-upsert-te",
           "beat-day48-summary",
+          "beat-day48-summary-te",
           "beat-day48-payload-back",
+          "beat-day48-payload-back-te",
           "beat-day49-summary",
+          "beat-day49-summary-te",
           "beat-day49-bulk",
+          "beat-day49-bulk-te",
           "beat-day50-summary",
-          "beat-day50-phases"
+          "beat-day50-summary-te",
+          "beat-day50-phases",
+          "beat-day50-phases-te"
         ]
       },
       {
@@ -3486,19 +4647,33 @@
         "description": "Lesson summaries and concept songs for Days 51 to 58, in course order.",
         "tracks": [
           "beat-day51-summary",
+          "beat-day51-summary-te",
           "beat-day51-queue-vs-topic",
+          "beat-day51-queue-vs-topic-te",
           "beat-day52-summary",
+          "beat-day52-summary-te",
           "beat-day52-transient",
+          "beat-day52-transient-te",
           "beat-day53-summary",
+          "beat-day53-summary-te",
           "beat-day53-watermark",
+          "beat-day53-watermark-te",
           "beat-day54-summary",
+          "beat-day54-summary-te",
           "beat-day54-file-ftp-sftp",
+          "beat-day54-file-ftp-sftp-te",
           "beat-day55-summary",
+          "beat-day55-summary-te",
           "beat-day55-ci-cd",
+          "beat-day55-ci-cd-te",
           "beat-day57-summary",
+          "beat-day57-summary-te",
           "beat-day57-buckets",
+          "beat-day57-buckets-te",
           "beat-day58-summary",
-          "beat-day58-flatten"
+          "beat-day58-summary-te",
+          "beat-day58-flatten",
+          "beat-day58-flatten-te"
         ]
       },
       {
@@ -3507,11 +4682,17 @@
         "description": "Songs for the three interview-preparation parts.",
         "tracks": [
           "beat-interview-part1-summary",
+          "beat-interview-part1-summary-te",
           "beat-interview-part1-intro",
+          "beat-interview-part1-intro-te",
           "beat-interview-part2-summary",
+          "beat-interview-part2-summary-te",
           "beat-interview-part2-propagate-continue",
+          "beat-interview-part2-propagate-continue-te",
           "beat-interview-part3-summary",
-          "beat-interview-part3-api-led"
+          "beat-interview-part3-summary-te",
+          "beat-interview-part3-api-led",
+          "beat-interview-part3-api-led-te"
         ]
       },
       {
@@ -3520,65 +4701,125 @@
         "description": "One song per lesson: the whole lesson in about three minutes.",
         "tracks": [
           "beat-day01-summary",
+          "beat-day01-summary-te",
           "beat-day02-summary",
+          "beat-day02-summary-te",
           "beat-day03-summary",
+          "beat-day03-summary-te",
           "beat-day04-summary",
+          "beat-day04-summary-te",
           "beat-day05-summary",
+          "beat-day05-summary-te",
           "beat-day06-summary",
+          "beat-day06-summary-te",
           "beat-day07-summary",
+          "beat-day07-summary-te",
           "beat-day08-summary",
+          "beat-day08-summary-te",
           "beat-day09-summary",
+          "beat-day09-summary-te",
           "beat-day10-summary",
+          "beat-day10-summary-te",
           "beat-day11-summary",
+          "beat-day11-summary-te",
           "beat-day12-summary",
+          "beat-day12-summary-te",
           "beat-day13-summary",
+          "beat-day13-summary-te",
           "beat-day14-summary",
+          "beat-day14-summary-te",
           "beat-day15-summary",
+          "beat-day15-summary-te",
           "beat-day16-summary",
+          "beat-day16-summary-te",
           "beat-day17-summary",
+          "beat-day17-summary-te",
           "beat-day18-summary",
+          "beat-day18-summary-te",
           "beat-day19-summary",
+          "beat-day19-summary-te",
           "beat-day20-summary",
+          "beat-day20-summary-te",
           "beat-day21-summary",
+          "beat-day21-summary-te",
           "beat-day22-summary",
+          "beat-day22-summary-te",
           "beat-day23-summary",
+          "beat-day23-summary-te",
           "beat-day24-summary",
+          "beat-day24-summary-te",
           "beat-day25-summary",
+          "beat-day25-summary-te",
           "beat-day26-summary",
+          "beat-day26-summary-te",
           "beat-day27-summary",
+          "beat-day27-summary-te",
           "beat-day28-summary",
+          "beat-day28-summary-te",
           "beat-day29-summary",
+          "beat-day29-summary-te",
           "beat-day30-summary",
+          "beat-day30-summary-te",
           "beat-day31-summary",
+          "beat-day31-summary-te",
           "beat-day32-summary",
+          "beat-day32-summary-te",
           "beat-day33-summary",
+          "beat-day33-summary-te",
           "beat-day34-summary",
+          "beat-day34-summary-te",
           "beat-day35-summary",
+          "beat-day35-summary-te",
           "beat-day36-summary",
+          "beat-day36-summary-te",
           "beat-day37-summary",
+          "beat-day37-summary-te",
           "beat-day38-summary",
+          "beat-day38-summary-te",
           "beat-day39-summary",
+          "beat-day39-summary-te",
           "beat-day40-summary",
+          "beat-day40-summary-te",
           "beat-day41-summary",
+          "beat-day41-summary-te",
           "beat-day42-summary",
+          "beat-day42-summary-te",
           "beat-day43-summary",
+          "beat-day43-summary-te",
           "beat-day44-summary",
+          "beat-day44-summary-te",
           "beat-day45-summary",
+          "beat-day45-summary-te",
           "beat-day46-summary",
+          "beat-day46-summary-te",
           "beat-day47-summary",
+          "beat-day47-summary-te",
           "beat-day48-summary",
+          "beat-day48-summary-te",
           "beat-day49-summary",
+          "beat-day49-summary-te",
           "beat-day50-summary",
+          "beat-day50-summary-te",
           "beat-day51-summary",
+          "beat-day51-summary-te",
           "beat-day52-summary",
+          "beat-day52-summary-te",
           "beat-day53-summary",
+          "beat-day53-summary-te",
           "beat-day54-summary",
+          "beat-day54-summary-te",
           "beat-day55-summary",
+          "beat-day55-summary-te",
           "beat-day57-summary",
+          "beat-day57-summary-te",
           "beat-day58-summary",
+          "beat-day58-summary-te",
           "beat-interview-part1-summary",
+          "beat-interview-part1-summary-te",
           "beat-interview-part2-summary",
-          "beat-interview-part3-summary"
+          "beat-interview-part2-summary-te",
+          "beat-interview-part3-summary",
+          "beat-interview-part3-summary-te"
         ]
       },
       {
@@ -3587,6 +4828,7 @@
         "description": "For the browser tests.",
         "tracks": [
           "beat-test-one",
+          "beat-test-one-te",
           "beat-test-two",
           "beat-test-three",
           "beat-test-missing"

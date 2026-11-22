@@ -85,12 +85,53 @@ describe("MuleBeats manifest", () => {
   });
 });
 
+describe("songs in Telugu", () => {
+  it("a Telugu version takes the original's lesson, type and concepts, gets a Telugu style and a default title", () => {
+    const r = parse({ tracks: [song(), { id: "beat-a-te", versionOf: "beat-a", language: "te", status: "planned" }] });
+    expect(r.problems).toEqual([]);
+    const te = r.all.tracks.find((t) => t.id === "beat-a-te")!;
+    expect(te).toMatchObject({ lesson: "day05", type: "summary", concepts: ["one"], language: "te", versionOf: "beat-a", title: "Song A (తెలుగు)", genre: "Telugu hip-hop" });
+    expect(r.all.tracks[0].language).toBe("en");
+  });
+
+  it("rejects versions of songs that don't exist, versions of versions, same-language versions and unknown languages", () => {
+    const r = parse({ tracks: [
+      song(),
+      { id: "beat-x", versionOf: "beat-ghost", language: "te" },
+      { id: "beat-a-te", versionOf: "beat-a", language: "te" },
+      { id: "beat-a-te2", versionOf: "beat-a-te", language: "en" },
+      { id: "beat-a-en", versionOf: "beat-a", language: "en" },
+      song({ id: "beat-y", language: "fr" }),
+    ] });
+    const all = r.problems.join("\n");
+    expect(all).toMatch(/beat-x\)\.versionOf "beat-ghost" does not exist/);
+    expect(all).toMatch(/beat-a-te2\)\.versionOf "beat-a-te" is itself a version/);
+    expect(all).toMatch(/beat-a-en\): a version must be in a different language/);
+    expect(all).toMatch(/beat-y\)\.language must be one of en, te/);
+  });
+
+  it("every English song in the real manifest has a Telugu version", () => {
+    const ROOT = path.resolve(__dirname, "../..");
+    const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, ".notes/manifest.json"), "utf8")) as { sessions: Record<string, unknown> };
+    const media = JSON.parse(fs.readFileSync(path.join(ROOT, "config/media.json"), "utf8"));
+    const problems: string[] = [];
+    const { all } = parseBeats(media.mulebeats, Object.keys(manifest.sessions), problems, { checkUrl: checkMediaUrl });
+    expect(problems).toEqual([]);
+    const english = all.tracks.filter((t) => !t.test && t.language === "en");
+    const telugu = new Set(all.tracks.filter((t) => t.language === "te").map((t) => t.versionOf));
+    expect(english.length).toBeGreaterThan(0);
+    for (const t of english) expect(telugu.has(t.id)).toBe(true);
+  });
+});
+
 describe("choosing a style from what the song teaches", () => {
   it("lists get a chant, steps a story, comparisons two voices, deep ideas a calmer pace; denser songs run longer", () => {
     expect(planStyle("concept", "recall-list", 1).genre).toMatch(/chant/);
     expect(planStyle("summary", "process", 2).genre).toMatch(/hip-hop/);
     expect(planStyle("concept", "contrast", 2).genre).toMatch(/call-and-response/i);
     expect(planStyle("summary", "concept", 3).genre).toBe("Lo-fi hip-hop");
+    expect(planStyle("concept", "recall-list", 1, "te").genre).toMatch(/Telugu folk-pop/);
+    expect(planStyle("concept", "contrast", 1, "te").targetSecs).toBe(planStyle("concept", "contrast", 1).targetSecs);
     expect(planStyle("summary", "process", 1).targetSecs).toBeLessThan(planStyle("summary", "process", 3).targetSecs);
     expect(planStyle("concept", "process", 3).targetSecs).toBeLessThan(planStyle("summary", "process", 1).targetSecs);
   });

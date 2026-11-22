@@ -4,9 +4,13 @@ import { expect, test, type Page } from "./test";
 
 /** The test songs come from config/media.json (test: true), so names and lessons are read from there. */
 const media = JSON.parse(readFileSync(new URL("../../config/media.json", import.meta.url), "utf8"));
-type T = { id: string; title: string; lesson: string; test?: boolean; audioUrl: string };
+type T = { id: string; title: string; lesson: string; test?: boolean; audioUrl: string; language?: string };
 const testSongs: T[] = media.mulebeats.tracks.filter((t: T) => t.test);
-const [one, two, three] = testSongs;
+const english = testSongs.filter((t) => (t.language ?? "en") === "en");
+const telugu = testSongs.filter((t) => t.language === "te");
+const [one, two, three] = english;
+/** order tests use the English songs only */
+const onlyEnglish = (page: Page) => page.getByRole("group", { name: "Song language" }).getByRole("button", { name: "English" }).click();
 const missing = testSongs.find((t) => t.audioUrl.includes("missing"))!;
 
 const player = (page: Page) => page.getByRole("region", { name: "Audio podcast player" });
@@ -33,6 +37,7 @@ test.describe("MuleBeats", () => {
 
   test("Play all plays in order; next, previous and the Up next list follow the playlist", async ({ page }) => {
     await page.goto("mulebeats/");
+    await onlyEnglish(page);
     await page.getByRole("button", { name: "Play all" }).click();
     await expect(title(page)).toHaveText(one.title);
     await expect.poll(() => page.locator("[data-audio]").evaluate((a: HTMLAudioElement) => !a.paused), { timeout: 10_000 }).toBe(true);
@@ -53,6 +58,7 @@ test.describe("MuleBeats", () => {
 
   test("repeat one replays the song, repeat all wraps around, and shuffle keeps the current song playing", async ({ page }) => {
     await page.goto("mulebeats/");
+    await onlyEnglish(page);
     await page.locator(`[data-mb-play="${three.id}"]`).first().click();
     await expect(title(page)).toHaveText(three.title);
     await openControls(page);
@@ -75,7 +81,25 @@ test.describe("MuleBeats", () => {
     await expect(shuffle).toHaveAttribute("aria-pressed", "true");
     await expect(title(page)).toHaveText(one.title);
     await expect(page.locator("[data-mb-queue-about]")).toContainText("shuffled");
-    await expect(page.locator("[data-mb-queue-list] li")).toHaveCount(testSongs.length - 1);
+    await expect(page.locator("[data-mb-queue-list] li")).toHaveCount(english.length - 1);
+  });
+
+  test("the language switch shows English or Telugu songs, plays only those, and is remembered", async ({ page }) => {
+    await page.goto("mulebeats/");
+    const lang = page.getByRole("group", { name: "Song language" });
+    await lang.getByRole("button", { name: "తెలుగు" }).click();
+    await expect(lang.getByRole("button", { name: "తెలుగు" })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("[data-mb-track]:visible")).toHaveCount(telugu.length);
+    await expect(page.locator("[data-mb-track]:visible").first()).toContainText("తెలుగు");
+    await expect(page.locator("[data-mb-track]:visible").first()).toContainText("Lesson summary");
+    await page.getByRole("button", { name: "Play all" }).click();
+    await expect(title(page)).toHaveText(telugu[0].title);
+    await expect(page.locator("[data-mb-queue]")).toBeVisible();
+    await expect(page.locator("[data-mb-queue-list] li")).toHaveText(["Nothing after this song."]);
+    await page.reload();
+    await expect(page.getByRole("group", { name: "Song language" }).getByRole("button", { name: "తెలుగు" })).toHaveAttribute("aria-pressed", "true");
+    await page.getByRole("group", { name: "Song language" }).getByRole("button", { name: "All" }).click();
+    await expect(page.locator("[data-mb-track]:visible")).toHaveCount(testSongs.length);
   });
 
   test("a song whose audio can't be loaded says so, in the list and in the player", async ({ page }) => {

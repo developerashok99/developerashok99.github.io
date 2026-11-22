@@ -1906,3 +1906,4 @@ html[data-locked] .invite-pop { display: none !important; }
 .repeat-btn__one { display: none; position: absolute; right: 0.2rem; bottom: 0.15rem; font: 800 0.6rem var(--mono); }
 .repeat-btn[data-repeat="one"] .repeat-btn__one { display: block; }
 .player [data-act="shuffle"][aria-pressed="true"], .player .repeat-btn:not([data-repeat="off"]) { color: var(--accent); }
+.mb-lang { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.75rem; }

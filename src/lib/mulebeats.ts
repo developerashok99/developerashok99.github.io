@@ -14,6 +14,10 @@ import { parseDuration } from "./duration";
 export type TrackType = "summary" | "concept";
 export type Objective = "recall-list" | "process" | "contrast" | "concept";
 export type TrackStatus = "planned" | "review" | "approved";
+/** the language a song is sung in: English, or Telugu (the language the lectures are taught in) */
+export type Language = "en" | "te";
+export const LANGUAGES: Language[] = ["en", "te"];
+export const LANGUAGE_NAMES: Record<Language, string> = { en: "English", te: "తెలుగు" };
 
 export interface Track {
   id: string;
@@ -31,6 +35,9 @@ export interface Track {
   targetSecs: number;
   audioUrl: string | null;
   status: TrackStatus;
+  language: Language;
+  /** for a song in another language: the original it's a version of (same lesson and concepts) */
+  versionOf: string | null;
   test: boolean;
 }
 export interface Playlist {
@@ -55,13 +62,21 @@ const isObj = (v: unknown): v is Record<string, unknown> => typeof v === "object
 const str = (v: unknown) => (typeof v === "string" ? v.trim() : "");
 
 /** Genre and length to aim for, from what the song teaches and how dense it is. */
-export function planStyle(type: TrackType, objective: Objective, complexity: 1 | 2 | 3): { genre: string; bpm: string; targetSecs: number; why: string } {
-  const style = {
+export function planStyle(type: TrackType, objective: Objective, complexity: 1 | 2 | 3, language: Language = "en"): { genre: string; bpm: string; targetSecs: number; why: string } {
+  // Telugu songs use styles familiar to Telugu listeners, chosen by the same rule
+  const telugu = {
+    "recall-list": { genre: "Telugu folk-pop with a chant chorus", bpm: "110–125", why: "a janapadam-style chant makes a list stick" },
+    process: { genre: "Telugu hip-hop", bpm: "88–100", why: "verses walk through the steps in order" },
+    contrast: { genre: "Telugu duet, call-and-response", bpm: "100–115", why: "two singers trade lines, one for each side" },
+    concept: { genre: complexity === 3 ? "Telugu lo-fi melody" : "Telugu acoustic melody", bpm: complexity === 3 ? "70–85" : "85–100", why: "a calmer melody leaves room to take in one deep idea" },
+  };
+  const english = {
     "recall-list": { genre: "Upbeat pop with a chant chorus", bpm: "110–125", why: "a repeated chant makes a list stick" },
     process: { genre: "Storytelling hip-hop", bpm: "88–100", why: "verses walk through the steps in order" },
     contrast: { genre: "Call-and-response pop rock", bpm: "100–115", why: "two voices trade lines, one for each side" },
     concept: { genre: complexity === 3 ? "Lo-fi hip-hop" : "Acoustic folk", bpm: complexity === 3 ? "70–85" : "85–100", why: "a calmer pace leaves room to take in one deep idea" },
-  }[objective];
+  };
+  const style = (language === "te" ? telugu : english)[objective];
   // summaries cover the whole lesson; concept songs one idea. Denser material gets more time.
   const targetSecs = type === "summary" ? Math.min(210, 120 + 30 * complexity) : Math.min(150, 60 + 25 * complexity);
   return { ...style, targetSecs };
@@ -85,11 +100,25 @@ export function parseBeats(
   }
   const tracks: Track[] = [];
   const ids = new Set<string>();
-  (Array.isArray(raw.tracks) ? raw.tracks : []).forEach((t: unknown, i: number) => {
+  const rawTracks = Array.isArray(raw.tracks) ? raw.tracks : [];
+  const rawById = new Map<string, Record<string, unknown>>();
+  for (const t of rawTracks) if (isObj(t) && str(t.id) && !rawById.has(str(t.id))) rawById.set(str(t.id), t);
+  rawTracks.forEach((entry: unknown, i: number) => {
     const where = `media.json mulebeats.tracks[${i}]`;
-    if (!isObj(t)) return problems.push(`${where}: must be an object`);
-    const id = str(t.id);
+    if (!isObj(entry)) return problems.push(`${where}: must be an object`);
+    const id = str(entry.id);
     const at = `${where} (${id || "no id"})`;
+    // a version in another language takes the original's lesson, type and concepts unless it sets its own
+    const versionOf = str(entry.versionOf);
+    const source = versionOf ? rawById.get(versionOf) : undefined;
+    if (versionOf && !source) problems.push(`${at}.versionOf "${versionOf}" does not exist`);
+    if (source && str(source.versionOf)) problems.push(`${at}.versionOf "${versionOf}" is itself a version; point to the original`);
+    const inherited = source ? { lesson: source.lesson, type: source.type, objective: source.objective, complexity: source.complexity, concepts: source.concepts } : {};
+    const t: Record<string, unknown> = { ...inherited, ...entry };
+    const language = (str(t.language) || "en") as Language;
+    if (!LANGUAGES.includes(language)) problems.push(`${at}.language must be one of ${LANGUAGES.join(", ")}`);
+    if (source && (str(source.language) || "en") === language) problems.push(`${at}: a version must be in a different language from its original`);
+    if (!str(t.title) && source) t.title = `${str(source.title)} (${LANGUAGE_NAMES[language] ?? language})`;
     if (!ID.test(id)) problems.push(`${at}.id must be lowercase letters, digits and dashes`);
     if (ids.has(id)) problems.push(`${at}.id is used twice`);
     ids.add(id);
@@ -113,11 +142,11 @@ export function parseBeats(
     if (status === "approved" && !audioUrl) problems.push(`${at}: an approved song needs its audioUrl`);
     if (status === "approved" && !rawDuration) problems.push(`${at}: an approved song needs its real duration`);
     const concepts = Array.isArray(t.concepts) ? t.concepts.map(str).filter(Boolean) : [];
-    const plan = planStyle(type, objective, complexity ?? 2);
+    const plan = planStyle(type, objective, complexity ?? 2, LANGUAGES.includes(language) ? language : "en");
     tracks.push({
       id, title: str(t.title), lesson, type, objective, complexity: complexity ?? 2, concepts,
       genre: str(t.genre) || plan.genre, duration: duration ?? null, targetSecs: plan.targetSecs,
-      audioUrl: audioUrl || null, status, test: t.test === true,
+      audioUrl: audioUrl || null, status, language: LANGUAGES.includes(language) ? language : "en", versionOf: versionOf || null, test: t.test === true,
     });
   });
   const playlists: Playlist[] = [];
