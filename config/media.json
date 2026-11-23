@@ -1515,9 +1515,21 @@
         "id": "beat-day07-summary-te",
         "versionOf": "beat-day07-summary",
         "language": "te",
-        "status": "planned",
-        "audioUrl": "",
-        "duration": ""
+        "status": "approved",
+        "audioUrl": "https://github.com/developerashok99/developerashok99.github.io/releases/download/mulebeats-v1/beat-day07-summary-te.mp3",
+        "duration": "3:48",
+        "title": "Mule Event లోపల",
+        "genre": "Telugu melodic acoustic pop, female vocal"
+      },
+      {
+        "id": "beat-day07-summary-te-2",
+        "versionOf": "beat-day07-summary",
+        "language": "te",
+        "title": "Mule Event లోపల (version 2)",
+        "genre": "Telugu melodic acoustic pop, female vocal",
+        "status": "approved",
+        "audioUrl": "https://github.com/developerashok99/developerashok99.github.io/releases/download/mulebeats-v1/beat-day07-summary-te-2.mp3",
+        "duration": "3:58"
       },
       {
         "id": "beat-day07-three-parts",
@@ -1590,9 +1602,11 @@
         "id": "beat-day08-summary-te",
         "versionOf": "beat-day08-summary",
         "language": "te",
-        "status": "planned",
-        "audioUrl": "",
-        "duration": ""
+        "status": "approved",
+        "audioUrl": "https://github.com/developerashok99/developerashok99.github.io/releases/download/mulebeats-v1/beat-day08-summary-te.mp3",
+        "duration": "5:08",
+        "title": "ప్రతి Folder కి ఒక Job",
+        "genre": "Telugu melodic upbeat pop, female vocal"
       },
       {
         "id": "beat-day08-pom",
@@ -1640,9 +1654,11 @@
         "id": "beat-day09-summary-te",
         "versionOf": "beat-day09-summary",
         "language": "te",
-        "status": "planned",
-        "audioUrl": "",
-        "duration": ""
+        "status": "approved",
+        "audioUrl": "https://github.com/developerashok99/developerashok99.github.io/releases/download/mulebeats-v1/beat-day09-summary-te.mp3",
+        "duration": "5:28",
+        "title": "Anypoint Studio తెలుసుకోండి",
+        "genre": "Telugu melodic upbeat pop, female vocal"
       },
       {
         "id": "beat-day09-bottom-tabs",
@@ -1690,9 +1706,11 @@
         "id": "beat-day10-summary-te",
         "versionOf": "beat-day10-summary",
         "language": "te",
-        "status": "planned",
-        "audioUrl": "",
-        "duration": ""
+        "status": "approved",
+        "audioUrl": "https://github.com/developerashok99/developerashok99.github.io/releases/download/mulebeats-v1/beat-day10-summary-te.mp3",
+        "duration": "6:29",
+        "title": "URI Param ఆ? Query Param ఆ?",
+        "genre": "Telugu melodic upbeat pop, female vocal"
       },
       {
         "id": "beat-day10-filter-sort-page",
@@ -1765,9 +1783,11 @@
         "id": "beat-day11-summary-te",
         "versionOf": "beat-day11-summary",
         "language": "te",
-        "status": "planned",
-        "audioUrl": "",
-        "duration": ""
+        "status": "approved",
+        "audioUrl": "https://github.com/developerashok99/developerashok99.github.io/releases/download/mulebeats-v1/beat-day11-summary-te.mp3",
+        "duration": "6:09",
+        "title": "HTTP Request తో బయటికి వెళ్దాం",
+        "genre": "Telugu pop rock, male vocal"
       },
       {
         "id": "beat-day11-listener-vs-request",
@@ -1815,9 +1835,11 @@
         "id": "beat-day12-summary-te",
         "versionOf": "beat-day12-summary",
         "language": "te",
-        "status": "planned",
-        "audioUrl": "",
-        "duration": ""
+        "status": "approved",
+        "audioUrl": "https://github.com/developerashok99/developerashok99.github.io/releases/download/mulebeats-v1/beat-day12-summary-te.mp3",
+        "duration": "6:10",
+        "title": "Shape the Response",
+        "genre": "Telugu acoustic pop, female vocal"
       },
       {
         "id": "beat-day12-target-variable",
@@ -1886,9 +1908,11 @@
         "id": "beat-day13-summary-te",
         "versionOf": "beat-day13-summary",
         "language": "te",
-        "status": "planned",
-        "audioUrl": "",
-        "duration": ""
+        "status": "approved",
+        "audioUrl": "https://github.com/developerashok99/developerashok99.github.io/releases/download/mulebeats-v1/beat-day13-summary-te.mp3",
+        "duration": "6:05",
+        "title": "Network Glitch వస్తే",
+        "genre": "Telugu acoustic pop, female vocal"
       },
       {
         "id": "beat-day13-reconnect",
@@ -1937,9 +1961,11 @@
         "id": "beat-day14-summary-te",
         "versionOf": "beat-day14-summary",
         "language": "te",
-        "status": "planned",
-        "audioUrl": "",
-        "duration": ""
+        "status": "approved",
+        "audioUrl": "https://github.com/developerashok99/developerashok99.github.io/releases/download/mulebeats-v1/beat-day14-summary-te.mp3",
+        "duration": "6:33",
+        "title": "ప్రతి Environment కి ఒక File",
+        "genre": "Telugu acoustic pop, female vocal"
       },
       {
         "id": "beat-day14-four-steps",
@@ -2013,9 +2039,11 @@
         "id": "beat-day15-summary-te",
         "versionOf": "beat-day15-summary",
         "language": "te",
-        "status": "planned",
-        "audioUrl": "",
-        "duration": ""
+        "status": "approved",
+        "audioUrl": "https://github.com/developerashok99/developerashok99.github.io/releases/download/mulebeats-v1/beat-day15-summary-te.mp3",
+        "duration": "6:10",
+        "title": "Error వస్తే Catch చెయ్",
+        "genre": "Catchy Telugu pop, male vocal"
       },
       {
         "id": "beat-day15-any-last",
@@ -4425,6 +4453,7 @@
           "beat-day06-https-te",
           "beat-day07-summary",
           "beat-day07-summary-te",
+          "beat-day07-summary-te-2",
           "beat-day07-three-parts",
           "beat-day07-three-parts-te",
           "beat-day07-set-vs-transform",
@@ -4714,6 +4743,7 @@
           "beat-day06-summary-te",
           "beat-day07-summary",
           "beat-day07-summary-te",
+          "beat-day07-summary-te-2",
           "beat-day08-summary",
           "beat-day08-summary-te",
           "beat-day09-summary",

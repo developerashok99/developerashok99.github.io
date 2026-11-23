@@ -13,6 +13,11 @@ const [one, two, three] = english;
 const onlyEnglish = (page: Page) => page.getByRole("group", { name: "Song language" }).getByRole("button", { name: "English" }).click();
 const missing = testSongs.find((t) => t.audioUrl.includes("missing"))!;
 
+/** real songs come first now; the browser tests use the test playlist */
+async function openTestPlaylist(page: Page) {
+  await page.goto("mulebeats/");
+  await page.locator('[data-mb-pick="test-playlist"]').click();
+}
 const player = (page: Page) => page.getByRole("region", { name: "Audio podcast player" });
 const title = (page: Page) => player(page).locator("[data-title]");
 const ended = (page: Page) => page.locator("[data-audio]").evaluate((a: HTMLAudioElement) => a.dispatchEvent(new Event("ended")));
@@ -23,7 +28,7 @@ async function openControls(page: Page) {
 
 test.describe("MuleBeats", () => {
   test("lists each song with its lesson, type, genre and length, and links to the lesson", async ({ page }) => {
-    await page.goto("mulebeats/");
+    await openTestPlaylist(page);
     const row = page.locator(`[data-mb-track="${one.id}"]`).first();
     await expect(row).toContainText(one.title);
     await expect(row).toContainText("Lesson summary");
@@ -36,7 +41,7 @@ test.describe("MuleBeats", () => {
   });
 
   test("Play all plays in order; next, previous and the Up next list follow the playlist", async ({ page }) => {
-    await page.goto("mulebeats/");
+    await openTestPlaylist(page);
     await onlyEnglish(page);
     await page.getByRole("button", { name: "Play all" }).click();
     await expect(title(page)).toHaveText(one.title);
@@ -57,7 +62,7 @@ test.describe("MuleBeats", () => {
   });
 
   test("repeat one replays the song, repeat all wraps around, and shuffle keeps the current song playing", async ({ page }) => {
-    await page.goto("mulebeats/");
+    await openTestPlaylist(page);
     await onlyEnglish(page);
     await page.locator(`[data-mb-play="${three.id}"]`).first().click();
     await expect(title(page)).toHaveText(three.title);
@@ -85,32 +90,34 @@ test.describe("MuleBeats", () => {
   });
 
   test("the language switch shows English or Telugu songs, plays only those, and is remembered", async ({ page }) => {
-    await page.goto("mulebeats/");
+    await openTestPlaylist(page);
     const lang = page.getByRole("group", { name: "Song language" });
     await lang.getByRole("button", { name: "తెలుగు" }).click();
     await expect(lang.getByRole("button", { name: "తెలుగు" })).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator("[data-mb-track]:visible")).toHaveCount(telugu.length);
-    await expect(page.locator("[data-mb-track]:visible").first()).toContainText("తెలుగు");
-    await expect(page.locator("[data-mb-track]:visible").first()).toContainText("Lesson summary");
+    const visible = page.locator('[data-mb-playlist="test-playlist"] [data-mb-track]:visible');
+    await expect(visible).toHaveCount(telugu.length);
+    await expect(visible.first()).toContainText("తెలుగు");
+    await expect(visible.first()).toContainText("Lesson summary");
     await page.getByRole("button", { name: "Play all" }).click();
     await expect(title(page)).toHaveText(telugu[0].title);
     await expect(page.locator("[data-mb-queue]")).toBeVisible();
     await expect(page.locator("[data-mb-queue-list] li")).toHaveText(["Nothing after this song."]);
     await page.reload();
+    await page.locator('[data-mb-pick="test-playlist"]').click();
     await expect(page.getByRole("group", { name: "Song language" }).getByRole("button", { name: "తెలుగు" })).toHaveAttribute("aria-pressed", "true");
     await page.getByRole("group", { name: "Song language" }).getByRole("button", { name: "All" }).click();
-    await expect(page.locator("[data-mb-track]:visible")).toHaveCount(testSongs.length);
+    await expect(page.locator('[data-mb-playlist="test-playlist"] [data-mb-track]:visible')).toHaveCount(testSongs.length);
   });
 
   test("a song whose audio can't be loaded says so, in the list and in the player", async ({ page }) => {
-    await page.goto("mulebeats/");
+    await openTestPlaylist(page);
     await page.locator(`[data-mb-play="${missing.id}"]`).first().click();
     await expect(player(page).locator("[data-status]")).toContainText("Can't play", { timeout: 15_000 });
     await expect(page.locator(`[data-mb-track="${missing.id}"] [data-mb-error]`).first()).toBeVisible();
   });
 
   test("playing a podcast afterwards leaves the playlist: no shuffle or repeat, podcast next/previous as before", async ({ page }) => {
-    await page.goto("mulebeats/");
+    await openTestPlaylist(page);
     await page.getByRole("button", { name: "Play all" }).click();
     await expect(player(page).locator('[data-act="shuffle"]')).toBeAttached();
     await page.goto("podcasts/test-fixture/");
