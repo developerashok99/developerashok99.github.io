@@ -56,6 +56,8 @@ test.describe("friends online and invites", () => {
 
     const pop = s.getByRole("region", { name: "Invitation to watch together" });
     await expect(pop).toContainText("Ravi invites you to watch");
+    // the pop-up fades in; check its colours once it's fully shown (mid-fade, every colour looks paler)
+    await pop.evaluate((el) => Promise.all(el.getAnimations().map((a) => a.finished)));
     expect((await new AxeBuilder({ page: s }).include("[data-invite-pop]").analyze()).violations).toEqual([]);
     await pop.getByRole("button", { name: "Join" }).click();
     await expect(s).toHaveURL(/videos\/day03\/\?room=/);
