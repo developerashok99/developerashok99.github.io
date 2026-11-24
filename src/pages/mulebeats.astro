@@ -2,6 +2,7 @@
 /**
  * MuleBeats: the study-song library. Lists the published playlists and songs (approved, with audio) from
  * config/media.json; src/client/mulebeats.ts plays them through the site's one audio player as a queue.
+ * Every song is shown as "Day N · Title" (src/lib/mulebeats.ts songLabel), the same name the player uses.
  */
 import Base from "../layouts/Base.astro";
 import Icon from "../components/Icon.astro";
@@ -9,18 +10,26 @@ import PageHead from "../components/PageHead.astro";
 import { getBeats, getLesson } from "../lib/content";
 import { formatLength } from "../lib/duration";
 import { lessonPath, withBase } from "../lib/routes";
-import { LANGUAGE_NAMES } from "../lib/mulebeats";
+import { LANGUAGE_NAMES, courseOrder } from "../lib/mulebeats";
 
 const base = import.meta.env.BASE_URL;
-const { tracks, playlists } = getBeats();
+const { tracks, playlists: listed } = getBeats();
 const byId = new Map(tracks.map((t) => [t.id, t]));
 const TYPE = { summary: "Lesson summary", concept: "Concept song" } as const;
 const languages = [...new Set(tracks.map((t) => t.language))];
 const count = (ids: string[], lang?: string) => ids.filter((id) => !lang || byId.get(id)?.language === lang).length;
+// "All songs" first: every published song in course order, so there's always one list to play straight through
+const playlists = tracks.length
+  ? [{ id: "all", title: "All songs", description: "Every song in course order.", tracks: courseOrder(tracks).map((t) => t.id) }, ...listed]
+  : [];
+const videos = tracks.filter((t) => t.videoUrl).length;
+const totalSecs = tracks.reduce((n, t) => n + (t.duration ?? 0), 0);
+const hours = Math.floor(totalSecs / 3600);
+const mins = Math.round((totalSecs % 3600) / 60);
 ---
-<Base title="MuleBeats" nav="mulebeats" description="Study songs: each lesson's summary and its key concepts, set to music">
+<Base title="MuleBeats" nav="mulebeats" description="Study songs: each lesson's summary set to music, with lyric videos">
   <div class="page mulebeats" data-mulebeats>
-    <PageHead eyebrow="Learn by ear" title="MuleBeats" sub="Short songs that teach each lesson: one song sums up the whole lesson, others explain a single concept. Each style suits what it teaches: a catchy chant for lists, a story for steps, two voices for comparisons." />
+    <PageHead eyebrow="Learn by ear" title="MuleBeats" sub="Each lesson as a song, with a lyric video you can watch. Play a whole playlist, or pick a song." />
 
     {playlists.length === 0 ? (
       <section class="card mb-empty" data-mb-empty>
@@ -33,12 +42,48 @@ const count = (ids: string[], lang?: string) => ids.filter((id) => !lang || byId
       </section>
     ) : (
       <>
+        <p class="mb-stats small muted">
+          <span><b>{tracks.length}</b> song{tracks.length === 1 ? "" : "s"}</span>
+          <span><b>{videos}</b> lyric video{videos === 1 ? "" : "s"}</span>
+          <span><b>{hours ? `${hours} h ${mins} min` : `${mins} min`}</b> of listening</span>
+        </p>
+
+        <!-- what's playing, with the controls you need most; shown once a song plays -->
+        <section class="card mb-now" data-mb-now data-mb-queue hidden aria-labelledby="mb-now-h">
+          <div class="mb-now__top">
+            <span class="mb-now__art" aria-hidden="true"><Icon name="music" /></span>
+            <div class="mb-now__info">
+              <p class="mb-now__eyebrow small" id="mb-now-h">Now playing <span class="muted" data-mb-queue-about></span></p>
+              <p class="mb-now__title" data-mb-now-title>—</p>
+              <a class="small" data-mb-now-lesson href="#">—</a>
+            </div>
+          </div>
+          <div class="mb-now__bar" aria-hidden="true"><span data-mb-now-fill></span></div>
+          <p class="mb-now__time small muted"><span data-mb-now-elapsed>0:00</span><span data-mb-now-total>0:00</span></p>
+          <div class="mb-now__controls">
+            <button class="icon-btn" type="button" data-mb-now-act="shuffle" aria-pressed="false" aria-label="Shuffle: off"><Icon name="shuffle" /></button>
+            <button class="icon-btn mb-now__step" type="button" data-mb-now-act="prev" aria-label="Previous song"><Icon name="prev" /></button>
+            <button class="play-btn mb-now__play" type="button" data-mb-now-act="toggle" aria-label="Play">
+              <Icon name="play" class="play" /><Icon name="pause" class="pause" />
+            </button>
+            <button class="icon-btn mb-now__step" type="button" data-mb-now-act="next" aria-label="Next song"><Icon name="next" /></button>
+            <button class="icon-btn repeat-btn" type="button" data-mb-now-act="repeat" data-repeat="off" aria-label="Repeat: off"><Icon name="repeat" /><span class="repeat-btn__one" aria-hidden="true">1</span></button>
+          </div>
+          <div class="mb-now__more">
+            <button class="btn btn--sm" type="button" data-mb-now-video hidden><Icon name="video" /> Watch video</button>
+          </div>
+          <details class="mb-now__next">
+            <summary>Up next <span class="muted" data-mb-queue-count></span></summary>
+            <ol class="mb-queue__list" data-mb-queue-list></ol>
+          </details>
+        </section>
+
         {languages.length > 1 && (
           <div class="mb-lang" role="group" aria-label="Song language">
             <span class="small muted">Language</span>
             <div class="segmented">
               <button type="button" data-mb-lang="" aria-pressed="true">All</button>
-              {languages.map((l) => <button type="button" data-mb-lang={l} aria-pressed="false" lang={l}>{LANGUAGE_NAMES[l]}</button>)}
+              {languages.map((l) => <button type="button" data-mb-lang={l} aria-pressed="false">{LANGUAGE_NAMES[l]}</button>)}
             </div>
           </div>
         )}
@@ -64,21 +109,25 @@ const count = (ids: string[], lang?: string) => ids.filter((id) => !lang || byId
               </div>
             </div>
             <ol class="mb-tracks">
-              {p.tracks.map((id, n) => {
+              {p.tracks.map((id) => {
                 const t = byId.get(id)!;
                 const lesson = getLesson(t.lesson);
                 return (
                   <li class="mb-track" id={i === 0 ? t.id : undefined} data-mb-track={t.id} data-lang={t.language}>
-                    <button class="play-btn mb-track__play" type="button" data-mb-play={t.id} aria-label={`Play ${t.title}`}>
+                    <button class="play-btn mb-track__play" type="button" data-mb-play={t.id} aria-label={`Play ${t.label}`}>
                       <Icon name="play" class="play" /><Icon name="pause" class="pause" />
                     </button>
                     <div class="mb-track__body">
-                      <p class="mb-track__title"><b lang={t.language}>{t.title}</b></p>
+                      <p class="mb-track__title">
+                        {t.day != null && <span class="mb-day">Day {t.day}</span>}
+                        <b>{t.title}</b>
+                        <span class="mb-track__playing small" aria-hidden="true">Playing</span>
+                      </p>
                       <p class="mb-track__meta small">
                         <a href={withBase(base, lessonPath(t.lesson))}>{lesson?.label ?? t.lesson}{lesson ? `: ${lesson.title}` : ""}</a>
                       </p>
                       <p class="mb-track__tags small muted">
-                        <span class="pill">{TYPE[t.type]}</span> <span class="pill pill--blue" lang={t.language}>{LANGUAGE_NAMES[t.language]}</span> <span>{t.genre}</span> · <span>{formatLength(t.duration ?? 0)}</span>
+                        <span>{TYPE[t.type]}</span> · <span>{LANGUAGE_NAMES[t.language]}</span> · <span>{t.genre}</span> · <span>{formatLength(t.duration ?? 0)}</span>
                       </p>
                       {t.concepts.length > 0 && (
                         <details class="mb-track__covers small">
@@ -86,13 +135,13 @@ const count = (ids: string[], lang?: string) => ids.filter((id) => !lang || byId
                           <ul>{t.concepts.map((c) => <li>{c}</li>)}</ul>
                         </details>
                       )}
-                      {t.videoUrl && (
-                        <button class="btn btn--sm mb-track__video" type="button" data-mb-video={withBase(base, t.videoUrl)} data-title={t.title}>
-                          <Icon name="video" /> Watch video
-                        </button>
-                      )}
                       <p class="mb-track__error small" data-mb-error hidden role="status">This song's audio couldn't be loaded. Try again later.</p>
                     </div>
+                    {t.videoUrl && (
+                      <button class="btn btn--sm mb-track__video" type="button" data-mb-video={withBase(base, t.videoUrl)} data-mb-video-id={t.id} data-title={t.label}>
+                        <Icon name="video" /> Watch video
+                      </button>
+                    )}
                   </li>
                 );
               })}
@@ -107,14 +156,13 @@ const count = (ids: string[], lang?: string) => ids.filter((id) => !lang || byId
             <button class="icon-btn" type="button" data-mb-video-close aria-label="Close the video"><Icon name="close" /></button>
           </div>
           <video class="mb-video__player" controls playsinline preload="none" data-mb-video-player></video>
-          <p class="small muted mb-video__note">The song with its lyrics and pictures. The audio player is paused while the video plays.</p>
+          <div class="mb-video__nav">
+            <button class="btn btn--sm" type="button" data-mb-video-prev><Icon name="prev" /> Previous video</button>
+            <p class="small muted mb-video__upnext" data-mb-video-upnext></p>
+            <button class="btn btn--primary btn--sm" type="button" data-mb-video-next>Next video <Icon name="next" /></button>
+          </div>
+          <p class="small muted mb-video__note">The next video starts when this one ends. The audio player is paused while a video plays.</p>
         </dialog>
-
-        <section class="card mb-queue" aria-labelledby="mb-q-h" data-mb-queue hidden>
-          <h2 id="mb-q-h">Up next</h2>
-          <p class="small muted" data-mb-queue-about></p>
-          <ol class="mb-queue__list" data-mb-queue-list></ol>
-        </section>
       </>
     )}
   </div>

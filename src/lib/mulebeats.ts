@@ -17,11 +17,15 @@ export type TrackStatus = "planned" | "review" | "approved";
 /** the language a song is sung in: English, or Telugu (the language the lectures are taught in) */
 export type Language = "en" | "te";
 export const LANGUAGES: Language[] = ["en", "te"];
-export const LANGUAGE_NAMES: Record<Language, string> = { en: "English", te: "తెలుగు" };
+export const LANGUAGE_NAMES: Record<Language, string> = { en: "English", te: "Telugu" };
 
 export interface Track {
   id: string;
   title: string;
+  /** the course day the song's lesson belongs to (lesson "day19" is day 19), or null for other lessons */
+  day: number | null;
+  /** how the song is shown everywhere (page, player, lock screen, video): "Day 19 · Our Own Server" */
+  label: string;
   lesson: string;
   type: TrackType;
   objective: Objective;
@@ -149,7 +153,7 @@ export function parseBeats(
     const concepts = Array.isArray(t.concepts) ? t.concepts.map(str).filter(Boolean) : [];
     const plan = planStyle(type, objective, complexity ?? 2, LANGUAGES.includes(language) ? language : "en");
     tracks.push({
-      id, title: str(t.title), lesson, type, objective, complexity: complexity ?? 2, concepts,
+      id, title: str(t.title), day: dayOf(lesson), label: songLabel(str(t.title), lesson), lesson, type, objective, complexity: complexity ?? 2, concepts,
       genre: str(t.genre) || plan.genre, duration: duration ?? null, targetSecs: plan.targetSecs,
       audioUrl: audioUrl || null, videoUrl: videoUrl || null, status, language: LANGUAGES.includes(language) ? language : "en", versionOf: versionOf || null, test: t.test === true,
     });
@@ -181,6 +185,21 @@ export function publish(b: Beats, showTest: boolean): Beats {
   const ok = new Set(tracks.map((t) => t.id));
   const playlists = b.playlists.map((p) => ({ ...p, tracks: p.tracks.filter((id) => ok.has(id)) })).filter((p) => p.tracks.length > 0);
   return { tracks, playlists };
+}
+
+/** The course day of a lesson id ("day07" is 7); null for lessons that aren't a numbered day. */
+export function dayOf(lesson: string): number | null {
+  const m = /^day(\d+)$/.exec(lesson);
+  return m ? Number(m[1]) : null;
+}
+/** "Day 19 · Our Own Server": the day first, so songs read in course order wherever they appear. */
+export function songLabel(title: string, lesson: string): string {
+  const d = dayOf(lesson);
+  return d == null ? title : `Day ${d} · ${title}`;
+}
+/** Songs in course order (by day, keeping manifest order within a day), for the "All songs" playlist. */
+export function courseOrder(tracks: Track[]): Track[] {
+  return tracks.map((t, i) => ({ t, i })).sort((a, b) => (a.t.day ?? 999) - (b.t.day ?? 999) || a.i - b.i).map((x) => x.t);
 }
 
 // ---- the play queue (used by the shared audio player, src/client/player.ts) ----

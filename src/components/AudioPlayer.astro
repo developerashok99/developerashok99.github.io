@@ -25,7 +25,8 @@ const episodes = getPodcasts()
 // MuleBeats songs share the player; they play as playlists (a queue), never in the podcast next/previous order.
 const songs = getBeats().tracks.map((t) => ({
   id: t.id,
-  title: t.title,
+  // "Day 19 · Our Own Server": the same name in the player, on the lock screen and on the MuleBeats page
+  title: t.label,
   src: withBase(base, t.audioUrl!),
   bytes: null,
   href: withBase(base, `mulebeats/#${t.id}`),

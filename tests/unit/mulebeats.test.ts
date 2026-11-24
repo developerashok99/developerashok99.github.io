@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { checkMediaUrl, parseMedia } from "../../src/lib/config";
-import { afterEnd, parseBeats, planStyle, publish, shuffled, stepIndex } from "../../src/lib/mulebeats";
+import { afterEnd, courseOrder, dayOf, parseBeats, planStyle, publish, shuffled, songLabel, stepIndex } from "../../src/lib/mulebeats";
 
 const known = ["day05", "day06", "day07"];
 const song = (over: Record<string, unknown> = {}) => ({
@@ -91,12 +91,37 @@ describe("MuleBeats manifest", () => {
   });
 });
 
+describe("song names: the day first, then the title", () => {
+  it("names a song by its lesson's day: Day 5 · Song A", () => {
+    expect(dayOf("day05")).toBe(5);
+    expect(dayOf("day19")).toBe(19);
+    expect(dayOf("interview-part1")).toBeNull();
+    expect(songLabel("Our Own Server", "day19")).toBe("Day 19 · Our Own Server");
+    expect(songLabel("Interview songs", "interview-part1")).toBe("Interview songs");
+    const r = parse({ tracks: [song()] });
+    expect(r.published.tracks[0]).toMatchObject({ day: 5, label: "Day 5 · Song A" });
+  });
+
+  it("puts songs in course order by day, keeping the manifest order within a day", () => {
+    const r = parse({ tracks: [song({ id: "late", lesson: "day07" }), song({ id: "a1" }), song({ id: "a2" }), song({ id: "mid", lesson: "day06" })] });
+    expect(courseOrder(r.published.tracks).map((t) => t.id)).toEqual(["a1", "a2", "mid", "late"]);
+  });
+
+  it("every published song in the real manifest has an English title (shown in the app and on the lock screen)", () => {
+    const media = JSON.parse(fs.readFileSync(path.join(__dirname, "../../config/media.json"), "utf8"));
+    const telugu = /[\u0C00-\u0C7F]/;
+    const published = media.mulebeats.tracks.filter((t: { status: string; test?: boolean }) => t.status === "approved" && !t.test);
+    expect(published.length).toBeGreaterThan(0);
+    for (const t of published) expect(t.title, t.id).not.toMatch(telugu);
+  });
+});
+
 describe("songs in Telugu", () => {
   it("a Telugu version takes the original's lesson, type and concepts, gets a Telugu style and a default title", () => {
     const r = parse({ tracks: [song(), { id: "beat-a-te", versionOf: "beat-a", language: "te", status: "planned" }] });
     expect(r.problems).toEqual([]);
     const te = r.all.tracks.find((t) => t.id === "beat-a-te")!;
-    expect(te).toMatchObject({ lesson: "day05", type: "summary", concepts: ["one"], language: "te", versionOf: "beat-a", title: "Song A (తెలుగు)", genre: "Telugu hip-hop" });
+    expect(te).toMatchObject({ lesson: "day05", type: "summary", concepts: ["one"], language: "te", versionOf: "beat-a", title: "Song A (Telugu)", genre: "Telugu hip-hop" });
     expect(r.all.tracks[0].language).toBe("en");
   });
 
