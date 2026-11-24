@@ -107,8 +107,8 @@ The e2e tests run against `astro preview` of `dist/`, so **rebuild before runnin
 
 - Manifest: `config/media.json` → `mulebeats` {tracks, playlists}, parsed by `src/lib/mulebeats.ts` `parseBeats` (called from `parseMedia`; mistakes stop the build). Only `status: "approved"` songs with `audioUrl` and `duration` are published (`publish`); `test: true` songs only in test builds. `planStyle` picks genre/length from objective and complexity. All 60 lessons have planned songs (130: a summary per lesson plus concept songs) and no audio yet, so the live page shows the empty state.
 - Page `/mulebeats/` (`src/pages/mulebeats.astro`, `src/client/mulebeats.ts`). Songs join the shared audio player's list (`AudioPlayer.astro`, `kind: "song"`) and play as a queue: `player.ts` `playQueue`, `setShuffle`, `cycleRepeat`, `queueInfo`, event `mls:queue`, `mls:player-error`. Pure queue helpers `stepIndex`, `afterEnd`, `shuffled`. Podcasts never step into songs; playing a podcast ends the queue. Songs start from the top (no resume). Lock-screen next/previous use the same `step()`.
-- **Published songs:** Telugu lesson-summary songs for Days 7–21 (Day 7 has two versions), made by the user with Suno, re-encoded to 128 kbps and hosted as assets of GitHub Release `mulebeats-v1` (not marked latest). Lyrics were written from the notes in simple Telugu mixed with English; the user prefers a clear style: vocals upfront and dry, crisp diction, guitar and piano, about 88–100 bpm. To add more: upload to `mulebeats-v1`, set `status: "approved"`, `audioUrl`, `duration`, `title`, `genre`.
-- **Lyric videos:** every published song has `videoUrl` (an MP4 in `mulebeats-v1`), shown with a "Watch video" button that opens a `<dialog>` player and pauses the audio player. Made outside this repo in `~/Downloads/job-pilot/mulebeats-studio/video/` (see its RESUME.md): Demucs separates the voice, `fa.py` force-aligns the known lyrics (torchaudio MMS_FA, Telugu romanized), `render.mjs` draws the video (headless Chrome → ffmpeg), `make_fa.py` + `finish.sh` run them with a stall watchdog and checks.
+- **Published songs:** Telugu lesson-summary songs for Days 7–21, 23–26 and 28–33 (Day 7 has two versions; Days 22 and 27 have no song yet), made by the user with Suno, re-encoded to 128 kbps and hosted as assets of GitHub Release `mulebeats-v1` (not marked latest). Lyrics were written from the notes in simple Telugu mixed with English; the user prefers a clear style: vocals upfront and dry, crisp diction, guitar and piano, about 88–100 bpm. To add more: upload to `mulebeats-v1`, set `status: "approved"`, `audioUrl`, `duration`, `title`, `genre`.
+- **Lyric videos:** every published song has `videoUrl` (an MP4 in `mulebeats-v1`), shown with a "Watch video" button that opens a `<dialog>` player and pauses the audio player. Made outside this repo in `~/Downloads/job-pilot/mulebeats-studio/video/` (see its RESUME.md): Demucs separates the voice, `fa.py` force-aligns the known lyrics (torchaudio MMS_FA, Telugu romanized), `render.mjs` draws the video (headless Chrome → ffmpeg), `make_fa.py` + `finish.sh` run them with a stall watchdog and checks. `match.py` checks a song sings its own day's lyrics (it caught Suno files saved under the wrong day).
 - Tests: `tests/unit/mulebeats.test.ts`, `tests/e2e/mulebeats.spec.ts` (empty-state test runs only with `MULEBEATS_EMPTY=1` against a production build).
 
 ### Menu toggle (`setupNavToggle` in app.ts)
@@ -141,7 +141,7 @@ The e2e tests run against `astro preview` of `dist/`, so **rebuild before runnin
   - `window.mlsOrientation` (`@capacitor/screen-orientation`), needed because the WebView doesn't support `screen.orientation.lock`
   - the media session
 - `MainActivity` serves a folder's index.html itself.
-- The version is set in `android/app/build.gradle`. It is now **versionCode 19 / versionName "1.19"**. Bump both for every app release.
+- The version is set in `android/app/build.gradle`. It is now **versionCode 20 / versionName "1.20"**. Bump both for every app release.
 - **Build environment:**
   - `export JAVA_HOME=~/.jdks/jdk-21.0.12.1+1 ANDROID_HOME=~/Android/Sdk` (the system Java is a JRE only)
   - The root disk is nearly full. Free only rebuildable caches, never user data.
@@ -152,7 +152,7 @@ The e2e tests run against `astro preview` of `dist/`, so **rebuild before runnin
   - Screenshots don't work in the headless emulator (`dev.screenshot` is black and `page.screenshot` hangs), so check state with `evaluate` and `isVisible` instead.
   - Stop it with `adb emu kill`.
 - **Releases:**
-  - GitHub Releases are named `app-vX.Y`. The latest published one is **app-v1.19** (1.5–1.11 were skipped).
+  - GitHub Releases are named `app-vX.Y`. The latest published one is **app-v1.20** (1.5–1.11 were skipped).
   - Publish with (as `developerashok99`; this worked for 1.12):
     ```bash
     cp android/app/build/outputs/apk/debug/app-debug.apk mule-learning-hub-X.Y.apk
