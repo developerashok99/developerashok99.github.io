@@ -2,7 +2,7 @@
  * The MuleBeats page (src/pages/mulebeats.astro): pick a playlist, play a song or the whole playlist (in order or
  * shuffled), and see what's up next. Playback is the site's one audio player (src/client/player.ts), as a queue.
  */
-import { currentId, getEpisode, isPlaying, playQueue, queueInfo, toggle } from "./player";
+import { controls, currentId, getEpisode, isPlaying, playQueue, queueInfo, toggle } from "./player";
 import { pageSignal } from "./page";
 import { prefs, setPrefs } from "./store";
 
@@ -72,8 +72,29 @@ export function setupMuleBeats() {
     if (!next.length) ol.append(Object.assign(document.createElement("li"), { className: "small muted", textContent: q.repeat === "one" ? "This song repeats." : "Nothing after this song." }));
   };
 
+  // the lyric video: one player in a dialog; the audio player pauses so the song doesn't play twice
+  const dialog = root.querySelector<HTMLDialogElement>("[data-mb-video-dialog]");
+  const video = root.querySelector<HTMLVideoElement>("[data-mb-video-player]");
+  const closeVideo = () => {
+    if (!video) return;
+    video.pause();
+    video.removeAttribute("src");
+    video.load();
+  };
+  dialog?.addEventListener("close", closeVideo, { signal });
+  dialog?.querySelector("[data-mb-video-close]")?.addEventListener("click", () => dialog.close(), { signal });
+
   root.addEventListener("click", (e) => {
     const el = e.target as Element;
+    const vid = el.closest<HTMLElement>("[data-mb-video]");
+    if (vid && dialog && video) {
+      controls.pause();
+      root.querySelector<HTMLElement>("[data-mb-video-title]")!.textContent = vid.dataset.title ?? "Lyric video";
+      video.src = vid.dataset.mbVideo!;
+      dialog.showModal();
+      void video.play().catch(() => {});
+      return;
+    }
     const langBtn = el.closest<HTMLElement>("[data-mb-lang]");
     if (langBtn) {
       setLang(langBtn.dataset.mbLang ?? "");

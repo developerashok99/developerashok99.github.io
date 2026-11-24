@@ -1907,3 +1907,10 @@ html[data-locked] .invite-pop { display: none !important; }
 .repeat-btn[data-repeat="one"] .repeat-btn__one { display: block; }
 .player [data-act="shuffle"][aria-pressed="true"], .player .repeat-btn:not([data-repeat="off"]) { color: var(--accent); }
 .mb-lang { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.75rem; }
+.mb-track__video { margin-top: 0.4rem; }
+.mb-video { width: min(960px, calc(100vw - 2rem)); max-height: calc(100vh - 2rem); padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); }
+.mb-video::backdrop { background: rgba(10, 14, 22, 0.7); }
+.mb-video__head { display: flex; justify-content: space-between; align-items: center; gap: 0.75rem; margin-bottom: 0.6rem; }
+.mb-video__head h2 { margin: 0; font-size: 1.1rem; min-width: 0; overflow-wrap: anywhere; }
+.mb-video__player { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; border-radius: var(--radius-sm); }
+.mb-video__note { margin: 0.5rem 0 0; }

@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import AxeBuilder from "@axe-core/playwright";
+import type { Locator } from "@playwright/test";
 import { expect, test } from "./test";
 import { useFakeYouTube, yt } from "./fake-yt";
 
@@ -7,6 +8,17 @@ const media = JSON.parse(readFileSync(new URL("../../config/media.json", import.
 const ids = Object.entries(media.lectures as Record<string, { youtube?: string }>)
   .filter(([, l]) => l.youtube?.trim())
   .map(([id]) => id);
+
+/** Clicks one of our player controls. They hide 1 s after the last mouse move, and the mouse may already sit on the
+ *  player (the big play button is in the middle), so move to a new spot and click at once, retrying both together. */
+async function clickControl(player: Locator, button: Locator, action: "click" | "focus" = "click") {
+  let n = 0;
+  await expect(async () => {
+    n++;
+    await player.hover({ position: { x: 20 + (n % 5) * 15, y: 20 + (n % 3) * 10 } });
+    await button[action]({ timeout: 1500 });
+  }).toPass({ timeout: 20_000 });
+}
 
 test.describe("video player (our controls over YouTube)", () => {
   test.beforeEach(async ({ page }) => {
@@ -23,27 +35,26 @@ test.describe("video player (our controls over YouTube)", () => {
     // the clear shield covers the video, so YouTube never sees the mouse
     await expect(player.locator(".yt-shield")).toBeVisible();
 
-    await player.hover();
-    await player.getByRole("button", { name: "Pause" }).first().click();
+    await clickControl(player, player.getByRole("button", { name: "Pause" }).first());
     await expect.poll(() => yt(page).state()).toBe(2);
-    await player.getByRole("button", { name: "Play" }).first().click();
+    await clickControl(player, player.getByRole("button", { name: "Play" }).first());
     await expect.poll(() => yt(page).state()).toBe(1);
     const t0 = await yt(page).time();
-    await player.getByRole("button", { name: "Forward 10 seconds" }).click();
+    await clickControl(player, player.getByRole("button", { name: "Forward 10 seconds" }));
     expect(await yt(page).time()).toBeGreaterThan(t0 + 9);
     // quick presses add up, even if the player still reports the old position right after a seek
     await page.evaluate(() => { const p = (window as unknown as { __fakeYt: { player: { seekTo(t: number): void; getCurrentTime(): number } } }).__fakeYt.player;
       const real = p.seekTo.bind(p); let lag = 0; p.seekTo = (t: number) => { lag = Date.now(); setTimeout(() => real(t), 300); void lag; }; });
     const t1 = await yt(page).time();
-    for (let i = 0; i < 3; i++) await player.getByRole("button", { name: "Forward 10 seconds" }).click();
+    for (let i = 0; i < 3; i++) await clickControl(player, player.getByRole("button", { name: "Forward 10 seconds" }));
     await expect.poll(async () => (await yt(page).time()) - t1).toBeGreaterThan(29);
     // phones hide mute and volume (hardware buttons do that); everywhere else the button mutes
     if ((page.viewportSize()?.width ?? 0) > 560) {
-      await player.getByRole("button", { name: "Mute" }).click();
+      await clickControl(player, player.getByRole("button", { name: "Mute" }));
       expect(await yt(page).call("isMuted")).toBe(true);
     } else await expect(player.getByRole("button", { name: "Mute" })).toBeHidden();
     // speed from the settings menu
-    await player.getByRole("button", { name: /Settings/ }).click();
+    await clickControl(player, player.getByRole("button", { name: /Settings/ }));
     await player.getByRole("menuitemradio", { name: "1.25×" }).click();
     expect(await yt(page).call("getPlaybackRate")).toBe(1.25);
     await expect(player.getByRole("menu", { name: "Settings" })).toBeHidden();
@@ -60,8 +71,7 @@ test.describe("video player (our controls over YouTube)", () => {
     // the viewer's YouTube settings switched them on; the default here is off
     await expect.poll(() => yt(page).captions()).toBeNull();
     const player = page.getByRole("region", { name: /Video player:/ });
-    await player.hover();
-    await player.getByRole("button", { name: /Settings/ }).click();
+    await clickControl(player, player.getByRole("button", { name: /Settings/ }));
     const menu = player.getByRole("menu", { name: "Settings" });
     await expect(menu.getByRole("menuitemradio", { name: "Off" })).toHaveAttribute("aria-checked", "true");
     await menu.getByRole("menuitemradio", { name: "English (auto-translated)" }).click();
@@ -69,8 +79,7 @@ test.describe("video player (our controls over YouTube)", () => {
     await expect(player.getByRole("button", { name: "Captions (on)" })).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator(".video-frame")).toHaveClass(/yt-cc-on/); // not cropped, so the captions at the bottom show
     // CC turns them off, and the choice is remembered on the next lecture
-    await player.hover();
-    await player.getByRole("button", { name: "Captions (on)" }).click();
+    await clickControl(player, player.getByRole("button", { name: "Captions (on)" }));
     await expect.poll(() => yt(page).captions()).toBeNull();
     await expect(page.locator(".video-frame")).not.toHaveClass(/yt-cc-on/);
     // the C key brings back the last captions used
@@ -89,8 +98,7 @@ test.describe("video player (our controls over YouTube)", () => {
     await expect.poll(() => yt(page).state()).toBe(1);
     await yt(page).seek(1200);
     const player = page.getByRole("region", { name: /Video player:/ });
-    await player.hover();
-    await player.getByRole("button", { name: /Settings/ }).click();
+    await clickControl(player, player.getByRole("button", { name: /Settings/ }));
     const menu = player.getByRole("menu", { name: "Settings" });
     await expect(menu.getByRole("menuitemradio", { name: /Auto/ })).toContainText("now 720p");
     await menu.getByRole("menuitem", { name: /720p, 1080p/ }).click();
@@ -127,8 +135,11 @@ test.describe("video player (our controls over YouTube)", () => {
     await page.getByRole("button", { name: /Play video:/ }).click();
     await expect.poll(() => yt(page).state()).toBe(1);
     const player = page.getByRole("region", { name: /Video player:/ });
-    await player.hover();
-    await player.getByRole("button", { name: /Settings/ }).focus();
+    await page.keyboard.press("Shift"); // a keyboard user: their focus keeps the controls up
+    await clickControl(player, player.getByRole("button", { name: /Settings/ }), "focus");
+    // a keyboard user who pauses keeps their place: the controls don't hide from under the focus
+    await page.waitForTimeout(1500);
+    await expect(player.getByRole("button", { name: /Settings/ })).toBeFocused();
     await page.keyboard.press("Enter");
     const menu = player.getByRole("menu", { name: "Settings" });
     await expect(menu).toBeVisible();
@@ -154,9 +165,12 @@ test.describe("video player (our controls over YouTube)", () => {
     await expect.poll(() => yt(page).state()).toBe(1);
     const frame = page.locator(".video-frame");
     const box = (await frame.boundingBox())!;
+    // the controls show for only a second, so note that they appeared (a slow check under load could miss it)
+    await frame.evaluate((el) => new MutationObserver(() => el.classList.contains("yt-show") && ((window as unknown as { __ytShown: boolean }).__ytShown = true))
+      .observe(el, { attributes: true, attributeFilter: ["class"] }));
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await page.mouse.move(box.x + box.width / 2 + 5, box.y + box.height / 2 + 5);
-    await expect(frame).toHaveClass(/yt-show/);
+    await expect.poll(() => page.evaluate(() => (window as unknown as { __ytShown?: boolean }).__ytShown === true || document.querySelector(".video-frame")!.classList.contains("yt-show"))).toBe(true);
     await page.waitForTimeout(1400);
     await expect(frame).not.toHaveClass(/yt-show/); // still hovering, but nothing moved: gone
     // paused: the controls stay

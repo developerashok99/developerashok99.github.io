@@ -109,6 +109,23 @@ test.describe("MuleBeats", () => {
     await expect(page.locator('[data-mb-playlist="test-playlist"] [data-mb-track]:visible')).toHaveCount(testSongs.length);
   });
 
+  test("a song's lyric video opens in a player and pauses the audio player", async ({ page }) => {
+    await openTestPlaylist(page);
+    await page.getByRole("button", { name: "Play all" }).click();
+    await expect.poll(() => page.locator("[data-audio]").evaluate((a: HTMLAudioElement) => !a.paused), { timeout: 10_000 }).toBe(true);
+    const row = page.locator('[data-mb-playlist="test-playlist"]').locator(`[data-mb-track="${one.id}"]`);
+    await row.getByRole("button", { name: "Watch video" }).click();
+    const dialog = page.getByRole("dialog", { name: one.title });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.locator("video")).toHaveAttribute("src", /fixture-video\.mp4$/);
+    expect(await page.locator("[data-audio]").evaluate((a: HTMLAudioElement) => a.paused)).toBe(true);
+    expect((await new AxeBuilder({ page }).include("[data-mb-video-dialog]").withTags(["wcag2a", "wcag2aa"]).analyze()).violations).toEqual([]);
+    await dialog.getByRole("button", { name: "Close the video" }).click();
+    await expect(dialog).toBeHidden();
+    // songs without a video have no button
+    await expect(page.locator('[data-mb-playlist="test-playlist"]').locator(`[data-mb-track="${two.id}"]`).getByRole("button", { name: "Watch video" })).toHaveCount(0);
+  });
+
   test("a song whose audio can't be loaded says so, in the list and in the player", async ({ page }) => {
     await openTestPlaylist(page);
     await page.locator(`[data-mb-play="${missing.id}"]`).first().click();

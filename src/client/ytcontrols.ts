@@ -161,8 +161,14 @@ export function attachControls(frame: HTMLElement, player: YtControlsPlayer, tit
   let osdTimer = 0;
 
   const menuOpen = () => !menu.hidden;
+  /** a keyboard user is on one of our controls: hiding them would drop the focus (mouse clicks don't count) */
+  const keyboardInside = () => {
+    const el = document.activeElement;
+    return !!el && frame.contains(el) && el.matches(":focus-visible");
+  };
   const hide = () => {
     if (!playing() || dragging || menuOpen()) return;
+    if (keyboardInside()) { hideTimer = window.setTimeout(hide, HIDE_AFTER_MS); return; }
     frame.classList.remove("yt-show");
   };
   /** show the controls; while playing they go away again after HIDE_AFTER_MS without movement */

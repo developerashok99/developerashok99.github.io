@@ -86,6 +86,11 @@ const count = (ids: string[], lang?: string) => ids.filter((id) => !lang || byId
                           <ul>{t.concepts.map((c) => <li>{c}</li>)}</ul>
                         </details>
                       )}
+                      {t.videoUrl && (
+                        <button class="btn btn--sm mb-track__video" type="button" data-mb-video={withBase(base, t.videoUrl)} data-title={t.title}>
+                          <Icon name="video" /> Watch video
+                        </button>
+                      )}
                       <p class="mb-track__error small" data-mb-error hidden role="status">This song's audio couldn't be loaded. Try again later.</p>
                     </div>
                   </li>
@@ -95,6 +100,15 @@ const count = (ids: string[], lang?: string) => ids.filter((id) => !lang || byId
             <p class="small muted" data-mb-none hidden>No songs in this language in this playlist yet.</p>
           </section>
         ))}
+
+        <dialog class="mb-video" data-mb-video-dialog aria-labelledby="mb-video-title">
+          <div class="mb-video__head">
+            <h2 id="mb-video-title" data-mb-video-title>Lyric video</h2>
+            <button class="icon-btn" type="button" data-mb-video-close aria-label="Close the video"><Icon name="close" /></button>
+          </div>
+          <video class="mb-video__player" controls playsinline preload="none" data-mb-video-player></video>
+          <p class="small muted mb-video__note">The song with its lyrics and pictures. The audio player is paused while the video plays.</p>
+        </dialog>
 
         <section class="card mb-queue" aria-labelledby="mb-q-h" data-mb-queue hidden>
           <h2 id="mb-q-h">Up next</h2>

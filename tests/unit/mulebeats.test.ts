@@ -66,6 +66,12 @@ describe("MuleBeats manifest", () => {
     expect(parse(undefined).published).toEqual({ tracks: [], playlists: [] });
   });
 
+  it("keeps a song's lyric video link and rejects a bad one", () => {
+    expect(parse({ tracks: [song({ videoUrl: "https://example.com/a.mp4" })] }).published.tracks[0].videoUrl).toBe("https://example.com/a.mp4");
+    expect(parse({ tracks: [song()] }).published.tracks[0].videoUrl).toBeNull();
+    expect(parse({ tracks: [song({ videoUrl: "javascript:alert(1)" })] }).problems.join()).toMatch(/videoUrl must be an http\(s\) URL/);
+  });
+
   it("a mistake in the manifest stops the build, like any media.json mistake", () => {
     expect(() => parseMedia({ podcasts: [], mulebeats: { tracks: [song({ lesson: "nope" })] } }, known)).toThrow(/lesson "nope" does not exist/);
   });

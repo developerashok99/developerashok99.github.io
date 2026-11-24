@@ -34,6 +34,8 @@ export interface Track {
   duration: number | null;
   targetSecs: number;
   audioUrl: string | null;
+  /** the lyric video (the song with animated lyrics and pictures), when there is one */
+  videoUrl: string | null;
   status: TrackStatus;
   language: Language;
   /** for a song in another language: the original it's a version of (same lesson and concepts) */
@@ -139,6 +141,9 @@ export function parseBeats(
     const audioUrl = str(t.audioUrl);
     const urlProblem = audioUrl ? opts.checkUrl?.(audioUrl) : null;
     if (urlProblem) problems.push(`${at}.audioUrl ${urlProblem}`);
+    const videoUrl = str(t.videoUrl);
+    const videoProblem = videoUrl ? opts.checkUrl?.(videoUrl) : null;
+    if (videoProblem) problems.push(`${at}.videoUrl ${videoProblem}`);
     if (status === "approved" && !audioUrl) problems.push(`${at}: an approved song needs its audioUrl`);
     if (status === "approved" && !rawDuration) problems.push(`${at}: an approved song needs its real duration`);
     const concepts = Array.isArray(t.concepts) ? t.concepts.map(str).filter(Boolean) : [];
@@ -146,7 +151,7 @@ export function parseBeats(
     tracks.push({
       id, title: str(t.title), lesson, type, objective, complexity: complexity ?? 2, concepts,
       genre: str(t.genre) || plan.genre, duration: duration ?? null, targetSecs: plan.targetSecs,
-      audioUrl: audioUrl || null, status, language: LANGUAGES.includes(language) ? language : "en", versionOf: versionOf || null, test: t.test === true,
+      audioUrl: audioUrl || null, videoUrl: videoUrl || null, status, language: LANGUAGES.includes(language) ? language : "en", versionOf: versionOf || null, test: t.test === true,
     });
   });
   const playlists: Playlist[] = [];
